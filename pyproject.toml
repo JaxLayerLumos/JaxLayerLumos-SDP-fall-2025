@@ -1,0 +1,60 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools",
+    "setuptools_scm",
+]
+
+[tool.setuptools]
+packages = [
+    "jaxlayerlumos",
+]
+
+[project]
+name = "jaxlayerlumos"
+version = "0.3.3"
+description = "A JAX-based efficient transfer-matrix method framework for optical simulations"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Mingxuan Li", email = "mil152@pitt.edu"},
+    {name = "Jungtaek Kim", email = "jungtaek.kim.mail@gmail.com"},
+    {name = "Paul W. Leu", email = "pleu@pitt.edu"},
+]
+dependencies = [
+    "jax",
+    "jaxlib",
+]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.urls]
+Homepage = "https://github.com/JaxLayerLumos/JaxLayerLumos"
+Source = "https://github.com/JaxLayerLumos/JaxLayerLumos"
+
+[project.optional-dependencies]
+dev = [
+    "matplotlib",
+    "pytest",
+    "wheel",
+    "build",
+    "twine",
+    "sphinx",
+    "black",
+    "colour-science",
+]
+
+benchmarking = [
+    "tmm-fast",
+]
+
+examples = [
+    "bayeso",
+    "optax",
+]
