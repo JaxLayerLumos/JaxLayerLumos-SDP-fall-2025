@@ -4,7 +4,7 @@ import numpy as onp
 from plot_R_frequency import read_csv_file
 
 def plot_R_thickness():
-    filename = "./data/LF.csv"
+    filename = "radar/data/LF.csv"
     #filename = "./data/CHF.csv"
     prefix = filename.split("/")[-1].replace(".csv", "")
     all_materials, d_stack, freq_range, inc_angles, polarization, R_db_list = read_csv_file(filename)
