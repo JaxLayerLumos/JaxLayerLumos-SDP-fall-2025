@@ -14,7 +14,7 @@ material_name = 'BerylliumOxide'
 
 
 B_ep1 = (1.6503) + (1E-004j)
-C_ep1 = (1.6503) + (4E-004j)
+C_ep1 = (1.6503) + (4E-004j) # Potentially incorrect value for imaginary portion of this value
 D_ep1 = (-2.3E-003) + (0)
 G_ep1 = (1.6502) + (1E-004j)
 H_ep1 = (1.042E-005) - (1.02E-006j)
