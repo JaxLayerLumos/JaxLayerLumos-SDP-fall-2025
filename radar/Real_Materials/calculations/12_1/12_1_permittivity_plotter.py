@@ -7,11 +7,55 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import pdfplumber
+import os
+import re
+
+base_dir = os.path.dirname(__file__)  # folder where script is
+pdf_path = os.path.join(base_dir, "12_1.pdf")
 
 
-#material properties
-material_name = 'BerylliumOxide'
+rows = []
+with pdfplumber.open(pdf_path) as pdf:
+    for page in pdf.pages:
+        table = page.extract_table()
+        if table:
+            rows.extend(table)
 
+df = pd.DataFrame(rows)
+
+sample_name = input("Input material name: ")
+
+# find the row index where this sample name appears
+sample_idx = df[df.iloc[:,0].str.contains(sample_name, na=False)].index[0]
+
+print( (sample_name + " sample row index:"), sample_idx)
+
+# Row 2 (index=2) has B, C, D, G, H, I, J
+df.columns = df.iloc[2]
+
+df = df.drop([0, 1]).reset_index(drop=True)
+
+# Now df[["B","C","D","G","H","I","J"]] will work
+df_selected = df[["B", "C", "D", "G", "H", "I", "J"]]
+
+# Acquire real and imag components
+real = df_selected.iloc[sample_idx - 1]
+imag = df_selected.iloc[sample_idx]
+
+# Combine into complex numbers
+combined = real.astype(str) + imag.astype(str)
+print(combined)
+
+#define frequency range
+f_min = 0.2  # GHz
+f_max = 250  # GHz
+num_points = 100 - 1  # Number of frequency points
+frequencies = np.linspace(f_min, f_max, num_points)
+
+
+
+'''
 
 B_ep1 = (1.6503) + (1E-004j)
 C_ep1 = (1.6503) + (1E-004j) 
@@ -74,3 +118,5 @@ plt.title('Real and Imaginary Permittivity vs. Frequency', fontsize=14)
 plt.xlim(1e-1, 1e3)
 plt.ylim(1e-4, 10)
 plt.show()
+
+'''
