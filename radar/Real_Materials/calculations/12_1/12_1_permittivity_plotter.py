@@ -3,13 +3,11 @@
 #Inputs: B_ep1, C_ep1, D_ep1, G_ep1, H_ep1, I_ep1, and J_ep1, f_min
 #Outputs: .csv file '12.1_BerylliumOxide.csv'
 
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pdfplumber
 import os
-import re
 
 base_dir = os.path.dirname(__file__)  # folder where script is
 pdf_path = os.path.join(base_dir, "12_1.pdf")
