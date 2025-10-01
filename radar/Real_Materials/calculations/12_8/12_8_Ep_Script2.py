@@ -1,16 +1,14 @@
-#This code models the frequency-dependent dielectric BerylliumOxide
-#Computes Permittivity, across the range 0.2 to 8 GHz
-#Inputs: B_ep1, C_ep1, D_ep1, G_ep1, H_ep1, I_ep1, and J_ep1, f_min
-#Outputs: .csv file '12.1_BerylliumOxide.csv'
-
+#Section 12.8 contains one material (7058 Epoxy with about 40%/volume 52-um silica hollow spheres) that uses a different fitting equation than the rest of the section
+#This script is solely for that material
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pdfplumber
 import os
+import re
 
 base_dir = os.path.dirname(__file__)  # folder where script is
-pdf_path = os.path.join(base_dir, "12_1.pdf")
+pdf_path = os.path.join(base_dir, "12_8.pdf")
 
 
 rows = []
@@ -22,6 +20,7 @@ with pdfplumber.open(pdf_path) as pdf:
 
 df = pd.DataFrame(rows)
 
+#Sample name is "7058 Epoxy with about 40%/volume 52-μm silica hollow spheres, 3–5μμm walls (2–18 GHz)"
 sample_name = input("Input material name: ")
 
 # find the row index where this sample name appears
@@ -29,21 +28,20 @@ sample_idx = df[df.iloc[:,0].str.contains(sample_name, na=False)].index[0]
 
 print( (sample_name + " sample row index:"), sample_idx)
 
-# Row 2 (index=2) has B, C, D, G, H, I, J
-df.columns = df.iloc[2]
+# Row 2 (index=2) has B, C, D, E, F, G, H, I, J
+df.columns = ["B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
 df = df.drop([0, 1]).reset_index(drop=True)
 
-# Now df[["B","C","D","G","H","I","J"]] will work
-df_selected = df[["B", "C", "D", "G", "H", "I", "J"]]
+# Now df[["B","C","D","E","F","G","H","I","J"]] will work
+df_selected = df[["B","C","D","E","F","G","H","I","J"]]
 
-# Acquire real and imag components
-real = df_selected.iloc[sample_idx - 1]
-imag = df_selected.iloc[sample_idx]
+# Acquire real and imag components - for this section they are combined
+values = df_selected.iloc[sample_idx - 1]
 
-# Combine into complex numbers
-combined = real.astype(str) + imag.astype(str)
-print(combined)
+# remove /n and change dashes
+new_values = values.str.replace('\n', '', regex=False)
+final_values = new_values.str.replace('–', '-', regex=False)
 
 def parse_complex_safe(s):
     """
@@ -72,30 +70,28 @@ def parse_complex_safe(s):
         c = complex(0, 0)
     return c
 
-# Apply to the selected row
-real_floats = df_selected.iloc[sample_idx - 1].apply(parse_complex_safe).apply(lambda x: x.real)
-imag_floats = df_selected.iloc[sample_idx].apply(parse_complex_safe).apply(lambda x: x.imag)
 
-complex_floats = real_floats + imag_floats * complex(0, 1)
-complex_floats.head()
 
-B = complex_floats.iloc[0]
-C = complex_floats.iloc[1]
-D = complex_floats.iloc[2]
-G = complex_floats.iloc[3]
-H = complex_floats.iloc[4]
-I = complex_floats.iloc[5]
-J = complex_floats.iloc[6]
+# Convert single string into complex float using robust parser
+B = parse_complex_safe(final_values.iloc[0])
+C = parse_complex_safe(final_values.iloc[1])
+D = parse_complex_safe(final_values.iloc[2])
+E = parse_complex_safe(final_values.iloc[3])
+F = parse_complex_safe(final_values.iloc[4])
+G = parse_complex_safe(final_values.iloc[5])
+H = parse_complex_safe(final_values.iloc[6])
+I = parse_complex_safe(final_values.iloc[7])
+J = parse_complex_safe(final_values.iloc[8])
 
 #define frequency range
-f_min = 1  # GHz
-f_max = 300  # GHz
+f_min = 2  # GHz
+f_max = 18  # GHz
 num_points = 100 - 1  # Number of frequency points
 frequencies = np.linspace(f_min, f_max, num_points)
 
-epsilon_f = B + 2 * C * (frequencies ** D) + G * (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies)**(-1)
+epsilon_f = (B + (2*C*(frequencies**D)) + (E*(frequencies**frequencies)) + (G*(1 - (J *(frequencies - H)**2) - (1j*2*I*frequencies))**-1))
 
-#permeability (mu = 1 for non-farreous)
+#permeability (mu = 1 for non-ferrous)
 mu_f = np.ones(frequencies.shape)
 
 # loglog plot
@@ -107,6 +103,6 @@ plt.ylabel('Epsilon', fontsize=12)
 plt.legend(loc='best')
 plt.grid(True, which="both", ls="--")
 plt.title('Real and Imaginary Permittivity vs. Frequency', fontsize=14)
-plt.xlim(1e-1, 1e3)
-plt.ylim(1e-4, 10)
+plt.xlim(0, 20)
+plt.ylim(1e-1, 1e6)
 plt.show()
