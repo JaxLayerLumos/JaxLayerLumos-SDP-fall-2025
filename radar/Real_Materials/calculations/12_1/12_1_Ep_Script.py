@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import pdfplumber
 import os
+import re
 
 base_dir = os.path.dirname(__file__)  # folder where script is
 pdf_path = os.path.join(base_dir, "12_1.pdf")
