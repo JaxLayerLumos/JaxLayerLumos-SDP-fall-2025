@@ -127,7 +127,10 @@ def getEpAndMu_12_1(user_f_min, user_f_max, material):
     plt.show()
 
 def main():
-    getEpAndMu_12_1(0.2, 250, "Beryllium oxide")
+    freq_min = float(input("Input min freq: "))
+    freq_max = float(input("Input max freq: "))
+    material = input("Input material: ")
+    getEpAndMu_12_1(freq_min, freq_max, material)
 
 if __name__ == "__main__":
     main()
