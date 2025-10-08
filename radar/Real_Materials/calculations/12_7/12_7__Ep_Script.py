@@ -72,9 +72,14 @@ for idx, row in df.iterrows():
     if row[0] and isinstance(row[0], str):
         cell_text = row[0].strip()
         # Check if this looks like a material name (not a header or empty)
-        if len(cell_text) > 3 and not cell_text.startswith('Sample') and cell_text != 'B':
+        if len(cell_text) > 3 and not cell_text.startswith('Sample') and cell_text != 'B' and not cell_text.startswith('Sample ID') and not cell_text.startswith('0') and not cell_text.startswith('90'): 
             print(f"{idx}: {cell_text}")
             material_names.append((idx, cell_text))
+
+
+# Must create nested arrays. Entry 0 will be the material which will then have another array that will point to 0 or 90 degree
+# So implement nested arrays
+# Create an exclusion portion of it for PBI Honeycomb 
 
 print("\n")
 sample_name = input("Input material name (or part of name): ").strip()
