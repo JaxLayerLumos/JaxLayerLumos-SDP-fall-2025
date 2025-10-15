@@ -1,6 +1,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from Materials_Library import materials_data
+import sys
+import os
+
+# Add the parent directory (calculations folder) to the path to find Materials_Library.py
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+
+try:
+    from Materials_Library import materials_data
+except ImportError:
+    print("ERROR: Could not find Materials_Library.py")
+    print(f"Looked in: {parent_dir}")
+    print("Please ensure Materials_Library.py is in the calculations folder (one level up from this script).")
+    sys.exit(1)
 
 def calculate_permittivity(frequencies, params):
     """
