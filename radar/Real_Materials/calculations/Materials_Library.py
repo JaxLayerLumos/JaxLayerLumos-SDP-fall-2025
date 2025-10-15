@@ -1407,6 +1407,54 @@ materials_data = [
         }
     },
     {
+        'name': "1/4 in. cell, meta-aramid honeycomb Measurement Position 1",
+        'section': 7,
+        'freq_range_ghz': (0.2, 18),
+        'eps_params': {
+            'B': 1.08 + 0.23j,
+            'C': 0.21 + 0.21j,
+            'D': -0.37 - 0.34j,
+            'E': 0.17 + 0.19j,
+            'F': -0.98 - 0.5j,
+            'G': 0.09 - 0.31j,
+            'H': 2.68 + 0.37j,
+            'I': 0.77 - 0.11j,
+            'J': -0.08 - 0.13j
+        }
+    },
+    {
+        'name': "1/4 in. cell, meta-aramid honeycomb Measurement Position 2",
+        'section': 7,
+        'freq_range_ghz': (0.2, 18),
+        'eps_params': {
+            'B': 1.175 + 0.18j,
+            'C': -0.16 - 0.002j,
+            'D': -1.12 + 0.56j,
+            'E': -0.17 - 0.02j,
+            'F': -0.93 - 0.0j,
+            'G': 1.12 - 0.1j,
+            'H': 0.35 + 0.81j,
+            'I': 0.29 + 0.02j,
+            'J': -0.09 - 0.01j
+        }
+    },
+    {
+        'name': "1/4 in. cell, meta-aramid honeycomb Measurement Position 3",
+        'section': 7,
+        'freq_range_ghz': (0.2, 18),
+        'eps_params': {
+            'B': 1.2 + 0.18j,
+            'C': 0.09 + 0.2j,
+            'D': -1.03 - 0.56j,
+            'E': 0.094 + 0.2j,
+            'F': -0.66 - 0.48j,
+            'G': 0.12 - 0.43j,
+            'H': 1.97 - 1.04j,
+            'I': 0.6 - 0.5j,
+            'J': -0.03 - 0.18j
+        }
+    },
+    {
         'name': "Bismaleimide BMI F650, 1.27 g/cc (18–60 GHz)",
         'section': 8,
         'freq_range_ghz': (18, 60),
