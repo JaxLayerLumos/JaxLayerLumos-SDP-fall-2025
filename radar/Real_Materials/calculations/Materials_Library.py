@@ -1639,17 +1639,20 @@ materials_data = [
         }
     },
     {
+        # Was missing E & F columns so I (Glazer) added them
         'name': "7058 Epoxy w/ ~40% vol silica hollow spheres (2–18 GHz)",
         'section': 8,
         'freq_range_ghz': (2, 18),
         'eps_params': {
             'B': 0.7275+0.0758j,
             'C': 2.4321+0.1323j,
-            'D': -3.8007-0.9919j,
-            'G': 1.6261+0.2312j,
-            'H': -3.3603+1.9301j,
-            'I': 0.9885-0.0586j,
-            'J': -9E-003+0.0107j
+            'D': -3.8007-0.9919j, 
+            'E': 1.6216+0.2312j, #This was 'G' before but it actually contains values from 'E' --> it kept the same BCDGHIJ pattern but this epoxy has BCDEFGHIJ so it just missed 'I' and 'J' values and skipped the column labels for 'E' and 'F'
+            'F': -3.3603+1.9301j, # Also used to be 'H' but contains values from 'F' 
+            'G': 0.9885-0.0586j, 
+            'H': -9E-003+0.0107j,
+            'I': -2E-004-2.3E-003j, #Added manually
+            'J': -1.62E-004+1.21E-005j #Added manually
         }
     }
 ]
