@@ -1,3 +1,6 @@
+#Genetic Algorithm Optimization 
+#Code uses Real_Materials found in Electromagnetic Composites Handbook
+
 import pygad
 import jax.numpy as jnp
 import numpy as np
