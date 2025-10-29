@@ -1,3 +1,6 @@
+#Genetic Algorithm Optimization 
+#Code uses Real_Materials found in Electromagnetic Composites Handbook
+
 import pygad
 import jax.numpy as jnp
 import numpy as np
@@ -19,23 +22,30 @@ freq_lowerbound = 0.2*10**9 #Hz
 freq_upperbound = 2*10**9 #Hz
 
 #Hyper-Parameters
-num_generations = 4000
-num_parents_mating = 6
-sol_per_pop = 40
-num_genes = 10
-last_fitness = 0
-mutation_adaptive = (0.3, 0.05)
+num_generations = 4000 #Number of GA's to converge
+num_parents_mating = 6 #
+sol_per_pop = 40 #40 candidate designs for generation
+num_genes = 10 #Total decisions variables for individual, 5 materials and 2 for each
+last_fitness = 0 #Holder to update
+mutation_adaptive = (0.3, 0.05) #PyGAD’s adaptive mutation, where mutation probability starts at 0.3 and can
+                                #reduce to 0.05 as generations progress (helps explore early, fine-tune later).
 
 # Define the gene space
-gene_space = [{'low': 1, 'high': 16}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers
+#Code defines domain for each of 10 gense
+gene_space = [{'low': 1, 'high': 16}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
+
 
 #---------------------------------------
 
 # 0.1 GHz to 10 GHz, logarithmically spaced
+
+#BOUNDS NEED TO BE UPDATED, INPUT IS 0.2 TO 2, CHANGE THIS 
+
 frequencies = jnp.logspace(np.log10(freq_lowerbound), np.log10(freq_upperbound), nfreq)
 # Same thing but for plotting
 freqplot = jnp.logspace(np.log10(freq_lowerbound*1e-9), np.log10(freq_upperbound*1e-9), nfreq)
 
+#These are containers to store performance and evolution data as the GA runs.
 all_generations_fitness = []
 all_solutions = []
 avg_thickness_fitness_per_gen = []
@@ -45,6 +55,12 @@ pareto_thickness =[]
 pareto_thicknesses = []
 pareto_materials =[]
 
+
+#Stachsolve Function
+#Builds a full stack bounded by Air (front) and PEC (perfect electric conductor, back)
+#Pulls the frequency-dependent permittivity/permeability (ε, μ) for each layer
+#Solves the planewave, normal-incidence reflection/transmission of the stack
+#Returns either: peak reflection across the band in dB (for use as an objective), or full reflection spectrum in dB
 
 def stacksolve(tlist,matsin,output):
 
@@ -64,7 +80,12 @@ def stacksolve(tlist,matsin,output):
     mats.append("PEC")
     try:
         #get eps, mu, and then solve the stack
+        #pulls ε(ω), μ(ω) for every layer/material at the vector of frequencies, data found in utils_materials
         eps_stack, mu_stack = utils_materials.get_eps_mu(mats, frequencies)
+
+        #Calls your solver at 0.0 rad incidence (normal incidence) to obtain:
+        #R_TE, T_TE: reflectance/transmittance for TE polarization.
+        #R_TM, T_TM: same for TM.
         R_TE, T_TE, R_TM, T_TM = stackrt_eps_mu(eps_stack, mu_stack, d_stack, frequencies, 0.0) #eps, mu, thick, freq, angle
 
         R_avg = (R_TE + R_TM) / 2
@@ -74,19 +95,24 @@ def stacksolve(tlist,matsin,output):
           return max(R_db)
         if output==2:
           return R_db
-
+        #output == 1: returns the peak reflection (i.e., the worst-case dB value across the band).
+        #Since reflection dB is negative for values < 1, the “max” is indeed the least negative (worst) point.
+        #output == 2: returns the full spectrum array (one dB value per frequency).
 
     except Exception as e:
         #Catch any exception and return a default value
         print(f"Error in stacksolve: {e}")
         return float('inf')
+    #Any error with material data returns inf
 
+#Fitness_func for the Genetic Algorithm
+#PyGad calls function once per candidate solutionin each generation to compute fitness
 def fitness_func(ga_instance, solution, solution_idx):
 
-    tlist = solution[5:10]
+    tlist = solution[5:10] #Solution had 10 genes total, first 5 material indices and second 5 is thickness
     total_thickness = np.sum(tlist)
 
-    minRmax = stacksolve(tlist,solution[0:5],1)
+    minRmax = stacksolve(tlist,solution[0:5],1) #Computes maximum reflection over frequency band
 
     fitness1 = -1 * total_thickness
     fitness2 = -1 * minRmax
