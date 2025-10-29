@@ -5,107 +5,88 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import pdfplumber
 import os
-import re
+import sys
+
+# =======================================================
+# CRITICAL CHANGE: Library Import Setup
+# =======================================================
+# 1. Add the parent directory ('calculations') to the system path
+current_dir = os.path.dirname(__file__)
+parent_dir = os.path.join(current_dir, '..')
+sys.path.append(parent_dir)
+
+# 2. Import the Materials_Library module and its data
+import Materials_Library
+materials_data_full = Materials_Library.materials_data
+# =======================================================
+
+# 3. Define the desired section and filter the materials
+SECTION_TO_USE = 6
+materials_data_filtered = [
+    material for material in materials_data_full if material.get('section') == SECTION_TO_USE
+]
+
+# NOTE: The unused PDF-related functions are left commented or removed below
+# to minimize changes, but they are no longer functional or necessary.
+
+# Removed pdfplumber and re imports (no longer needed)
+# Removed get_frequency_range_from_pdf (no longer needed)
+# Removed parse_complex_safe (no longer needed, data is already complex)
 
 
-def get_frequency_range_from_pdf(material, pdf_path):
-    '''
-    Extracts the frequency range (min, max) for a given material
-    from the PDF text.
-    '''
-    with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages:
-            text = page.extract_text()
-            for line in text.split("\n"):
-                if material.lower() in line.lower():
-                    # Look for (X–Y GHz) after the material name
-                    match = re.search(r"\((\d*\.?\d+)–(\d*\.?\d+)\s*GHz\)", line)
-                    if match:
-                        f_min = float(match.group(1))
-                        f_max = float(match.group(2))
-                        return f_min, f_max
+def get_material_data(material_name):
+    """Retrieves material data from the filtered list."""
+    for material in materials_data_filtered:
+        if material['name'] == material_name:
+            # We assume 'eps_params' holds the parameters needed for the calculation
+            return material.get('eps_params'), material.get('freq_range_ghz')
     return None, None
 
-def parse_complex_safe(s):
-    """
-    Parse a string from a PDF table into a complex number.
-    Handles weird cases like '1.6503+', '2.34- 0.56i', etc.
-    """
-    if s is None:
-        return complex(0, 0)
+
+def getEpAndMu_12_6(user_f_min, user_f_max, material_name):
+    # This entire function is simplified to use the library data instead of PDF extraction
     
-    s = s.strip()  # remove leading/trailing whitespace
-    s = s.replace(" ", "")  # remove internal spaces
-    s = s.replace('\n', '')
-    s = s.replace("i", "j")  # Python uses j for imaginary unit
-    s = s.replace('–', '-')
-
-    # Fix cases where string ends with + or - (incomplete imaginary part)
-    if re.match(r"^[+-]?[\d.]+[+-]$", s):
-        s += "0j"  # add 0 as imaginary part
+    # 1. Retrieve the parameters and frequency range from the library
+    params, freq_range = get_material_data(material_name)
     
-    # Fix cases where string is just a real number with trailing j
-    if re.match(r"^[+-]?[\d.]+$", s):
-        s += "+0j"
+    if params is None:
+        raise ValueError(f"Material '{material_name}' not found in Section {SECTION_TO_USE} library.")
 
-    try:
-        c = complex(s)
-    except ValueError:
-        # fallback: treat as 0+0j
-        c = complex(0, 0)
-    return c
+    f_min, f_max = freq_range
 
-def getEpAndMu_12_6(user_f_min, user_f_max, material):
-    base_dir = os.path.dirname(__file__)  # folder where script is
-    pdf_path = os.path.join(base_dir, "12_6.pdf")
-
-    # Get frequency range automatically
-    f_min, f_max = get_frequency_range_from_pdf(material, pdf_path)
-    if f_min is None or f_max is None:
-        raise ValueError(f"Could not find frequency range for {material}")
-    
     if user_f_min < f_min or user_f_max > f_max:
-        print(f"\n\nWARNING: Frequency range {f_min}–{f_max} GHz is defined for {material}. All data outside of this range will be extrapolated.")
-    rows = []
-    
-    with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages:
-            table = page.extract_table()
-            if table:
-                rows.extend(table)
+        print(f"\n\nWARNING: Frequency range {f_min}–{f_max} GHz is defined for {material_name}. All data outside of this range will be extrapolated.")
+        # Adjusting the plotting range to the user's requested range
+        plot_f_min, plot_f_max = user_f_min, user_f_max
+    else:
+        # Use the tested range for the plot if user input is within bounds
+        plot_f_min, plot_f_max = f_min, f_max
 
-    df = pd.DataFrame(rows)
+    # 2. Assign parameters using the keys from the 'eps_params' dictionary
+    # Note: Section 6 uses A-H, not B-H as in the function definition below, but 
+    # the dictionary keys in your library (B, C, D, E, F, G, H) are the ones we must use.
+    B = params.get('B', 0)
+    C = params.get('C', 0)
+    D = params.get('D', 0)
+    E = params.get('E', 0)
+    F = params.get('F', 0)
+    G = params.get('G', 0)
+    H = params.get('H', 0)
 
-    # find the row index where this sample name appears
-    sample_idx = df[df.iloc[:,0].str.contains(material, na=False)].index[0]
+    # Define frequency range for calculation (using the actual tested range for interpolation/extrapolation)
+    num_points = 100 
+    frequencies = np.logspace(np.log10(plot_f_min), np.log10(plot_f_max), num_points)
 
-    # Row 2 (index=2) has B, C, D, G, H, I, J
-    df.columns = df.iloc[2]
+    # 3. Permittivity Calculation (Formula is preserved)
+    # NOTE: The formula from the original code seems complex but is preserved below.
+    # It assumes the parameters B-H correspond to the physical constants in the model.
+    epsilon_f = (
+        B + np.real(C) * (frequencies ** D) + np.imag(C) * (frequencies ** E) + 
+        F * (1 - (frequencies / G) ** 2 - 1j * 2 * frequencies / H) ** (-1)
+    )
 
-    df = df.drop([0, 1]).reset_index(drop=True)
-    # Convert single string into complex float
-    df_selected = df[["B", "C", "D", "E", "F", "G", "H"]]
-
-    values = df_selected.iloc[sample_idx - 1].apply(parse_complex_safe)
-
-    B = complex(values.iloc[0])
-    C = complex(values.iloc[1])
-    D = complex(values.iloc[2])
-    E = complex(values.iloc[3])
-    F = complex(values.iloc[4])
-    G = complex(values.iloc[5])
-    H = complex(values.iloc[6])
-
-    #define frequency range
-
-    num_points = 100 - 1  # Number of frequency points
-    frequencies = np.linspace(f_min, f_max, num_points)
-
-    epsilon_f = (B + np.real(C) * (frequencies ** D) + np.imag(C) * (frequencies ** E) + F * (1 - (frequencies / G) ** 2 - 1j * 2 * frequencies / H) ** (-1))
-
-    #permeability (mu = 1 for non-farreous)
+    # Permeability (mu = 1 for non-ferrous)
     mu_f = np.ones(frequencies.shape)
 
     # loglog plot
@@ -114,15 +95,49 @@ def getEpAndMu_12_6(user_f_min, user_f_max, material):
     plt.loglog(frequencies, np.imag(epsilon_f), 'r--', linewidth=2, label='Im($\epsilon$)')
     plt.xlabel('Frequency [GHz]', fontsize=12)
     plt.ylabel('Epsilon', fontsize=12)
+    plt.title(f'{material_name} (Section {SECTION_TO_USE}) Permittivity vs. Frequency', fontsize=14)
     plt.legend(loc='best')
     plt.grid(True, which="both", ls="--")
-    plt.title('Real and Imaginary Permittivity vs. Frequency', fontsize=14)
-    plt.xlim(f_min, f_max)
-    plt.ylim(1e-4, 10)
+    plt.xlim(plot_f_min, plot_f_max) # Use the calculated range
+    plt.ylim(1e-4, 100) # Increased ylim to accommodate various Section 6 values
     plt.show()
 
+    # Clean up the path
+    sys.path.pop()
+
+
 def main():
-    getEpAndMu_12_6(0.2, 250, "Zinc sulfide")
+    # --- Interactive Material Selection ---
+    print(f"Please select a material from Section {SECTION_TO_USE}:")
+    for i, material in enumerate(materials_data_filtered):
+        freq_range = material.get('freq_range_ghz', ('N/A', 'N/A'))
+        print(f"  [{i+1}] {material['name']} (Range: {freq_range[0]}-{freq_range[1]} GHz)")
+
+    choice = -1
+    num_materials = len(materials_data_filtered)
+    while not (1 <= choice <= num_materials):
+        try:
+            choice = int(input(f"Enter a number (1-{num_materials}): "))
+            if not (1 <= choice <= num_materials):
+                print("Invalid choice. Please select a number from the list.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+            
+    selected_name = materials_data_filtered[choice - 1]['name']
+    
+    while True:
+        try:
+            min_freq_ghz = float(input("Enter the minimum frequency (GHz): "))
+            max_freq_ghz = float(input("Enter the maximum frequency (GHz): "))
+            if min_freq_ghz >= max_freq_ghz:
+                print("Minimum frequency must be less than maximum frequency.")
+                continue
+            break
+        except ValueError:
+            print("Invalid input. Please enter a numerical value for frequency.")
+
+    # Call the plotting function with the selected material
+    getEpAndMu_12_6(min_freq_ghz, max_freq_ghz, selected_name)
 
 if __name__ == "__main__":
     main()
