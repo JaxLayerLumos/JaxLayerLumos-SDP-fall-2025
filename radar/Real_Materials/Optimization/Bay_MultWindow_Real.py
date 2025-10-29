@@ -1,5 +1,6 @@
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 import numpy as np
+import jax
 import jax.numpy as jnp
 import jaxlayerlumos
 from jaxlayerlumos import stackrt_eps_mu
@@ -12,7 +13,6 @@ import json
 from pathlib import Path
 from jaxlayerlumos import utils_spectra
 from jaxlayerlumos import utils_radar_materials
-import jax
 import random
 
 # cd /d E:\spring2025school\SeniorDesign\code
