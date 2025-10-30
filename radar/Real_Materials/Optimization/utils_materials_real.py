@@ -155,9 +155,11 @@ def get_eps_mu(materials, frequencies):
     assert frequencies.ndim == 1
     assert materials[0] == "Air"
 
+    # Materials
     materials = onp.array(materials)
     eps_r, mu_r = utils_radar_materials.get_eps_mus_real_materials(materials[1:-1].astype(int), frequencies)
 
+    # Air and PEC
     n_k_air = get_n_k(materials[:1], frequencies)
     n_k_air = n_k_air.T
     eps_air, mu_air = convert_n_k_to_eps_mu_for_non_magnetic_materials(n_k_air)
@@ -173,6 +175,7 @@ def get_eps_mu(materials, frequencies):
         except:
             raise NotImplementedError("This condition is not implemented yet.")
 
+    # Put it all together
     eps_r = jnp.concatenate([eps_air, eps_r, eps_last], axis=0)
     mu_r = jnp.concatenate([mu_air, mu_r, mu_last], axis=0)
 
