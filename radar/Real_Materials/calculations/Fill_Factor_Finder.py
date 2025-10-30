@@ -1,34 +1,92 @@
 import numpy as np
+from scipy.optimize import minimize
+import jaxlayerlumos as jll
+import jax.numpy as jnp
+import matplotlib.pyplot as plt
 
-def fill_factor_finder(eps, freq):
+def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
         
-    fill = 1
-    
-    eps = np.array(eps, dtype=complex)
-    
-    # Parameters
-    learning_rate = 0.1
-    num_steps = 500
-    
-    # Initialize f randomly between 0 and 1 for each epsilon1
-    f = np.random.rand(len(eps))
+   # Discretize structure
+    z = np.linspace(0, T, N)
 
-    for step in range(num_steps):
-        # Compute gradient: d(epsilonE)/df = epsilon1 - 1.0006
-        grad = eps - 1.0006
-    
-    # Update rule for gradient ascent (we’re maximizing epsilonE)
-    f = f + learning_rate * grad
-    
-    # Keep f in [0, 1] bounds
-    f = np.clip(f, 0, 1)
+    # Initialize Fill_Factor
+    if init_type == 'linear':
+        fill_factor_init = np.linspace(0, 1, N)
+    elif init_type == 'parabolic':
+        fill_factor_init = (np.linspace(0, 1, N))**2
+    elif init_type == 'cubic':
+        fill_factor_init = (np.linspace(0, 1, N))**3
+    else:
+        raise ValueError("\n\ninit_type must be 'linear', 'parabolic', 'cubic'.")
 
-    # Compute final epsilonE values
-    epsilonE = eps * f + 1.0006 * (1 - f)
+    # Define effective parameter functions
+    def epsilon_eff(F):
+        return Epsilon_Material * F + 1 * (1 - F)
 
-    print("Optimal f values:", f)
-    print("Resulting epsilonE values:", epsilonE)
+    def mu_eff(F):
+        return mu_Material * F + 1 * (1 - F)
+
+    # Approximate reflection coefficient at normal incidence
+    def reflection_loss(F):
+        eps = epsilon_eff(F)
+        mu = mu_eff(F)
+        Z = np.sqrt(mu / eps)
+
+        # Approximate total input impedance using transmission line cascading
+        # Start from the last layer and work backward
+        Z0 = 1  # free space impedance (normalized)
+        Zin = Z[-1]
+        for i in range(N-2, -1, -1):
+            beta = 2 * np.pi / T  # simplified propagation term (normalized)
+            Zin = Z[i] * (Zin + 1j * Z[i] * np.tan(beta * (T/N))) / (Z[i] + 1j * Zin * np.tan(beta * (T/N)))
+
+        R = np.abs((Zin - Z0) / (Zin + Z0))**2
+        return R
+
+    ''''
+    R_TE, _, R_TM, _ = jll.stackrt_eps_mu(Epsilon_Material, mu_Material, T, freq, 0)
+    R = (R_TE + R_TM) / 2.0
+    R_in_db = 10 * jnp.log10(R).squeeze()
+    print("\n\nReflection before fill opt:", R, "\n\n")
+    '''
     
+    # Define objective function (we minimize reflection)
+    def objective(F):
+        return reflection_loss(F)
+
+    # Constraints: Fill_Factor between 0 and 1
+    bounds = [(0, 1) for _ in range(N)]
+
+    # Optimization
+    result = minimize(objective, fill_factor_init, bounds=bounds, method='L-BFGS-B')
+    
+    result_max = minimize(lambda F: -reflection_loss(F),
+                      fill_factor_init,
+                      bounds=bounds,
+                      method='L-BFGS-B')
+    
+    R_max = -result_max.fun
+    R_max_dB = 10 * np.log10(R_max)
+    F_opt_max = result_max.x   
+    
+    print(f"\n\nMaximum reflection: {R_max:.3e} ({R_max_dB:.2f} dB)\n\n")     
+    
+    # Compute final effective properties
+    F_opt = result.x
+    eps_eff = epsilon_eff(F_opt)
+    mu_eff_vals = mu_eff(F_opt)
+
+    R_min = result.fun
+    R_min_dB = 10 * np.log10(R_min)
+    print(f"\n\nMinimum reflection: {R_min:.3e} ({R_min_dB:.2f} dB)\n\n")
+    
+    return {
+        'z': z,
+        'Fill_Factor_opt': F_opt,
+        'Epsilon_Effective': eps_eff,
+        'mu_Effective': mu_eff_vals,
+        'Reflection_min': result.fun
+    }
 
 def main():
     
@@ -131,11 +189,13 @@ def main():
     (6.395596377984865+0.0037580724211794194j),
     (6.392434388023163+0.003771778586718523j), 
     (6.389254232891443+0.003785277863798649j)]
- 
+    
     freq = np.linspace(0.2, 250, 99)
-   
-   
-    fill_factor_finder(eps, freq)
+    
+    result = fill_factor_finder(eps[0], 1.0, freq[0], 1.0, 100, 'parabolic')
+        
+    print("Optimized fill factor: \n\n", result['Fill_Factor_opt'])
+    print("\n\nEpsilon Effective: \n\n", result['Epsilon_Effective'])
     
 if __name__ == "__main__":
     main()
