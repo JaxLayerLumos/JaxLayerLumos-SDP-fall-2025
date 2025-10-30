@@ -21,7 +21,7 @@ import csv
 
 # ------------------------------Inputs------------------------------
 lofreq = 2  # GHz lower bound for frequency test range
-hifreq = 8  # GHz higher bound for frequency test range
+hifreq = 8 # GHz higher bound for frequency test range
 Nevals = 50  # max possible function evaluations
 minthick = .001  # minimum layer thickness
 allowdiff = .35  # multiple of allowed difference from total thickness value
