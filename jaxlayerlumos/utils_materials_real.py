@@ -156,9 +156,7 @@ def get_eps_mu(materials, frequencies):
     assert materials[0] == "Air"
 
     materials = onp.array(materials)
-    eps_r, mu_r = utils_radar_materials.get_eps_mu_Michielssen(
-        materials[1:-1].astype(int), frequencies
-    )
+    eps_r, mu_r = utils_radar_materials.get_eps_mus_real_materials(materials[1:-1].astype(int), frequencies)
 
     n_k_air = get_n_k(materials[:1], frequencies)
     n_k_air = n_k_air.T

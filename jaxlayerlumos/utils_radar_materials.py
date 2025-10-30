@@ -2,6 +2,12 @@ import jax.numpy as jnp
 import numpy as onp
 
 from jaxlayerlumos import utils_units
+from radar import materials_data
+from radar import Ep_12_1
+from radar import Ep_12_4
+from radar import Ep_12_6
+from radar import Ep_12_7
+from radar import Ep_12_8
 
 
 def get_eps_mu_Michielssen(material_indices, frequencies):
@@ -67,4 +73,37 @@ def get_eps_mu_Michielssen(material_indices, frequencies):
     eps_r = M_epsr[material_indices - 1, :]  # Python uses 0-based indexing
     mu_r = M_mur[material_indices - 1, :]
 
+    return eps_r, mu_r
+
+
+def get_eps_mus_real_materials(material_indices, frequencies):
+
+    freq_min = min(frequencies)
+    freq_max = max(frequencies)
+
+    for i in material_indices:
+        if materials_data[material_indices(i)]['section']==1:
+            material = material[material_indices(i)]['name']
+            eps_r, mu_r = Ep_12_1.getEpAndMu_12_1(freq_min, freq_max, material)
+        elif materials_data[material_indices(i)]['section']==4:
+            material = material[material_indices(i)]['name']
+            eps_r, mu_r = Ep_12_4.getEpAndMu_12_4(freq_min, freq_max, material)
+        elif materials_data[material_indices(i)]['section']==6:
+            material = material[material_indices(i)]['name']
+            eps_r, mu_r = Ep_12_6.getEpAndMu_12_6(freq_min, freq_max, material)
+        elif materials_data[material_indices(i)]['section']==7:
+            material = material[material_indices(i)]['name']
+            eps_r, mu_r = Ep_12_7.getEpAndMu_12_7(freq_min, freq_max, material)
+        elif materials_data[material_indices(i)]['section']==8:
+            material = material[material_indices(i)]['name']
+            eps_r, mu_r = Ep_12_7.getEpAndMu_12_7(freq_min, freq_max, material)
+        else:
+            print('Material error')
+
+        M_epsr=M_epsr.append(eps_r)
+        M_mur=M_mur.append(mu_r)
+    
+
+    eps_r = M_epsr[material_indices - 1, :]  # Python uses 0-based indexing
+    mu_r = M_mur[material_indices - 1, :]
     return eps_r, mu_r
