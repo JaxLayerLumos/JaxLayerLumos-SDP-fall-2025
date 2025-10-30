@@ -7,19 +7,12 @@ import warnings
 import sys
 import os
 
-# =======================================================
-# CRITICAL CHANGE: System Path Setup for Library Import
-# This block allows the script to find Material_Library.py in the parent folder (../)
-# =======================================================
+#Important materials from Materials_Library.py
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.join(current_dir, '..')
-# Add the 'calculations' folder (parent directory) to the system path
 sys.path.append(parent_dir)
-
-# Now, import the file and its data structure directly.
 import Materials_Library
 materials_data_full = Materials_Library.materials_data 
-# =======================================================
 
 
 # Filter the full data list to only include materials where 'section' is 4

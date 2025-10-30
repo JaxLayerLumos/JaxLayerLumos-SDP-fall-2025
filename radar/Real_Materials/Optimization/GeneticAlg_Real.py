@@ -5,7 +5,7 @@ import pygad
 import jax.numpy as jnp
 import numpy as np
 from jaxlayerlumos import stackrt_eps_mu
-from jaxlayerlumos import utils_materials
+import utils_materials_real
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import pandas as pd
@@ -22,7 +22,7 @@ freq_lowerbound = 0.2*10**9 #Hz
 freq_upperbound = 2*10**9 #Hz
 
 #Hyper-Parameters
-num_generations = 4000 #Number of GA's to converge
+num_generations = 4 #Number of GA's to converge
 num_parents_mating = 6 #
 sol_per_pop = 40 #40 candidate designs for generation
 num_genes = 10 #Total decisions variables for individual, 5 materials and 2 for each
@@ -32,7 +32,7 @@ mutation_adaptive = (0.3, 0.05) #PyGAD’s adaptive mutation, where mutation pro
 
 # Define the gene space
 #Code defines domain for each of 10 gense
-gene_space = [{'low': 1, 'high': 16}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
+gene_space = [{'low': 1, 'high': 115}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
 
 
 #---------------------------------------
@@ -56,7 +56,7 @@ pareto_thicknesses = []
 pareto_materials =[]
 
 
-#Stachsolve Function
+#Stacksolve Function
 #Builds a full stack bounded by Air (front) and PEC (perfect electric conductor, back)
 #Pulls the frequency-dependent permittivity/permeability (ε, μ) for each layer
 #Solves the planewave, normal-incidence reflection/transmission of the stack
@@ -81,7 +81,7 @@ def stacksolve(tlist,matsin,output):
     try:
         #get eps, mu, and then solve the stack
         #pulls ε(ω), μ(ω) for every layer/material at the vector of frequencies, data found in utils_materials
-        eps_stack, mu_stack = utils_materials.get_eps_mu(mats, frequencies)
+        eps_stack, mu_stack = utils_materials_real.get_eps_mu(mats, frequencies)
 
         #Calls your solver at 0.0 rad incidence (normal incidence) to obtain:
         #R_TE, T_TE: reflectance/transmittance for TE polarization.
