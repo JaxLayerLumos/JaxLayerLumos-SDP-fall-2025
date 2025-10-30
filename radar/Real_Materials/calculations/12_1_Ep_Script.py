@@ -32,23 +32,24 @@ def getEpAndMu_12_1(user_f_min, user_f_max, material):
    
     frequencies = np.linspace(user_f_min, user_f_max, num_points)
     epsilon_f = B + 2 * C * (frequencies ** D) + G * (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies)**(-1)
-
-
+    
     #permeability (mu = 1 for non-farreous)
     mu_f = np.ones(frequencies.shape)
 
+    return epsilon_f, mu_f, frequencies
+
     # loglog plot
-    plt.figure()
-    plt.loglog(frequencies, np.real(epsilon_f), 'b-', linewidth=2, label='Re($\epsilon$)')
-    plt.loglog(frequencies, np.imag(epsilon_f), 'r--', linewidth=2, label='Im($\epsilon$)')
-    plt.xlabel('Frequency [GHz]', fontsize=12)
-    plt.ylabel('Epsilon', fontsize=12)
-    plt.legend(loc='best')
-    plt.grid(True, which="both", ls="--")
-    plt.title('Real and Imaginary Permittivity vs. Frequency', fontsize=14)
-    plt.xlim(1e-1, 1e3)
-    plt.ylim(1e-4, 10)
-    plt.show()
+    #plt.figure()
+    #plt.loglog(frequencies, np.real(epsilon_f), 'b-', linewidth=2, label='Re($\epsilon$)')
+    #plt.loglog(frequencies, np.imag(epsilon_f), 'r--', linewidth=2, label='Im($\epsilon$)')
+    #plt.xlabel('Frequency [GHz]', fontsize=12)
+    #plt.ylabel('Epsilon', fontsize=12)
+    #plt.legend(loc='best')
+    #plt.grid(True, which="both", ls="--")
+    #plt.title('Real and Imaginary Permittivity vs. Frequency', fontsize=14)
+    #plt.xlim(1e-1, 1e3)
+    #plt.ylim(1e-4, 10)
+    #plt.show()
 
 def main():
     
