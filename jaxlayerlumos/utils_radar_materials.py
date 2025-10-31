@@ -1,13 +1,9 @@
 import jax.numpy as jnp
 import numpy as onp
 
-from jaxlayerlumos import utils_units
-from radar import materials_data
-from radar import Ep_12_1
-from radar import Ep_12_4
-from radar import Ep_12_6
-from radar import Ep_12_7
-from radar import Ep_12_8
+import utils_units
+
+from radar.Real_Materials.Optimization.Materials_Library import materials_data
 
 
 def get_eps_mu_Michielssen(material_indices, frequencies):
@@ -84,19 +80,19 @@ def get_eps_mus_real_materials(material_indices, frequencies):
     for i in material_indices:
         if materials_data[material_indices(i)]['section']==1:
             material = material[material_indices(i)]['name']
-            eps_r, mu_r = Ep_12_1.getEpAndMu_12_1(freq_min, freq_max, material)
+            eps_r, mu_r = getEpAndMu_12_1(freq_min, freq_max, material)
         elif materials_data[material_indices(i)]['section']==4:
             material = material[material_indices(i)]['name']
-            eps_r, mu_r = Ep_12_4.getEpAndMu_12_4(freq_min, freq_max, material)
+            eps_r, mu_r = getEpAndMu_12_4(freq_min, freq_max, material)
         elif materials_data[material_indices(i)]['section']==6:
             material = material[material_indices(i)]['name']
-            eps_r, mu_r = Ep_12_6.getEpAndMu_12_6(freq_min, freq_max, material)
+            eps_r, mu_r = getEpAndMu_12_6(freq_min, freq_max, material)
         elif materials_data[material_indices(i)]['section']==7:
             material = material[material_indices(i)]['name']
-            eps_r, mu_r = Ep_12_7.getEpAndMu_12_7(freq_min, freq_max, material)
+            eps_r, mu_r = getEpAndMu_12_7(freq_min, freq_max, material)
         elif materials_data[material_indices(i)]['section']==8:
             material = material[material_indices(i)]['name']
-            eps_r, mu_r = Ep_12_7.getEpAndMu_12_7(freq_min, freq_max, material)
+            eps_r, mu_r = getEpAndMu_12_7(freq_min, freq_max, material)
         else:
             print('Material error')
 
@@ -107,3 +103,83 @@ def get_eps_mus_real_materials(material_indices, frequencies):
     eps_r = M_epsr[material_indices - 1, :]  # Python uses 0-based indexing
     mu_r = M_mur[material_indices - 1, :]
     return eps_r, mu_r
+
+def getEpAndMu_12_1(user_f_min, user_f_max, material):
+    # Get frequency range 
+    f_min, f_max = material['freq_range_ghz']
+    if f_min is None or f_max is None:
+        raise ValueError(f"Could not find frequency range for {material['name']}")
+    
+    if user_f_min < f_min or user_f_max > f_max:
+        print(f"\n\nWARNING: Frequency range {f_min}–{f_max} GHz is defined for {material['name']}. All data outside of this range will be extrapolated.")
+    rows = []
+
+
+    B = material['eps_params']['B']
+    C = material['eps_params']['C']
+    D = material['eps_params']['D']
+    G = material['eps_params']['G']
+    H = material['eps_params']['H']
+    I = material['eps_params']['I']
+    J = material['eps_params']['J']
+    
+    num_points = 100 - 1  # Number of frequency points
+   
+    frequencies = onp.linspace(user_f_min, user_f_max, num_points)
+    epsilon_f = B + 2 * C * (frequencies ** D) + G * (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies)**(-1)
+
+
+    #permeability (mu = 1 for non-farreous)
+    mu_f = onp.ones(frequencies.shape)
+    
+    return(epsilon_f, mu_f)
+
+def getEpAndMu_12_4(user_f_min, user_f_max, material):
+    num_points = 100 - 1
+    frequencies = onp.linspace(user_f_min, user_f_max, num_points)
+    epsilon_f = onp.ones(frequencies.shape)
+    mu_f = onp.ones(frequencies.shape)
+    return(epsilon_f, mu_f)
+
+def getEpAndMu_12_6(user_f_min, user_f_max, material):
+     # Get frequency range 
+    f_min, f_max = material['freq_range_ghz']
+    if f_min is None or f_max is None:
+        raise ValueError(f"Could not find frequency range for {material['name']}")
+    
+    if user_f_min < f_min or user_f_max > f_max:
+        print(f"\n\nWARNING: Frequency range {f_min}–{f_max} GHz is defined for {material['name']}. All data outside of this range will be extrapolated.")
+    rows = []
+
+
+    B = material['eps_params']['B']
+    C = material['eps_params']['C']
+    D = material['eps_params']['D']
+    E = material['eps_params']['E']
+    F = material['eps_params']['F']
+    G = material['eps_params']['G']
+    H = material['eps_params']['H']
+    
+    num_points = 100 - 1  # Number of frequency points
+   
+    frequencies = onp.linspace(user_f_min, user_f_max, num_points)
+    epsilon_f = (B + onp.real(C) * (frequencies ** D) + onp.imag(C) * (frequencies ** E) + F * (1 - (frequencies / G) ** 2 - 1j * 2 * frequencies / H) ** (-1))
+
+
+    #permeability (mu = 1 for non-farreous)
+    mu_f = onp.ones(frequencies.shape)
+    return(epsilon_f, mu_f)
+
+def getEpAndMu_12_7(user_f_min, user_f_max, material):
+    num_points = 100 - 1
+    frequencies = onp.linspace(user_f_min, user_f_max, num_points)
+    epsilon_f = onp.ones(frequencies.shape)
+    mu_f = onp.ones(frequencies.shape)
+    return(epsilon_f, mu_f)
+
+def getEpAndMu_12_8(user_f_min, user_f_max, material):
+    num_points = 100 - 1
+    frequencies = onp.linspace(user_f_min, user_f_max, num_points)
+    epsilon_f = onp.ones(frequencies.shape)
+    mu_f = onp.ones(frequencies.shape)
+    return(epsilon_f, mu_f)
