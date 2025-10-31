@@ -26,30 +26,86 @@ def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
     def mu_eff(F):
         return mu_Material * F + 1 * (1 - F)
 
-    # Approximate reflection coefficient at normal incidence
+    #REFLECTION CALCULATION USING JAXLAYERLUMOS
+        # Reflection using jll.stackrt_eps_mu
     def reflection_loss(F):
         eps = epsilon_eff(F)
         mu = mu_eff(F)
-        Z = np.sqrt(mu / eps)
+
+        # Convert to jax arrays
+        eps_jax = jnp.array(eps, dtype=jnp.complex128)
+        mu_jax  = jnp.array(mu, dtype=jnp.complex128)
+        d_jax   = jnp.ones_like(eps_jax) * (T / N)
+        d_jax = d_jax.at[0].set(0.0)
+        d_jax = d_jax.at[-1].set(0.0)
+
+        # Frequency array (use the full freq vector, not just freq[0])
+        freq_jax = jnp.array(freq)   # shape (Nfreq,)
+        theta = 0.0
+
+        # Call stackrt_eps_mu for all frequencies at once
+        R_TE, T_TE, R_TM, T_TM = jll.stackrt_eps_mu(
+            eps_jax[None, :].repeat(len(freq_jax), axis=0),  # broadcast layers across freqs
+            mu_jax[None, :].repeat(len(freq_jax), axis=0),
+            d_jax,
+            freq_jax,
+            theta
+        )
+
+        # Average TE/TM reflectance per frequency
+        R = (R_TE + R_TM) / 2.0
+
+        # Collapse across frequencies into a single scalar objective
+        return float(jnp.max(R))
+
+
+    # REFLECTION APPROXIMATION: Approximate reflection coefficient at normal incidence
+    #def reflection_loss(F):
+    #    eps = epsilon_eff(F)
+    #    mu = mu_eff(F)
+    #    Z = np.sqrt(mu / eps)
 
         # Approximate total input impedance using transmission line cascading
         # Start from the last layer and work backward
-        Z0 = 1  # free space impedance (normalized)
-        Zin = Z[-1]
-        for i in range(N-2, -1, -1):
-            beta = 2 * np.pi / T  # simplified propagation term (normalized)
-            Zin = Z[i] * (Zin + 1j * Z[i] * np.tan(beta * (T/N))) / (Z[i] + 1j * Zin * np.tan(beta * (T/N)))
+    #    Z0 = 1  # free space impedance (normalized)
+    #    Zin = Z[-1]
+    #    for i in range(N-2, -1, -1):
+    #        beta = 2 * np.pi / T  # simplified propagation term (normalized)
+    #       Zin = Z[i] * (Zin + 1j * Z[i] * np.tan(beta * (T/N))) / (Z[i] + 1j * Zin * np.tan(beta * (T/N)))
 
-        R = np.abs((Zin - Z0) / (Zin + Z0))**2
-        return R
+    #    R = np.abs((Zin - Z0) / (Zin + Z0))**2
+    #   return R
 
     ''''
     R_TE, _, R_TM, _ = jll.stackrt_eps_mu(Epsilon_Material, mu_Material, T, freq, 0)
     R = (R_TE + R_TM) / 2.0
-    R_in_db = 10 * jnp.log10(R).squeeze()
+    
     print("\n\nReflection before fill opt:", R, "\n\n")
     '''
-    
+    def reflection_spectrum(F):
+        eps = epsilon_eff(F)
+        mu = mu_eff(F)
+
+        eps_jax = jnp.array(eps, dtype=jnp.complex128)
+        mu_jax  = jnp.array(mu, dtype=jnp.complex128)
+        d_jax   = jnp.ones_like(eps_jax) * (T / N)
+        d_jax = d_jax.at[0].set(0.0)
+        d_jax = d_jax.at[-1].set(0.0)
+
+        freq_jax = jnp.array(freq)
+        theta = 0.0
+
+        R_TE, _, R_TM, _ = jll.stackrt_eps_mu(
+            eps_jax[None, :].repeat(len(freq_jax), axis=0),
+            mu_jax[None, :].repeat(len(freq_jax), axis=0),
+            d_jax,
+            freq_jax,
+            theta
+        )
+
+        R = (R_TE + R_TM) / 2.0
+        return np.array(R).squeeze()
+
     # Define objective function (we minimize reflection)
     def objective(F):
         return reflection_loss(F)
@@ -80,6 +136,19 @@ def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
     R_min_dB = 10 * np.log10(R_min)
     print(f"\n\nMinimum reflection: {R_min:.3e} ({R_min_dB:.2f} dB)\n\n")
     
+    R_init = reflection_spectrum(fill_factor_init)
+    R_opt  = reflection_spectrum(F_opt)
+
+    plt.figure(figsize=(8,6))
+    plt.plot(freq, 10*np.log10(R_init), label="Initial profile")
+    plt.plot(freq, 10*np.log10(R_opt), label="Optimized profile")
+    plt.xlabel("Frequency")
+    plt.ylabel("Reflection (dB)")
+    plt.title("Worst-case Reflection Spectrum")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
     return {
         'z': z,
         'Fill_Factor_opt': F_opt,
@@ -192,10 +261,10 @@ def main():
     
     freq = np.linspace(0.2, 250, 99)
     
-    result = fill_factor_finder(eps[0], 1.0, freq[0], 1.0, 100, 'parabolic')
+    result = fill_factor_finder(eps[0], 1.0, freq, 1.0, 100, 'parabolic')
         
     print("Optimized fill factor: \n\n", result['Fill_Factor_opt'])
     print("\n\nEpsilon Effective: \n\n", result['Epsilon_Effective'])
-    
+
 if __name__ == "__main__":
     main()
