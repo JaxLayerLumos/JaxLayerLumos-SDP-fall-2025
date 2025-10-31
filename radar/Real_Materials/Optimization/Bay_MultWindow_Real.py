@@ -4,7 +4,6 @@ import jax
 import jax.numpy as jnp
 import jaxlayerlumos
 from jaxlayerlumos import stackrt_eps_mu
-from jaxlayerlumos import utils_materials
 import matplotlib.pyplot as plt
 import time
 import os
@@ -12,16 +11,15 @@ import csv
 import json
 from pathlib import Path
 from jaxlayerlumos import utils_spectra
-from jaxlayerlumos import utils_radar_materials
+from jaxlayerlumos import utils_radar_materials # Keep this import, as utils_materials_real uses it internally
 import random
-
-# cd /d E:\spring2025school\SeniorDesign\code
-# bryce8.py
+import utils_materials_real as utils_materials # Calling the revised utilities module (Not sure why I needed to import this separately, but it works this way)
+from Materials_Library import materials_data
 
 # ------------------------------Inputs------------------------------
 lofreq = .2  # GHz lower bound for frequency test range
 hifreq = 2  # GHz higher bound for frequency test range
-Nevals = 5000  # max possible function evaluations per window
+Nevals = 100  # max possible function evaluations per window **********************************************THIS WAS CHANGED TO 10 FOR TESTING PURPOSES. SET TO 5000 FOR FINAL RUNS***********************
 # ------------------------------------------------------------------
 
 allmats = []
@@ -37,7 +35,7 @@ keepthick = []  # for plotting total thicknesses
 keepref = []  # for plotting reflections
 colors = []  # for coloring the point
 
-runs = 20  # number of thickness sections or windows
+runs = 3  # number of thickness sections or windows ***************************THIS WAS CHANGED TO 10 FOR TESTING PURPOSES. SET TO 10 FOR FINAL RUNS***********************
 minthick = .001  # minimum layer thickness
 Nlayers = 5  # number of RAM layers
 current = 1.0  # start thickness
@@ -45,17 +43,19 @@ current = 1.0  # start thickness
 allowdiff = .35  # percent allowed difference from total thickness start value
 maxcoeff = .85  # max percent of goal thickness allowed start value
 
+# **--- NEW: Material Index Range ---**
+# There are 58 materials in Materials_Library.py (len(materials_data) = 58)
+ALL_MATERIAL_INDICES = list(range(1, 114)) 
+# **-----------------------------------**
+
 for i in range(runs):
     print("run #", i + 1, "out of", runs)
     plotcolor = (random.random(), random.random(), random.random())  # i
 
     maxthick = current  # total thickness
     maxlayer = maxthick * maxcoeff  # maximum layer thickness
-    frequencies = jnp.logspace(np.log10(lofreq * 10 ** 9), np.log10(hifreq * 10 ** 9), 500)  # frequencies to evaluate
+    frequencies = jnp.logspace(np.log10(lofreq * 10 ** 9), np.log10(hifreq * 10 ** 9), 500)  # frequencies to evaluate ***********THIS WAS CHANGED TO 5 FOR TESTING PURPOSES. SET TO 50 FOR FINAL RUNS***********************
     freqplot = jnp.logspace(np.log10(0.1), np.log10(10), 500)
-
-
-    # this is just a condensed version to do the stackrt function
     def stacksolve(tlist, matsin, output):
 
         # make the thickness list
@@ -70,11 +70,12 @@ for i in range(runs):
         mats = []
         mats.append("Air")
         for i in range(len(matsin)):
-            mats.append(str(matsin[i]))
+            mats.append(str(matsin[i])) # Converts the integer index (1-58) to a string ("1", "2", etc.)
         mats.append("PEC")
 
         # get eps, mu, and then solve the stack
-        eps_stack, mu_stack = utils_materials.get_eps_mu(mats, frequencies)
+        # This call now uses utils_materials_real.get_eps_mu
+        eps_stack, mu_stack = utils_materials.get_eps_mu(mats, frequencies) 
         R_TE, T_TE, R_TM, T_TM = stackrt_eps_mu(eps_stack, mu_stack, d_stack, frequencies,
                                                 0.0)  # eps, mu, thick, freq, angle
 
@@ -155,8 +156,10 @@ for i in range(runs):
 
         if i >= Nlayers:
             string = "m" + str(i + 1 - Nlayers)
-            space.update({string: hp.choice(string, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16])})
-            # space[string] = hp.choice(string,[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16])
+            # **--- MODIFIED: Search space updated to include all 58 materials ---**
+            space.update({string: hp.choice(string, ALL_MATERIAL_INDICES)})
+            # space[string] = hp.choice(string, ALL_MATERIAL_INDICES) # The same as the line above
+            # **-------------------------------------------------------------------**
 
     current += 5 / runs  # 1-->6 mm
     maxcoeff -= .01
