@@ -159,7 +159,8 @@ def get_eps_mu(materials, frequencies):
     # Materials
     materials = onp.array(materials)
     
-    eps_r, mu_r = get_eps_mus_real_materials(materials[1:-1].astype(int), frequencies)
+    frequencies_GHz = frequencies/(10**9)
+    eps_r, mu_r = get_eps_mus_real_materials(materials[1:-1].astype(int), frequencies_GHz)
 
     # Air and PEC
     n_k_air = get_n_k(materials[:1], frequencies)
@@ -366,7 +367,7 @@ def calculate_epsilon1(f, params):
     term2 = C * onp.power(f_complex, D)
 
     lorentz_num = E
-    lorentz_den = 1 - (f / F)**2 - 2*j * (f / G)
+    lorentz_den = 1 - (f / F)**2 + 2*j * (f / G)
     term3 = onp.divide(lorentz_num, lorentz_den, out=onp.zeros_like(lorentz_den, dtype=onp.complex128), where=lorentz_den!=0)
     return term1 + term2 + term3
 
@@ -391,7 +392,7 @@ def calculate_epsilon2(f, params):
     term3 = onp.imag(C) * onp.power(f_complex, E)
 
     lorentz_num = F
-    lorentz_den = 1 - (f / G)**2 - 2*j * (f / H)
+    lorentz_den = 1 - (f / G)**2 + 2*j * (f / H)
     term4 = onp.divide(lorentz_num, lorentz_den, out=onp.zeros_like(lorentz_den, dtype=onp.complex128), where=lorentz_den!=0)
     return term1 + term2 + term3 + term4
 
@@ -416,7 +417,7 @@ def getEpAndMu_12_1(user_f_min, user_f_max, material):
     frequencies = onp.linspace(user_f_min, user_f_max, num_points)
     
     # Added a small value to avoid potential divide-by-zero in the formula
-    epsilon_f = B + 2 * C * (frequencies ** D) + G * (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies)**(-1)
+    epsilon_f = B + 2 * C * (frequencies ** D) + G * (1 - J * (frequencies - H)**2 + 1j * 2 * I * frequencies)**(-1)
 
     mu_f = onp.ones(frequencies.shape)
     return(epsilon_f, mu_f)
@@ -457,7 +458,7 @@ def getEpAndMu_12_6(user_f_min, user_f_max, material):
     frequencies = onp.linspace(user_f_min, user_f_max, num_points)
     
     # Check for divide-by-zero potential
-    denominator_term = (1 - (frequencies / G) ** 2 - 1j * 2 * frequencies / H)
+    denominator_term = (1 - (frequencies / G) ** 2 + 1j * 2 * frequencies / H)
     safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term) # Replace 0 with a small number
     
     epsilon_f = (B + onp.real(C) * (frequencies ** D) + onp.imag(C) * (frequencies ** E) + F / safe_denominator)
@@ -484,7 +485,7 @@ def getEpAndMu_12_7(user_f_min, user_f_max, material):
     frequencies = onp.linspace(user_f_min, user_f_max, num_points)
     
     # Check for divide-by-zero potential
-    denominator_term = (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies)
+    denominator_term = (1 - J * (frequencies - H)**2 + 1j * 2 * I * frequencies)
     safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term)
 
     epsilon_f = B + 2 * C * (frequencies ** D) + G / safe_denominator
@@ -511,7 +512,7 @@ def getEpAndMu_12_8(user_f_min, user_f_max, material):
     frequencies = onp.linspace(user_f_min, user_f_max, num_points)
     
     # Check for divide-by-zero potential
-    denominator_term = (1 - (J *(frequencies - H)**2) - (1j*2*I*frequencies))
+    denominator_term = (1 - (J *(frequencies - H)**2) + (1j*2*I*frequencies))
     safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term)
 
     epsilon_f = (B + (2*C*(frequencies**D)) + (G / safe_denominator))
