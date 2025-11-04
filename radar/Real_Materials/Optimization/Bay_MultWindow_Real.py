@@ -18,7 +18,7 @@ from Materials_Library import materials_data
 
 # ------------------------------Inputs------------------------------
 lofreq = .2  # GHz lower bound for frequency test range
-hifreq = 2  # GHz higher bound for frequency test range
+hifreq = 8  # GHz higher bound for frequency test range
 Nevals = 100  # max possible function evaluations per window **********************************************THIS WAS CHANGED TO 10 FOR TESTING PURPOSES. SET TO 5000 FOR FINAL RUNS***********************
 # ------------------------------------------------------------------
 
