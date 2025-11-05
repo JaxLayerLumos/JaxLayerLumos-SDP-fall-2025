@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 import numpy as onp
 
-import utils_units
+from jaxlayerlumos import utils_units
 
 from radar.Real_Materials.Optimization.Materials_Library import materials_data
 
