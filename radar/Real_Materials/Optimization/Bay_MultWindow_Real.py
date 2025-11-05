@@ -44,7 +44,7 @@ allowdiff = .35  # percent allowed difference from total thickness start value
 maxcoeff = .85  # max percent of goal thickness allowed start value
 
 # **--- NEW: Material Index Range ---**
-# There are 58 materials in Materials_Library.py (len(materials_data) = 58)
+# There are 114 materials in Materials_Library.py (len(materials_data) = 114, indices 1-114)
 ALL_MATERIAL_INDICES = list(range(1, 114)) 
 # **-----------------------------------**
 
@@ -54,8 +54,8 @@ for i in range(runs):
 
     maxthick = current  # total thickness
     maxlayer = maxthick * maxcoeff  # maximum layer thickness
-    frequencies = jnp.logspace(np.log10(lofreq * 10 ** 9), np.log10(hifreq * 10 ** 9), 500)  # frequencies to evaluate ***********THIS WAS CHANGED TO 5 FOR TESTING PURPOSES. SET TO 50 FOR FINAL RUNS***********************
-    freqplot = jnp.logspace(np.log10(0.1), np.log10(10), 500)
+    frequencies = jnp.logspace(np.log10(lofreq), np.log10(hifreq), 500)  # frequencies to evaluate ***********THIS WAS CHANGED TO 5 FOR TESTING PURPOSES. SET TO 50 FOR FINAL RUNS***********************
+    freqplot = jnp.logspace(np.log10(0.1), np.log10(10), 500) #***************************************This one should match I think***********************
     def stacksolve(tlist, matsin, output):
 
         # make the thickness list
@@ -70,7 +70,7 @@ for i in range(runs):
         mats = []
         mats.append("Air")
         for i in range(len(matsin)):
-            mats.append(str(matsin[i])) # Converts the integer index (1-58) to a string ("1", "2", etc.)
+            mats.append(str(matsin[i])) # Converts the integer index (1-114) to a string ("1", "2", etc.)
         mats.append("PEC")
 
         # get eps, mu, and then solve the stack
@@ -156,7 +156,7 @@ for i in range(runs):
 
         if i >= Nlayers:
             string = "m" + str(i + 1 - Nlayers)
-            # **--- MODIFIED: Search space updated to include all 58 materials ---**
+            # **--- MODIFIED: Search space updated to include all 114 materials ---**
             space.update({string: hp.choice(string, ALL_MATERIAL_INDICES)})
             # space[string] = hp.choice(string, ALL_MATERIAL_INDICES) # The same as the line above
             # **-------------------------------------------------------------------**
