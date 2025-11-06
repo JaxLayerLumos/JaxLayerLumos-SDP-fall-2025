@@ -19,7 +19,6 @@ def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
     else:
         raise ValueError("\n\ninit_type must be 'linear', 'parabolic', or 'cubic'.")
 
-    # Ensure Epsilon_Material and mu_Material are arrays over freq
     Epsilon_Material = np.array(Epsilon_Material)
     mu_Material = np.array(mu_Material)
     if Epsilon_Material.size != len(freq):
@@ -27,14 +26,11 @@ def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
     if mu_Material.size != len(freq):
         mu_Material = np.full(len(freq), mu_Material)
 
-    # Define effective parameter functions that work over freq and fill factor
     def epsilon_eff(F):
-        # Returns matrix of shape (len(freq), N)
         F = np.array(F)[None, :]
         return Epsilon_Material[:, None] * F + (1 - F)
 
     def mu_eff(F):
-        # Returns matrix of shape (len(freq), N)
         F = np.array(F)[None, :]
         return mu_Material[:, None] * F + (1 - F)
 
@@ -54,7 +50,7 @@ def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
         theta = 0.0
 
         R_TE, T_TE, R_TM, T_TM = jll.stackrt_eps_mu(
-            eps_jax,  # already shape (len(freq), N)
+            eps_jax, 
             mu_jax,
             d_jax,
             freq_jax,
@@ -63,6 +59,19 @@ def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
 
         R = (R_TE + R_TM) / 2.0
         return float(jnp.max(R))
+    
+    # REFLECTION APPROXIMATION: Approximate reflection coefficient at normal incidence 
+    #def reflection_loss(F): 
+    # eps = epsilon_eff(F) 
+    # mu = mu_eff(F) # Z = np.sqrt(mu / eps) 
+    # Approximate total input impedance using transmission line cascading 
+    # Start from the last layer and work backward 
+    # Z0 = 1  # free space impedance (normalized) 
+    # Zin = Z[-1] # for i in range(N-2, -1, -1): 
+    # beta = 2 * np.pi / T # simplified propagation term (normalized) 
+    # Zin = Z[i] * (Zin + 1j * Z[i] * np.tan(beta * (T/N))) / (Z[i] + 1j * Zin * np.tan(beta * (T/N))) 
+    # R = np.abs((Zin - Z0) / (Zin + Z0))**2 
+    # return R
 
     def reflection_spectrum(F):
         eps = epsilon_eff(F)
@@ -241,9 +250,9 @@ def main():
     (6.392434388023163+0.003771778586718523j), 
     (6.389254232891443+0.003785277863798649j)]
 
-    freq = np.linspace(0.2, 250, 99)
+    freq = np.linspace(0.2, 8, 99)
 
-    result = fill_factor_finder(eps, np.ones_like(eps), freq, 1.0, 100, 'parabolic')
+    result = fill_factor_finder(eps, np.ones_like(eps), freq, 1.0, 100, 'linear')
 
     print("Optimized fill factor: \n\n", result['Fill_Factor_opt'])
     print("\n\nEpsilon Effective: \n\n", result['Epsilon_Effective'])
