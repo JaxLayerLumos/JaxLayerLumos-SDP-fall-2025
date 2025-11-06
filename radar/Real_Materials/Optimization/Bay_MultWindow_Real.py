@@ -36,9 +36,9 @@ keepref = []  # for plotting reflections
 colors = []  # for coloring the point
 
 runs = 3  # number of thickness sections or windows ***************************THIS WAS CHANGED TO 10 FOR TESTING PURPOSES. SET TO 10 FOR FINAL RUNS***********************
-minthick = .001  # minimum layer thickness
-Nlayers = 5  # number of RAM layers
-current = 1.0  # start thickness
+minthick = .1  # minimum layer thickness
+Nlayers = 2  # number of RAM layers
+current = 10.0  # start thickness
 
 allowdiff = .35  # percent allowed difference from total thickness start value
 maxcoeff = .85  # max percent of goal thickness allowed start value
