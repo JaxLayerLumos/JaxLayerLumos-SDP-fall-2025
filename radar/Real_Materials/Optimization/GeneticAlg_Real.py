@@ -22,7 +22,7 @@ freq_lowerbound = 0.2*10**9 #Hz
 freq_upperbound = 2*10**9 #Hz
 
 #Hyper-Parameters
-num_generations = 50 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
+num_generations = 10 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
 num_parents_mating = 6 #
 sol_per_pop = 40 #40 candidate designs for generation
 num_genes = 10 #Total decisions variables for individual, 5 materials and 2 for each
