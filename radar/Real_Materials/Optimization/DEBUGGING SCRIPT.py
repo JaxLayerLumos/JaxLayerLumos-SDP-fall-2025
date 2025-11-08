@@ -10,7 +10,7 @@ print("RAM OPTIMIZATION DIAGNOSTIC TOOL")
 print("="*70)
 
 # Test configuration
-test_material_indices = [1, 2, 3]  # From your optimal structure
+test_material_indices = [1,2,3,4,5,6,7]  # Input from you optimizal strucutre
 freq_min_GHz = 0.2
 freq_max_GHz = 8.0
 num_freq_points = 100
