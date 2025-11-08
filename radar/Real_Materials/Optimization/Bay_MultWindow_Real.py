@@ -13,7 +13,7 @@ from pathlib import Path
 from jaxlayerlumos import utils_spectra
 from jaxlayerlumos import utils_radar_materials
 import random
-import utils_materials_real as utils_materials
+import utils_materials_real_try as utils_materials
 from Materials_Library_NEW import materials_data
 
 # ------------------------------Inputs------------------------------
@@ -38,7 +38,7 @@ colors = []
 runs = 3  # number of thickness sections or windows
 minthick = .1  # minimum layer thickness
 Nlayers = 2  # number of RAM layers
-current = 10.0  # start thickness
+current = 5.0  # start thickness mm
 
 allowdiff = .35  # percent allowed difference from total thickness start value
 maxcoeff = .85  # max percent of goal thickness allowed start value
@@ -124,6 +124,7 @@ for run_idx in range(runs):
 
         try:
             loss = stacksolve(tlist, mlist, 1)
+            loss = jnp.clip(loss, a_max = 0.0)
         except Exception as e:
             print(f"Error in objective function: {e}")
             return {'loss': 10 ** 20, 'status': STATUS_OK}
@@ -263,6 +264,7 @@ def compute_spectrum(tlist, matsin):
     # Also compute absorptivity
     A_avg = 1 - R_avg
     A_db = 10 * jnp.log10(A_avg).squeeze()
+
     
     return R_db, A_db
 

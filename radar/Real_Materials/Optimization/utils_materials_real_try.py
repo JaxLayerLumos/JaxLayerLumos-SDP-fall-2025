@@ -343,7 +343,7 @@ def calculate_chi_m(f, params): # f is in GHz
     denominator = 1 - (f / C)**2 - (j * f / D)
     return onp.divide(numerator, denominator, out=onp.zeros_like(denominator, dtype=onp.complex128), where=denominator!=0)
 
-def calculate_epsilon1(f, params): # f is in GHz
+def calculate_epsilon1(f, params):  # f is in GHz
     B = params.get('B', 0.0)
     C = params.get('C', 0.0)
     D = params.get('D', 0.0)
@@ -353,20 +353,20 @@ def calculate_epsilon1(f, params): # f is in GHz
     
     j = 1j
     f_complex = f.astype(onp.complex128)
-
-    # Normalize frequency for polynomial term
     f_norm = f / 1.0
 
     term1 = B
     term2 = C * onp.power(f_norm, D)
 
     lorentz_num = E
-    # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
-    lorentz_den = 1 - (f / F)**2 - 2*j * (f / G) # Changed + to -
-    term3 = onp.divide(lorentz_num, lorentz_den, out=onp.zeros_like(lorentz_den, dtype=onp.complex128), where=lorentz_den!=0)
+    # *** FIXED: Changed - to + for imaginary loss term ***
+    lorentz_den = 1 - (f / F)**2 + 2*j * (f / G)  # NOW CORRECT
+    term3 = onp.divide(lorentz_num, lorentz_den, 
+                       out=onp.zeros_like(lorentz_den, dtype=onp.complex128), 
+                       where=lorentz_den!=0)
     return term1 + term2 + term3
 
-def calculate_epsilon2(f, params): # f is in GHz
+def calculate_epsilon2(f, params):  # f is in GHz
     B = params.get('B', 0.0)
     C = params.get('C', 0.0)
     D = params.get('D', 0.0)
@@ -377,8 +377,6 @@ def calculate_epsilon2(f, params): # f is in GHz
     
     j = 1j
     f_complex = f.astype(onp.complex128)
-    
-    # Normalize frequency for polynomial term
     f_norm = f / 1.0
 
     term1 = B
@@ -386,9 +384,11 @@ def calculate_epsilon2(f, params): # f is in GHz
     term3 = onp.imag(C) * onp.power(f_norm, E)
 
     lorentz_num = F
-    # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
-    lorentz_den = 1 - (f / G)**2 - 2*j * (f / H) # Changed + to -
-    term4 = onp.divide(lorentz_num, lorentz_den, out=onp.zeros_like(lorentz_den, dtype=onp.complex128), where=lorentz_den!=0)
+    # *** FIXED: Changed - to + for imaginary loss term ***
+    lorentz_den = 1 - (f / G)**2 + 2*j * (f / H)  # NOW CORRECT
+    term4 = onp.divide(lorentz_num, lorentz_den, 
+                       out=onp.zeros_like(lorentz_den, dtype=onp.complex128), 
+                       where=lorentz_den!=0)
     return term1 + term2 + term3 + term4
 
 # --- Main EpAndMu functions (Now receive GHz array) ---
@@ -403,12 +403,10 @@ def getEpAndMu_12_1(frequencies, material):
     I = params.get('I', 0.0)
     J = params.get('J', 0.0)
     
-    # Normalize frequency for polynomial term
     f_norm = frequencies / 1.0
     
-    # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
-    # Formula: G / (1 - J*(f-H)^2 - j*2*I*f)
-    epsilon_f = B + 2 * C * (f_norm ** D) + G * (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies)**(-1)
+    # *** FIXED: Changed - to + for imaginary loss term ***
+    epsilon_f = B + 2 * C * (f_norm ** D) + G * (1 - J * (frequencies - H)**2 + 1j * 2 * I * frequencies)**(-1)
 
     mu_f = onp.ones(frequencies.shape)
     return(epsilon_f, mu_f)
@@ -440,12 +438,10 @@ def getEpAndMu_12_6(frequencies, material):
     G = params.get('G', 1.0) 
     H = params.get('H', 1.0) 
     
-    # Normalize frequency for polynomial term
     f_norm = frequencies / 1.0
 
-    # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
-    # Formula: F / (1 - (f/G)^2 - j*2*f/H)
-    denominator_term = (1 - (frequencies / G) ** 2 - 1j * 2 * frequencies / H) # Changed + to -
+    # *** FIXED: Changed - to + for imaginary loss term ***
+    denominator_term = (1 - (frequencies / G) ** 2 + 1j * 2 * frequencies / H)
     safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term) 
     
     epsilon_f = (B + onp.real(C) * (f_norm ** D) + onp.imag(C) * (f_norm ** E) + F / safe_denominator)
@@ -463,12 +459,10 @@ def getEpAndMu_12_7(frequencies, material):
     I = params.get('I', 0.0)
     J = params.get('J', 0.0)
     
-    # Normalize frequency for polynomial term
     f_norm = frequencies / 1.0
 
-    # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
-    # Formula: G / (1 - J*(f-H)^2 - j*2*I*f)
-    denominator_term = (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies) # Changed + to -
+    # *** FIXED: Changed - to + for imaginary loss term ***
+    denominator_term = (1 - J * (frequencies - H)**2 + 1j * 2 * I * frequencies)
     safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term)
 
     epsilon_f = B + 2 * C * (f_norm ** D) + G / safe_denominator
@@ -486,12 +480,10 @@ def getEpAndMu_12_8(frequencies, material):
     I = params.get('I', 0.0)
     J = params.get('J', 0.0)
 
-    # Normalize frequency for polynomial term
     f_norm = frequencies / 1.0
     
-    # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
-    # Formula: G / (1 - J*(f-H)^2 - j*2*I*f)
-    denominator_term = (1 - (J *(frequencies - H)**2) - (1j*2*I*frequencies)) # Changed + to -
+    # *** FIXED: Changed - to + for imaginary loss term ***
+    denominator_term = (1 - (J *(frequencies - H)**2) + (1j*2*I*frequencies))
     safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term)
 
     epsilon_f = (B + (2*C*(f_norm**D)) + (G / safe_denominator))
