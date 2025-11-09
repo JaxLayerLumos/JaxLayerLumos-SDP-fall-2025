@@ -17,9 +17,9 @@ import utils_materials_real_try as utils_materials
 from Materials_Library_NEW import materials_data
 
 # ------------------------------Inputs------------------------------
-lofreq = .2 * 10 ** 9  # GHz lower bound for frequency test range
-hifreq = 8 * 10 ** 9  # GHz higher bound for frequency test range
-Nevals = 100  # max possible function evaluations per window
+lofreq = .2  # GHz lower bound for frequency test range
+hifreq = 8  # GHz higher bound for frequency test range
+Nevals = 50  # max possible function evaluations per window
 # ------------------------------------------------------------------
 
 allmats = []
@@ -35,7 +35,7 @@ keepthick = []
 keepref = []
 colors = []
 
-runs = 3  # number of thickness sections or windows
+runs = 5  # number of thickness sections or windows
 minthick = .1  # minimum layer thickness
 Nlayers = 2  # number of RAM layers
 current = 5.0  # start thickness mm
@@ -46,8 +46,9 @@ maxcoeff = .85  # max percent of goal thickness allowed start value
 # **--- FIXED: Material Index Range ---**
 # Check actual materials library length and use correct range
 print(f"Number of materials available: {len(materials_data)}")
-# Use 1 to 113 (not 114) to match materials_data keys
-ALL_MATERIAL_INDICES = list(range(1, 114))  # 1 to 113 inclusive
+actual_num_materials = len(materials_data)
+ALL_MATERIAL_INDICES = list(range(1, actual_num_materials + 1))  # Use actual count
+print(f"Number of materials available: {actual_num_materials}")
 print(f"Material index range: {min(ALL_MATERIAL_INDICES)} to {max(ALL_MATERIAL_INDICES)}")
 # **-----------------------------------**
 
@@ -60,8 +61,9 @@ for run_idx in range(runs):
 
     maxthick = current
     maxlayer = maxthick * maxcoeff
-    frequencies = jnp.logspace(np.log10(lofreq), np.log10(hifreq), 500)
-    freqplot = jnp.logspace(np.log10(0.1), np.log10(10), 500)
+    frequencies = jnp.logspace(np.log10(lofreq), np.log10(hifreq), 500)  # Hz
+    freqplot_GHz = jnp.logspace(np.log10(0.1), np.log10(10), 500)
+    freqplot = freqplot_GHz * 10**9  # Convert GHz to Hz
     
     def stacksolve(tlist, matsin, output):
         # **--- FIXED: Proper array construction ---**
@@ -281,7 +283,6 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
 
 # Plot 1: Pareto Front
 ax1.plot(refined_partotthick, refined_parref, "b-o", label="BO with Gradient Pareto Front", linewidth=2, markersize=6)
-ax1.plot(best_total_thickness, best_reflection, "r*", markersize=20, label="Optimal Structure", zorder=5)
 ax1.plot(paperLFx, paperLFy, "g-^", label="IEEE Paper LF Results", linewidth=1.5, markersize=8, alpha=0.8)
 ax1.plot(paperHFx, paperHFy, "m-s", label="IEEE Paper HF Results", linewidth=1.5, markersize=8, alpha=0.8)
 ax1.set_xlabel("Total Structure Thickness [mm]", fontsize=12)

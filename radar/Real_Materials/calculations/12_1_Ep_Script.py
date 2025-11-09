@@ -6,7 +6,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import pdfplumber
 from Materials_Library import materials_data
 
 def getEpAndMu_12_1(user_f_min, user_f_max, material):

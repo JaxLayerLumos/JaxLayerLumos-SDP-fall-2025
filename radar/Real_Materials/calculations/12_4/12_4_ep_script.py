@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-"""12_4_Ep_Script - Now calling Materials_Library.py and filtering for Section 4."""
-
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 import warnings
 import sys
 import os
@@ -32,7 +30,7 @@ def calculate_chi_m(f, params):
 def calculate_epsilon1(f, params):
     """
     Calculates permittivity using the first model (ε1).
-    Formula: ε1(f) = B + C*f^D + E / (1 - (f/F)^2 - 2j*(f/G))
+    Formula: ε1(f) = B + C*f^D + E / (1 - (f/F)^2 + 2j*(f/G))
     """
     B, C, D, E, F, G = params['B'], params['C'], params['D'], params['E'], params['F'], params['G']
     j = 1j
@@ -42,14 +40,14 @@ def calculate_epsilon1(f, params):
     term2 = C * np.power(f_complex, D)
 
     lorentz_num = E
-    lorentz_den = 1 - (f / F)**2 - 2*j * (f / G)
+    lorentz_den = 1 - (f / F)**2 + 2*j * (f / G)  # FIXED: + sign
     term3 = np.divide(lorentz_num, lorentz_den, out=np.zeros_like(lorentz_den, dtype=np.complex128), where=lorentz_den!=0)
     return term1 + term2 + term3
 
 def calculate_epsilon2(f, params):
     """
     Calculates permittivity using the second model (ε2).
-    Formula: ε2(f) = B + real(C)*f^D + imag(C)*f^E + F / (1 - (f/G)^2 - 2j*(f/H))
+    Formula: ε2(f) = B + real(C)*f^D + imag(C)*f^E + F / (1 - (f/G)^2 + 2j*(f/H))
     """
     B, C, D, E, F, G, H = params['B'], params['C'], params['D'], params['E'], params['F'], params['G'], params['H']
     j = 1j
@@ -60,9 +58,114 @@ def calculate_epsilon2(f, params):
     term3 = np.imag(C) * np.power(f_complex, E)
 
     lorentz_num = F
-    lorentz_den = 1 - (f / G)**2 - 2*j * (f / H)
+    lorentz_den = 1 - (f / G)**2 + 2*j * (f / H)  # FIXED: + sign
     term4 = np.divide(lorentz_num, lorentz_den, out=np.zeros_like(lorentz_den, dtype=np.complex128), where=lorentz_den!=0)
     return term1 + term2 + term3 + term4
+
+
+def export_epsilon_data(freqs, eps1, eps2, chi_m, material_name, output_format='csv'):
+    """
+    Export epsilon values to CSV or text file.
+    
+    Parameters:
+    -----------
+    freqs : array
+        Frequency array in GHz
+    eps1 : array or None
+        Epsilon1 complex values
+    eps2 : array or None
+        Epsilon2 complex values
+    chi_m : array
+        Magnetic susceptibility
+    material_name : str
+        Name of the material
+    output_format : str
+        'csv' or 'txt'
+    """
+    
+    # Create output dictionary
+    data = {'Frequency_GHz': freqs}
+    
+    # Add epsilon1 data if available
+    if eps1 is not None:
+        data['eps1_real'] = np.real(eps1)
+        data['eps1_imag'] = np.imag(eps1)
+        data['eps1_magnitude'] = np.abs(eps1)
+        data['eps1_phase_deg'] = np.angle(eps1, deg=True)
+    
+    # Add epsilon2 data if available
+    if eps2 is not None:
+        data['eps2_real'] = np.real(eps2)
+        data['eps2_imag'] = np.imag(eps2)
+        data['eps2_magnitude'] = np.abs(eps2)
+        data['eps2_phase_deg'] = np.angle(eps2, deg=True)
+    
+    # Add magnetic susceptibility
+    data['chi_m_real'] = np.real(chi_m)
+    data['chi_m_imag'] = np.imag(chi_m)
+    
+    # Calculate permeability (μ = 1 + χ_m)
+    mu = 1 + chi_m
+    data['mu_real'] = np.real(mu)
+    data['mu_imag'] = np.imag(mu)
+    
+    # Calculate loss tangents if epsilon data exists
+    if eps1 is not None:
+        loss_tangent_1 = np.abs(np.imag(eps1) / np.real(eps1))
+        data['eps1_loss_tangent'] = loss_tangent_1
+    
+    if eps2 is not None:
+        loss_tangent_2 = np.abs(np.imag(eps2) / np.real(eps2))
+        data['eps2_loss_tangent'] = loss_tangent_2
+    
+    # Create DataFrame
+    df = pd.DataFrame(data)
+    
+    # Generate filename
+    safe_name = material_name.replace('/', '_').replace(' ', '_').replace('(', '').replace(')', '')
+    
+    if output_format == 'csv':
+        filename = f"{safe_name}_epsilon_data.csv"
+        df.to_csv(filename, index=False)
+        print(f"\n✅ Data exported to: {filename}")
+        
+    elif output_format == 'txt':
+        filename = f"{safe_name}_epsilon_data.txt"
+        with open(filename, 'w') as f:
+            f.write(f"Material: {material_name}\n")
+            f.write(f"{'='*80}\n\n")
+            f.write(df.to_string(index=False))
+        print(f"\n✅ Data exported to: {filename}")
+    
+    # Print summary statistics
+    print(f"\n{'='*80}")
+    print(f"MATERIAL PROPERTIES SUMMARY: {material_name}")
+    print(f"{'='*80}")
+    print(f"Frequency range: {freqs[0]:.3f} - {freqs[-1]:.3f} GHz")
+    print(f"Number of data points: {len(freqs)}")
+    
+    if eps1 is not None:
+        print(f"\nEpsilon 1 (ε1):")
+        print(f"  Real part:      {np.min(np.real(eps1)):8.4f} to {np.max(np.real(eps1)):8.4f}")
+        print(f"  Imaginary part: {np.min(np.imag(eps1)):8.4f} to {np.max(np.imag(eps1)):8.4f}")
+        print(f"  Loss tangent:   {np.min(loss_tangent_1):8.6f} to {np.max(loss_tangent_1):8.6f}")
+    
+    if eps2 is not None:
+        print(f"\nEpsilon 2 (ε2):")
+        print(f"  Real part:      {np.min(np.real(eps2)):8.4f} to {np.max(np.real(eps2)):8.4f}")
+        print(f"  Imaginary part: {np.min(np.imag(eps2)):8.4f} to {np.max(np.imag(eps2)):8.4f}")
+        print(f"  Loss tangent:   {np.min(loss_tangent_2):8.6f} to {np.max(loss_tangent_2):8.6f}")
+    
+    print(f"\nMagnetic Susceptibility (χ_m):")
+    print(f"  Real part:      {np.min(np.real(chi_m)):8.4f} to {np.max(np.real(chi_m)):8.4f}")
+    print(f"  Imaginary part: {np.min(np.imag(chi_m)):8.4f} to {np.max(np.imag(chi_m)):8.4f}")
+    
+    print(f"\nPermeability (μ = 1 + χ_m):")
+    print(f"  Real part:      {np.min(np.real(mu)):8.4f} to {np.max(np.real(mu)):8.4f}")
+    print(f"  Imaginary part: {np.min(np.imag(mu)):8.4f} to {np.max(np.imag(mu)):8.4f}")
+    print(f"{'='*80}\n")
+    
+    return df
 
 
 if __name__ == "__main__":
@@ -166,4 +269,16 @@ if __name__ == "__main__":
     ax2.grid(True, which="both", ls="--")
 
     plt.tight_layout()
+    
+    # --- NEW: Export Data to CSV ---
+    print("\n" + "="*80)
+    export_choice = input("Export data to file? (y/n): ").strip().lower()
+    
+    if export_choice == 'y':
+        format_choice = input("Choose format (csv/txt) [default: csv]: ").strip().lower()
+        if format_choice not in ['csv', 'txt']:
+            format_choice = 'csv'
+        
+        df = export_epsilon_data(freqs, eps1, eps2, chi_m, selected_material['name'], output_format=format_choice)
+    
     plt.show()
