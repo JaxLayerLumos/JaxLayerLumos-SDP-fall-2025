@@ -10,7 +10,7 @@ print("RAM OPTIMIZATION DIAGNOSTIC TOOL")
 print("="*70)
 
 # Test configuration
-test_material_indices = [31, 32, 33, 34, 35]  # Input from you optimizal strucutre
+test_material_indices = [43, 41, 3, 29, 2, 30, 17, 35, 26, 24]  # Input from you optimizal strucutre
 freq_min_GHz = 0.2
 freq_max_GHz = 8.0
 num_freq_points = 100
@@ -23,9 +23,7 @@ print(f"  Frequency range: {freq_min_GHz} - {freq_max_GHz} GHz")
 print(f"  Number of points: {num_freq_points}")
 print(f"  Test materials: {test_material_indices}")
 
-# ============================================================================
-# TEST 1: Check Material Data Existence
-# ============================================================================
+
 print("\n" + "="*70)
 print("TEST 1: Material Data Verification")
 print("="*70)
@@ -51,12 +49,12 @@ for mat_idx in test_material_indices:
             
             I_val = params.get('I', 0)
             if abs(I_val) < 1e-6:
-                print(f"  ⚠️  WARNING: I ≈ 0 → Material is essentially LOSSLESS!")
+                print(f"WARNING: I ≈ 0 → Material is essentially LOSSLESS!")
         else:
-            print(f"  ⚠️  ERROR: No eps_params found!")
+            print(f"ERROR: No eps_params found!")
             
     except Exception as e:
-        print(f"\n❌ ERROR loading material {mat_idx}: {e}")
+        print(f"\n ERROR loading material {mat_idx}: {e}")
 
 # ============================================================================
 # TEST 2: Material Property Calculation
@@ -83,16 +81,16 @@ for mat_idx in test_material_indices:
         
         # Check for issues
         if np.mean(np.abs(eps_imag)) < 1e-6:
-            print("❌ PROBLEM: Imaginary part is essentially ZERO → No absorption!")
+            print("PROBLEM: Imaginary part is essentially ZERO → No absorption!")
         elif np.mean(loss_tangent) < 0.01:
-            print("⚠️  WARNING: Loss tangent < 0.01 → Very weak absorption")
+            print("WARNING: Loss tangent < 0.01 → Very weak absorption")
         elif np.mean(loss_tangent) < 0.1:
-            print("⚠️  Marginal: Loss tangent < 0.1 → Limited absorption")
+            print("Marginal: Loss tangent < 0.1 → Limited absorption")
         else:
-            print("✅ Loss tangent looks reasonable for RAM applications")
+            print("Loss tangent looks reasonable for RAM applications")
             
     except Exception as e:
-        print(f"❌ ERROR: {e}")
+        print(f"ERROR: {e}")
 
 # ============================================================================
 # TEST 3: Stack Calculation Test
@@ -136,9 +134,9 @@ try:
     
     # Check for PEC at end
     if np.isinf(eps_stack[mid_idx, -1].real):
-        print("  ✅ PEC layer detected correctly")
+        print("PEC layer detected correctly")
     else:
-        print("  ⚠️  WARNING: PEC layer may not be configured correctly")
+        print("WARNING: PEC layer may not be configured correctly")
     
     # Calculate reflection/transmission
     R_TE, T_TE, R_TM, T_TM = stackrt_eps_mu(eps_stack, mu_stack, d_stack, frequencies_Hz, 0.0)
@@ -152,11 +150,11 @@ try:
     
     # Check for physical validity
     if np.any(R_avg > 1.0):
-        print("  ❌ UNPHYSICAL: R > 1 detected!")
+        print("UNPHYSICAL: R > 1 detected!")
     elif np.max(R_avg) > 0.99:
-        print("  ⚠️  Nearly perfect reflection (R > 0.99) → Poor absorption")
+        print("Nearly perfect reflection (R > 0.99) → Poor absorption")
     else:
-        print("  ✅ Reflection coefficients are physical")
+        print("Reflection coefficients are physical")
     
     # Absorption
     A_avg = 1 - R_avg
@@ -164,10 +162,10 @@ try:
     print(f"  A_avg: min={np.min(A_avg):.6f}, max={np.max(A_avg):.6f}")
     
     if np.max(A_avg) < 0.01:
-        print("  ❌ PROBLEM: Absorption < 1% → Materials are not absorbing!")
+        print("PROBLEM: Absorption < 1% → Materials are not absorbing!")
     
 except Exception as e:
-    print(f"❌ ERROR in stack calculation: {e}")
+    print(f"ERROR in stack calculation: {e}")
     import traceback
     traceback.print_exc()
 
@@ -232,20 +230,6 @@ axes[1, 1].grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('material_diagnostic.png', dpi=300, bbox_inches='tight')
-print("\n✅ Diagnostic plots saved to 'material_diagnostic.png'")
-
-# ============================================================================
-# SUMMARY
-# ============================================================================
-print("\n" + "="*70)
-print("DIAGNOSTIC SUMMARY")
-print("="*70)
-print("\nCheck the output above for:")
-print("  1. Materials with I ≈ 0 (no loss coefficient)")
-print("  2. ε_imag ≈ 0 (no imaginary permittivity)")
-print("  3. Loss tangent < 0.1 (weak absorption)")
-print("  4. R > 0.99 (near-perfect reflection)")
-print("\nIf any of these are true, your materials cannot absorb EM energy!")
-print("="*70)
+print("\n Diagnostic plots saved to 'material_diagnostic.png'")
 
 plt.show()

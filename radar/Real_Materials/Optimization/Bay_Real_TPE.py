@@ -16,10 +16,6 @@ import matplotlib.pyplot as plt
 import time
 from pathlib import Path
 from Materials_Library_NEW import materials_data
-
-# ============================================================================
-# CRITICAL FIX: Import and patch material functions with sign convention fix
-# ============================================================================
 import utils_materials_real as utils_materials_module
 
 # Store original functions
