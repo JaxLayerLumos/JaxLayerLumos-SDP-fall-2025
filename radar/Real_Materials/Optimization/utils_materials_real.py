@@ -9,7 +9,7 @@ import warnings
 
 from jaxlayerlumos import utils_spectra
 from jaxlayerlumos import utils_units
-from Materials_Library import materials_data
+from .Materials_Library import materials_data
 
 
 def load_json():
