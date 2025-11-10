@@ -3,9 +3,33 @@ from scipy.optimize import minimize
 import jaxlayerlumos as jll
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
+from .Materials_Library import materials_data
+from ..Optimization.utils_materials_real import get_eps_mus_real_materials
 
-def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
+def fill_factor_finder(T, N, init_type):
         
+    # Print options
+    i = 1
+        
+    for material in materials_data:
+        print(i, ". ", material['name'])
+        i+=1
+        
+    print('\n\n')
+
+    # Get input
+    mat_idx = [] 
+    mat_idx.append(int(input("Please select a material index from the list below: ")))
+        
+    freq_min = float(input("Input min freq: "))
+    freq_max = float(input("Input max freq: "))
+
+    freq = np.linspace(freq_min, freq_max, 100)
+
+    # Get eps and mus via the same function called by the optimization
+
+    Epsilon_Material, mu_Material = get_eps_mus_real_materials(mat_idx, freq)
+    print(Epsilon_Material[0])
     # Discretize structure
     z = np.linspace(0, T, N)
 
@@ -19,8 +43,8 @@ def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
     else:
         raise ValueError("\n\ninit_type must be 'linear', 'parabolic', or 'cubic'.")
 
-    Epsilon_Material = np.array(Epsilon_Material)
-    mu_Material = np.array(mu_Material)
+    Epsilon_Material = np.array(Epsilon_Material[0])
+    mu_Material = np.array(mu_Material[0])
     if Epsilon_Material.size != len(freq):
         Epsilon_Material = np.full(len(freq), Epsilon_Material)
     if mu_Material.size != len(freq):
@@ -140,6 +164,17 @@ def fill_factor_finder(Epsilon_Material, mu_Material, freq, T, N, init_type):
     plt.grid(True)
     plt.legend()
     plt.show()
+    
+    plt.figure(figsize=(8, 6))
+    plt.plot(z, fill_factor_init, label="Target Profile")
+    plt.plot(z, jnp.ones_like(F_opt), label="Initial Profile")
+    plt.plot(z, F_opt, label="Optimized Profile")
+    plt.xlabel("z")
+    plt.ylabel("F")
+    plt.title("F Optimized")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
 
     return {
         'z': z,
@@ -250,12 +285,11 @@ def main():
     (6.392434388023163+0.003771778586718523j), 
     (6.389254232891443+0.003785277863798649j)]
 
-    freq = np.linspace(0.2, 8, 99)
+    freq = np.linspace(.2, 8, 99)
 
-    result = fill_factor_finder(eps, np.ones_like(eps), freq, 1.0, 100, 'linear')
+    result = fill_factor_finder(1.0, 100, 'linear')
 
     print("Optimized fill factor: \n\n", result['Fill_Factor_opt'])
     print("\n\nEpsilon Effective: \n\n", result['Epsilon_Effective'])
-
 if __name__ == "__main__":
     main()
