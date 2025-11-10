@@ -1,16 +1,13 @@
 import jax.numpy as jnp
-import numpy as onp
+import numpy as np
 import os
 import csv
 import json
 from pathlib import Path
 import warnings
-
-
 from jaxlayerlumos import utils_spectra
 from jaxlayerlumos import utils_units
-from Materials_Library import materials_data
-
+from Materials_Library_NEW import materials_data
 
 def load_json():
     current_dir = str(Path(__file__).parent)
@@ -151,7 +148,7 @@ def interpolate_material_n_k(material, frequencies):
 
 
 def get_eps_mu(materials, frequencies):
-    assert isinstance(materials, (list, onp.ndarray))
+    assert isinstance(materials, (list, np.ndarray))
     assert isinstance(frequencies, jnp.ndarray)
     assert frequencies.ndim == 1
     assert materials[0] == "Air"
@@ -162,7 +159,7 @@ def get_eps_mu(materials, frequencies):
     frequencies_GHz = frequencies/(10**9) 
 
     # Materials
-    materials = onp.array(materials)
+    materials = np.array(materials)
     
     # 1. RAM Layers: Pass the GHZ array
     eps_r, mu_r = get_eps_mus_real_materials(materials[1:-1].astype(int), frequencies_GHz)
@@ -195,7 +192,7 @@ def get_eps_mu(materials, frequencies):
 
 
 def get_n_k(materials, frequencies):
-    assert isinstance(materials, (list, onp.ndarray))
+    assert isinstance(materials, (list, np.ndarray))
     assert isinstance(frequencies, jnp.ndarray)
     assert frequencies.ndim == 1
 
@@ -213,11 +210,11 @@ def get_n_k(materials, frequencies):
 
 
 def get_n_k_surrounded_by_air(materials, frequencies):
-    assert isinstance(materials, (list, onp.ndarray))
+    assert isinstance(materials, (list, np.ndarray))
     assert isinstance(frequencies, jnp.ndarray)
     assert frequencies.ndim == 1
 
-    n_k = get_n_k(onp.concatenate([["Air"], materials, ["Air"]], axis=0), frequencies)
+    n_k = get_n_k(np.concatenate([["Air"], materials, ["Air"]], axis=0), frequencies)
     return n_k
 
 
@@ -228,12 +225,12 @@ def convert_n_k_to_eps_mu_for_non_magnetic_materials(n_k):
     return eps, mu
 
 def get_eps_mu_Michielssen(material_indices, frequencies):
-    assert isinstance(material_indices, onp.ndarray)
+    assert isinstance(material_indices, np.ndarray)
     assert isinstance(frequencies, jnp.ndarray)
     assert material_indices.ndim == 1
     assert frequencies.ndim == 1
     for material_index in material_indices:
-        assert material_index in onp.arange(1, 17)
+        assert material_index in np.arange(1, 17)
 
     # Gets parameters from Michiellsen
     f = frequencies 
@@ -333,7 +330,7 @@ def get_eps_mus_real_materials(material_indices, frequencies): # frequencies is 
     return eps_r_final, mu_r_final
 
 # --- Helper functions for Section 4 ---
-def calculate_chi_m(f, params): # f is in GHz
+def calculate_chi_m(f, params):
     B = params.get('B', 0.0)
     C = params.get('C', 1.0) 
     D = params.get('D', 1.0) 
@@ -341,9 +338,17 @@ def calculate_chi_m(f, params): # f is in GHz
     j = 1j
     numerator = B * (1 - j * f / D)
     denominator = 1 - (f / C)**2 - (j * f / D)
-    return onp.divide(numerator, denominator, out=onp.zeros_like(denominator, dtype=onp.complex128), where=denominator!=0)
+    chi_m = np.divide(numerator, denominator, 
+                      out=np.zeros_like(denominator, dtype=np.complex128), 
+                      where=denominator!=0)
+    
+    # *** FIX: Convert to exp(+iωt) convention ***
+    chi_m = np.conj(chi_m)
+    
+    return chi_m
 
-def calculate_epsilon1(f, params):  # f is in GHz
+
+def calculate_epsilon1(f, params):
     B = params.get('B', 0.0)
     C = params.get('C', 0.0)
     D = params.get('D', 0.0)
@@ -352,21 +357,26 @@ def calculate_epsilon1(f, params):  # f is in GHz
     G = params.get('G', 1.0) 
     
     j = 1j
-    f_complex = f.astype(onp.complex128)
+    f_complex = f.astype(np.complex128)
     f_norm = f / 1.0
 
     term1 = B
-    term2 = C * onp.power(f_norm, D)
+    term2 = C * np.power(f_norm, D)
 
     lorentz_num = E
-    # *** FIXED: Changed - to + for imaginary loss term ***
-    lorentz_den = 1 - (f / F)**2 + 2*j * (f / G)  # NOW CORRECT
-    term3 = onp.divide(lorentz_num, lorentz_den, 
-                       out=onp.zeros_like(lorentz_den, dtype=onp.complex128), 
+    lorentz_den = 1 - (f / F)**2 + 2*j * (f / G)
+    term3 = np.divide(lorentz_num, lorentz_den, 
+                       out=np.zeros_like(lorentz_den, dtype=np.complex128), 
                        where=lorentz_den!=0)
-    return term1 + term2 + term3
+    
+    epsilon_result = term1 + term2 + term3
 
-def calculate_epsilon2(f, params):  # f is in GHz
+        # *** FIX: Convert to exp(+iωt) convention ***
+    epsilon_result = np.conj(epsilon_result)
+    
+    return epsilon_result
+
+def calculate_epsilon2(f, params):
     B = params.get('B', 0.0)
     C = params.get('C', 0.0)
     D = params.get('D', 0.0)
@@ -376,20 +386,25 @@ def calculate_epsilon2(f, params):  # f is in GHz
     H = params.get('H', 1.0) 
     
     j = 1j
-    f_complex = f.astype(onp.complex128)
+    f_complex = f.astype(np.complex128)
     f_norm = f / 1.0
 
     term1 = B
-    term2 = onp.real(C) * onp.power(f_norm, D)
-    term3 = onp.imag(C) * onp.power(f_norm, E)
+    term2 = np.real(C) * np.power(f_norm, D)
+    term3 = np.imag(C) * np.power(f_norm, E)
 
     lorentz_num = F
-    # *** FIXED: Changed - to + for imaginary loss term ***
-    lorentz_den = 1 - (f / G)**2 + 2*j * (f / H)  # NOW CORRECT
-    term4 = onp.divide(lorentz_num, lorentz_den, 
-                       out=onp.zeros_like(lorentz_den, dtype=onp.complex128), 
+    lorentz_den = 1 - (f / G)**2 + 2*j * (f / H)
+    term4 = np.divide(lorentz_num, lorentz_den, 
+                       out=np.zeros_like(lorentz_den, dtype=np.complex128), 
                        where=lorentz_den!=0)
-    return term1 + term2 + term3 + term4
+    
+    epsilon_result = term1 + term2 + term3 + term4
+    
+    # *** FIX: Convert to exp(+iωt) convention ***
+    epsilon_result = np.conj(epsilon_result)
+    
+    return epsilon_result
 
 # --- Main EpAndMu functions (Now receive GHz array) ---
 
@@ -405,26 +420,30 @@ def getEpAndMu_12_1(frequencies, material):
     
     f_norm = frequencies / 1.0
     
-    # *** FIXED: Changed - to + for imaginary loss term ***
+    # Calculate with handbook formula (gives exp(-iωt) convention)
     epsilon_f = B + 2 * C * (f_norm ** D) + G * (1 - J * (frequencies - H)**2 + 1j * 2 * I * frequencies)**(-1)
-
-    mu_f = onp.ones(frequencies.shape)
+    
+    # *** FIX: Convert to exp(+iωt) convention ***
+    epsilon_f = np.conj(epsilon_f)
+    
+    mu_f = np.ones(frequencies.shape)
     return(epsilon_f, mu_f)
 
 def getEpAndMu_12_4(frequencies, material):
     if material.get('chi_m_params'):
         chi_m = calculate_chi_m(frequencies, material['chi_m_params'])
+        # *** FIX: Also conjugate magnetic susceptibility ***
+        chi_m = np.conj(chi_m)
         mu_f = 1.0 + chi_m
     else:
-        mu_f = onp.ones(frequencies.shape, dtype=onp.complex128)
+        mu_f = np.ones(frequencies.shape, dtype=np.complex128)
 
-    # We call the helper functions (calculate_epsilon1 or 2) which now contain FIX 3
     if material.get('eps1_params'):
         epsilon_f = calculate_epsilon1(frequencies, material['eps1_params'])
     elif material.get('eps2_params'):
         epsilon_f = calculate_epsilon2(frequencies, material['eps2_params'])
     else:
-        epsilon_f = onp.ones(frequencies.shape, dtype=onp.complex128)
+        epsilon_f = np.ones(frequencies.shape, dtype=np.complex128)
 
     return epsilon_f, mu_f
 
@@ -440,13 +459,15 @@ def getEpAndMu_12_6(frequencies, material):
     
     f_norm = frequencies / 1.0
 
-    # *** FIXED: Changed - to + for imaginary loss term ***
     denominator_term = (1 - (frequencies / G) ** 2 + 1j * 2 * frequencies / H)
-    safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term) 
+    safe_denominator = np.where(denominator_term == 0, 1e-9, denominator_term) 
     
-    epsilon_f = (B + onp.real(C) * (f_norm ** D) + onp.imag(C) * (f_norm ** E) + F / safe_denominator)
+    epsilon_f = (B + np.real(C) * (f_norm ** D) + np.imag(C) * (f_norm ** E) + F / safe_denominator)
 
-    mu_f = onp.ones(frequencies.shape)
+    # *** FIX: Convert to exp(+iωt) convention ***
+    epsilon_f = np.conj(epsilon_f)
+
+    mu_f = np.ones(frequencies.shape)
     return(epsilon_f, mu_f)
 
 def getEpAndMu_12_7(frequencies, material):
@@ -461,13 +482,15 @@ def getEpAndMu_12_7(frequencies, material):
     
     f_norm = frequencies / 1.0
 
-    # *** FIXED: Changed - to + for imaginary loss term ***
     denominator_term = (1 - J * (frequencies - H)**2 + 1j * 2 * I * frequencies)
-    safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term)
+    safe_denominator = np.where(denominator_term == 0, 1e-9, denominator_term)
 
     epsilon_f = B + 2 * C * (f_norm ** D) + G / safe_denominator
 
-    mu_f = onp.ones(frequencies.shape)
+    # *** FIX: Convert to exp(+iωt) convention ***
+    epsilon_f = np.conj(epsilon_f)
+
+    mu_f = np.ones(frequencies.shape)
     return(epsilon_f, mu_f)
 
 def getEpAndMu_12_8(frequencies, material):
@@ -482,11 +505,13 @@ def getEpAndMu_12_8(frequencies, material):
 
     f_norm = frequencies / 1.0
     
-    # *** FIXED: Changed - to + for imaginary loss term ***
     denominator_term = (1 - (J *(frequencies - H)**2) + (1j*2*I*frequencies))
-    safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term)
+    safe_denominator = np.where(denominator_term == 0, 1e-9, denominator_term)
 
     epsilon_f = (B + (2*C*(f_norm**D)) + (G / safe_denominator))
 
-    mu_f = onp.ones(frequencies.shape)
+    # *** FIX: Convert to exp(+iωt) convention ***
+    epsilon_f = np.conj(epsilon_f)
+
+    mu_f = np.ones(frequencies.shape)
     return(epsilon_f, mu_f)

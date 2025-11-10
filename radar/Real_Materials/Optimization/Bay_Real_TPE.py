@@ -1,13 +1,3 @@
-"""
-Fixed RAM Bayesian Optimization - Complete Rewrite
-Addresses all identified issues:
-- Correct material index range
-- Proper sign convention (exp(+iωt))
-- Fixed frequency units
-- Proper array handling
-- Enhanced diagnostics
-"""
-
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 import numpy as np
 import jax
@@ -16,7 +6,7 @@ import matplotlib.pyplot as plt
 import time
 from pathlib import Path
 from Materials_Library_NEW import materials_data
-import utils_materials_real as utils_materials_module
+import utils_materials_real_try as utils_materials_module
 
 # Store original functions
 _original_get_eps_mus = utils_materials_module.get_eps_mus_real_materials
@@ -33,12 +23,8 @@ def patched_get_eps_mus_real_materials(material_indices, frequencies_GHz):
 utils_materials_module.get_eps_mus_real_materials = patched_get_eps_mus_real_materials
 
 # Now import the main function which will use our patched version
-from utils_materials_real import get_eps_mu
+from utils_materials_real_try import get_eps_mu
 from jaxlayerlumos import stackrt_eps_mu
-
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
 
 # Frequency range
 FREQ_MIN_GHZ = 0.2
@@ -62,10 +48,6 @@ MAX_THICKNESS_FRACTION = 0.85  # Max single layer = 85% of total
 # Material filtering
 FILTER_SECTION_4_ONLY = False  # Set True to use only magneto-dielectric materials
 MIN_LOSS_TANGENT = 0.0  # Minimum required loss tangent (0 = no filter)
-
-# ============================================================================
-# MATERIAL LIBRARY SETUP
-# ============================================================================
 
 print("="*80)
 print("RAM OPTIMIZATION - MATERIAL LIBRARY INITIALIZATION")
@@ -129,23 +111,6 @@ print(f"Number of frequency points: {NUM_FREQ_POINTS}")
 # ============================================================================
 
 def calculate_reflection_spectrum(layer_thicknesses_mm, material_indices, frequencies_Hz):
-    """
-    Calculate reflection coefficient spectrum for a multilayer structure.
-    
-    Parameters:
-    -----------
-    layer_thicknesses_mm : list of float
-        Thickness of each layer in millimeters
-    material_indices : list of int
-        Material index for each layer (1-indexed)
-    frequencies_Hz : jnp.ndarray
-        Frequency array in Hz
-        
-    Returns:
-    --------
-    R_db : jnp.ndarray
-        Reflection coefficient in dB
-    """
     # Build thickness array: [Air(0), Layer1, Layer2, ..., PEC(0)]
     d_stack = jnp.array([0.0] + list(layer_thicknesses_mm) + [0.0]) * 1e-3  # Convert mm to m
     
@@ -181,7 +146,7 @@ def calculate_peak_reflection(layer_thicknesses_mm, material_indices):
     R_db = calculate_reflection_spectrum(
         layer_thicknesses_mm, material_indices, frequencies_Hz
     )
-    return float(jnp.max(R_db))
+    return jnp.max(R_db)
 
 
 # ============================================================================
@@ -361,7 +326,7 @@ print(f"Total evaluations: {len(tracker.all_total_thicknesses)}")
 print(f"Pareto-optimal solutions found: {len(pareto_ref)}")
 
 if len(pareto_ref) == 0:
-    print("\n❌ ERROR: No valid solutions found!")
+    print("\n ERROR: No valid solutions found!")
     exit(1)
 
 # ============================================================================
@@ -459,7 +424,7 @@ if jnp.any(below_10db):
     bandwidth_ghz = bandwidth_end - bandwidth_start
     print(f"\n-10 dB Bandwidth: {bandwidth_ghz:.2f} GHz ({bandwidth_start:.2f} - {bandwidth_end:.2f} GHz)")
 else:
-    print(f"\n⚠️  Warning: No frequencies achieve -10 dB reflection")
+    print(f"\n  Warning: No frequencies achieve -10 dB reflection")
 
 # ============================================================================
 # PLOTTING
@@ -475,66 +440,77 @@ paperLFy = [-33, -21, -18, -14]
 paperHFx = [5.244, 2.670, 1.761, 1.236]
 paperHFy = [-23.5, -19.8, -17, -13]
 
-fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-
-# Plot 1: Pareto Front
-ax1 = axes[0, 0]
-ax1.plot(refined_total_thick, refined_ref, "b-o", 
+# --- Plot 1: Pareto Front ---
+plt.figure(figsize=(8, 6)) # Create a new figure
+plt.plot(refined_total_thick, refined_ref, "b-o", 
          label="Bayesian Optimization + Gradient Descent", 
          linewidth=2, markersize=6)
-ax1.plot(paperLFx, paperLFy, "g-^", 
+plt.plot(paperLFx, paperLFy, "g-^", 
          label="IEEE Paper LF", linewidth=1.5, markersize=8, alpha=0.8)
-ax1.plot(paperHFx, paperHFy, "m-s", 
+plt.plot(paperHFx, paperHFy, "m-s", 
          label="IEEE Paper HF", linewidth=1.5, markersize=8, alpha=0.8)
-ax1.set_xlabel("Total Structure Thickness (mm)", fontsize=12)
-ax1.set_ylabel("Peak Reflection (dB)", fontsize=12)
-ax1.set_title(f"{NUM_LAYERS}-Layer RAM Structures ({FREQ_MIN_GHZ}-{FREQ_MAX_GHZ} GHz)", 
-              fontsize=14)
-ax1.legend(fontsize=10)
-ax1.grid(True, alpha=0.3)
-
-# Plot 2: Reflection vs Frequency
-ax2 = axes[0, 1]
-ax2.plot(freqplot_GHz, best_reflection_spectrum, "b-", linewidth=2, label="Reflection")
-ax2.axhline(y=-10, color='r', linestyle='--', label='-10 dB threshold', alpha=0.7)
-ax2.axhline(y=-20, color='g', linestyle='--', label='-20 dB threshold', alpha=0.7)
-ax2.set_xlabel("Frequency (GHz)", fontsize=12)
-ax2.set_ylabel("Reflection (dB)", fontsize=12)
-ax2.set_title("Reflection Coefficient vs Frequency", fontsize=14)
-ax2.set_xscale('log')
-ax2.grid(True, alpha=0.3, which='both')
-ax2.legend(fontsize=10)
-ax2.set_ylim([np.min(best_reflection_spectrum) - 5, 5])
-
-# Plot 3: Absorption vs Frequency
-ax3 = axes[1, 0]
-absorption_percent = (1 - R_linear) * 100
-ax3.plot(freqplot_GHz, absorption_percent, "r-", linewidth=2)
-ax3.axhline(y=90, color='g', linestyle='--', label='90% absorption', alpha=0.7)
-ax3.set_xlabel("Frequency (GHz)", fontsize=12)
-ax3.set_ylabel("Absorption (%)", fontsize=12)
-ax3.set_title("Absorption vs Frequency", fontsize=14)
-ax3.set_xscale('log')
-ax3.grid(True, alpha=0.3, which='both')
-ax3.legend(fontsize=10)
-ax3.set_ylim([0, 100])
-
-# Plot 4: All Evaluations
-ax4 = axes[1, 1]
-ax4.scatter(tracker.all_total_thicknesses, tracker.all_reflections, 
-            c=tracker.run_colors, alpha=0.3, s=20, label='All evaluations')
-ax4.plot(refined_total_thick, refined_ref, "b-o", 
-         label="Pareto front", linewidth=2, markersize=6, zorder=10)
-ax4.set_xlabel("Total Thickness (mm)", fontsize=12)
-ax4.set_ylabel("Peak Reflection (dB)", fontsize=12)
-ax4.set_title("Optimization Landscape", fontsize=14)
-ax4.legend(fontsize=10)
-ax4.grid(True, alpha=0.3)
-
+plt.xlabel("Total Structure Thickness (mm)", fontsize=12)
+plt.ylabel("Peak Reflection (dB)", fontsize=12)
+plt.title(f"{NUM_LAYERS}-Layer RAM Structures ({FREQ_MIN_GHZ}-{FREQ_MAX_GHZ} GHz)", 
+          fontsize=14)
+plt.legend(fontsize=10)
+plt.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.savefig('ram_optimization_complete.png', dpi=300, bbox_inches='tight')
-print("✅ Results saved to: ram_optimization_complete.png")
+plt.savefig('ram_plot_1_pareto.png', dpi=300, bbox_inches='tight')
+print("Saved: ram_plot_1_pareto.png")
 
+
+# --- Plot 2: Reflection vs Frequency ---
+plt.figure(figsize=(8, 6)) # Create a new figure
+plt.plot(freqplot_GHz, best_reflection_spectrum, "b-", linewidth=2, label="Reflection")
+plt.axhline(y=-10, color='r', linestyle='--', label='-10 dB threshold', alpha=0.7)
+plt.axhline(y=-20, color='g', linestyle='--', label='-20 dB threshold', alpha=0.7)
+plt.xlabel("Frequency (GHz)", fontsize=12)
+plt.ylabel("Reflection (dB)", fontsize=12)
+plt.title("Reflection Coefficient vs Frequency", fontsize=14)
+plt.xscale('log')
+plt.grid(True, alpha=0.3, which='both')
+plt.legend(fontsize=10)
+plt.ylim([np.min(best_reflection_spectrum) - 5, 5])
+plt.tight_layout()
+plt.savefig('ram_plot_2_reflection.png', dpi=300, bbox_inches='tight')
+print("Saved: ram_plot_2_reflection.png")
+
+
+# --- Plot 3: Absorption vs Frequency ---
+plt.figure(figsize=(8, 6)) # Create a new figure
+absorption_percent = (1 - R_linear) * 100
+plt.plot(freqplot_GHz, absorption_percent, "r-", linewidth=2)
+plt.axhline(y=90, color='g', linestyle='--', label='90% absorption', alpha=0.7)
+plt.xlabel("Frequency (GHz)", fontsize=12)
+plt.ylabel("Absorption (%)", fontsize=12)
+plt.title("Absorption vs Frequency", fontsize=14)
+plt.xscale('log')
+plt.grid(True, alpha=0.3, which='both')
+plt.legend(fontsize=10)
+plt.ylim([0, 100])
+plt.tight_layout()
+plt.savefig('ram_plot_3_absorption.png', dpi=300, bbox_inches='tight')
+print("Saved: ram_plot_3_absorption.png")
+
+
+# --- Plot 4: All Evaluations ---
+plt.figure(figsize=(8, 6)) # Create a new figure
+plt.scatter(tracker.all_total_thicknesses, tracker.all_reflections, 
+            c=tracker.run_colors, alpha=0.3, s=20, label='All evaluations')
+plt.plot(refined_total_thick, refined_ref, "b-o", 
+         label="Pareto front", linewidth=2, markersize=6, zorder=10)
+plt.xlabel("Total Thickness (mm)", fontsize=12)
+plt.ylabel("Peak Reflection (dB)", fontsize=12)
+plt.title("Optimization Landscape", fontsize=14)
+plt.legend(fontsize=10)
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('ram_plot_4_landscape.png', dpi=300, bbox_inches='tight')
+print("Saved: ram_plot_4_landscape.png")
+
+
+# --- Show all plots ---
 plt.show()
 
 print("\n" + "="*80)

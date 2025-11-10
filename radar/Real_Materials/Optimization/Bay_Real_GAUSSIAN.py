@@ -11,8 +11,8 @@ from skopt.utils import use_named_args
 import time
 from pathlib import Path
 from Materials_Library_NEW import materials_data
-import utils_materials_real as utils_materials_module
-from utils_materials_real import get_eps_mu
+import utils_materials_real_try as utils_materials_module
+from utils_materials_real_try import get_eps_mu
 from jaxlayerlumos import stackrt_eps_mu
 
 # Store original functions
@@ -149,7 +149,7 @@ def calculate_peak_reflection(layer_thicknesses_mm, material_indices):
     R_db = calculate_reflection_spectrum(
         layer_thicknesses_mm, material_indices, frequencies_Hz
     )
-    return float(jnp.max(R_db))
+    return jnp.max(R_db)
 
 # OPTIMIZATION TRACKING
 
@@ -288,7 +288,7 @@ for run_idx in range(NUM_RUNS):
     # Run Gaussian Process optimization
     print(f"\nStarting GP optimization with {ACQUISITION_FUNC} acquisition function...")
     
-    gp_result = gp_minimize(
+    gp_result = gp_minimize( #I think there is an error in here with what type of data is being passed to the mimization function, LOOK INTO THIS LATER
         func=objective,
         dimensions=dimensions,
         n_calls=NUM_INITIAL_POINTS + NUM_GP_ITERATIONS,
@@ -355,7 +355,7 @@ for i in range(len(pareto_ref)):
             
             learning_rate = 0.001
             for j in range(len(gradients)):
-                refined_layer_thick[i][j] -= float(gradients[j]) * learning_rate
+                refined_layer_thick[i][j] -= gradients[j] * learning_rate
                 refined_layer_thick[i][j] = max(MIN_LAYER_THICKNESS_MM, refined_layer_thick[i][j])
             
             refined_ref[i] = reflection_for_grad(refined_layer_thick[i], pareto_mats[i])
