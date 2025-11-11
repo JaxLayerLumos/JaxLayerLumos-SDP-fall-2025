@@ -314,7 +314,6 @@ if len(pareto_ref) == 0:
     print("This suggests all evaluations failed. Check your material library and functions.")
     exit(1)
 
-    """Wrapper for gradient calculation"""
 # FIND OPTIMAL SOLUTION (Best point from Pareto front)
 
 print("\n" + "="*80)
