@@ -43,12 +43,12 @@ def fill_factor_finder(T, N, init_type):
     else:
         raise ValueError("\n\ninit_type must be 'linear', 'parabolic', or 'cubic'.")
 
-    Epsilon_Material = np.array(Epsilon_Material[0])
-    mu_Material = np.array(mu_Material[0])
+    Epsilon_Material = Epsilon_Material[0]
+    mu_Material = mu_Material[0]
     if Epsilon_Material.size != len(freq):
-        Epsilon_Material = np.full(len(freq), Epsilon_Material)
+        Epsilon_Material = np.full(len(freq), Epsilon_Material[0])
     if mu_Material.size != len(freq):
-        mu_Material = np.full(len(freq), mu_Material)
+        mu_Material = np.full(len(freq), mu_Material[0])
 
     def epsilon_eff(F):
         F = np.array(F)[None, :]
@@ -139,7 +139,6 @@ def fill_factor_finder(T, N, init_type):
 
     R_max = -result_max.fun
     R_max_dB = 10 * np.log10(R_max)
-    F_opt_max = result_max.x
 
     print(f"\n\nMaximum reflection: {R_max:.3e} ({R_max_dB:.2f} dB)\n\n")
 
@@ -177,11 +176,11 @@ def fill_factor_finder(T, N, init_type):
     plt.show()
     
     plt.figure(figsize=(8,6))
-    plt.loglog(freq, np.real(Epsilon_Material), 'b-', linewidth=2, label='Re($\epsilon$)')
-    plt.loglog(freq, np.imag(Epsilon_Material), 'r--', linewidth=2, label='Im($\epsilon$)')
-    plt.loglog(freq, np.real(eps_eff[0]), 'b-', linewidth=2, label='Re($\optimized$)')
-    plt.loglog(freq, np.imag(eps_eff[0]), 'r--', linewidth=2, label='Im($\optimized$)')
-    plt.xlabel('Frequency [GHz]', fontsize=12)
+    plt.plot(fill_factor_init, np.real(Epsilon_Material), 'b--', linewidth=2, label='Real (initial)')
+    plt.plot(fill_factor_init, np.imag(Epsilon_Material), 'r--', linewidth=2, label='Imaginary (initial)')
+    plt.plot(F_opt, np.real(eps_eff[0]), 'b', linewidth=2, label='Real (optimized)')
+    plt.plot(F_opt, np.imag(eps_eff[0]), 'r', linewidth=2, label='Imaginary (optimized)')
+    plt.xlabel('Fill', fontsize=12)
     plt.ylabel('Epsilon', fontsize=12)
     plt.grid(True)
     plt.title('Real and Imaginary Permittivity vs. Frequency', fontsize=14)
@@ -202,6 +201,5 @@ def main():
 
     print("Optimized fill factor: \n\n", result['Fill_Factor_opt'])
     print("\n\nEpsilon Effective: \n\n", result['Epsilon_Effective'])
-    print("Epsilon Effective Array element 0: \n\n", result['Epsilon_Effective'][0])
 if __name__ == "__main__":
     main()
