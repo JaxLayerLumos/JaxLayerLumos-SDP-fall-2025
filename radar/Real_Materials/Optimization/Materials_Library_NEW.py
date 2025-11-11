@@ -1,58 +1,6 @@
 materials_data = [
     { 
-        'name': "SRM709 (0.01–18 GHz), Lead oxide glass", 
-        'section': 1, 
-        'freq_range_ghz': (0.01, 18),
-        'eps_params': {
-            'B': 4.0907 + 0.0174j, 
-            'C': 4.0907 + 0.0174j, 
-            'D': -0.0002 + 0.0031j, 
-            'G': 4.0902 + 0.0168j, 
-            'H': -0.0001 + 0.0014j, 
-            'I': 0.0074 + 0.004j, 
-            'J': 0.0005 + 0.0006j}
-    },
-    { 
-        'name': "Beryllium oxide (BeO) (0.2–250 GHz)",
-        'section': 1, 
-        'freq_range_ghz': (0.2, 250),
-        'eps_params': {
-            'B': 1.6503 + 0.0001j, 
-            'C': 1.6503 + 0.0001j, 
-            'D': -0.0023 + 0.0001j, 
-            'G': 1.6502 - 0.00000102j, 
-            'H': 0.00001042 - 0.000357j, 
-            'I': 0.000002546 - 0.0000000109j, 
-            'J': -0.00000184 + 0j}
-    },
-    { 
-        'name': "SRM 709 Lead-oxide glass (0.01–18 GHz)",
-        'section': 1, 
-        'freq_range_ghz': (0.01, 18),
-        'eps_params': {
-            'B': 4.0905 + 0.0173j, 
-            'C': 4.0905 + 0.0173j, 
-            'D': -0.0002 + 0.0031j, 
-            'G': 4.0905 + 0.0175j, 
-            'H': -0.0001 + 0.0014j, 
-            'I': 0.0074 + 0.004j, 
-            'J': 0.0005 + 0.0006j}
-    },
-    { 
-        'name': "SRM 710a Sodalime glass (0.01–18 GHz)",
-        'section': 1, 
-        'freq_range_ghz': (0.01, 18),
-        'eps_params': {
-            'B': 1.7687 + 0.0004j,
-            'C': 1.7687 + 0.0004j, 
-            'D': -0.0024 - 0.0003j, 
-            'G': 1.7687 + 0.0004j, 
-            'H': -0.0004 + 0.0015j, 
-            'I': 0.0017 - 0.0006j, 
-            'J': -0.0001 + 0.0001j}
-    },
-    { 
-        'name': "Fused silica glass (Dynasil 4000, 2.16–2.2 g/cc) (0.1–100 GHz)",
+        'name': "Fused silica glass (Dynasil 4000, 2.16–2.2 g/cc) (0.1–100 GHz)", #5
         'section': 1, 
         'freq_range_ghz': (0.1, 100),
         'eps_params': {
@@ -64,21 +12,8 @@ materials_data = [
             'I': -0.0019 + 0j, 
             'J': -0.0000335 + 0j}
     },
-    { 
-        'name': "Magnesium titanate 16 (0.01–18 GHz) (Nominal εr = 16)",
-        'section': 1, 
-        'freq_range_ghz': (0.01, 18),
-        'eps_params': {
-            'B': 4.2136 + 0.0099j, 
-            'C': 4.2131 + 0.0099j, 
-            'D': 0.0094 + 0.0055j, 
-            'G': 4.2135 + 0.0099j, 
-            'H': 0.0073 + 0.0007j, 
-            'I': 0.0085 + 0.0046j, 
-            'J': 0.0004 + 0.0011j}
-    },
     {
-        'name': "80 µm 9%/vol in epoxy, 1.38 g/cc",
+        'name': "80 µm 9%/vol in epoxy, 1.38 g/cc", #7
         'section': 4,
         'freq_range_ghz': (0.05, 18),
         'chi_m_params': {
@@ -96,7 +31,7 @@ materials_data = [
             'H': -18.6+10.47j}
     },
     {
-        'name': "80 µm 16%/vol in epoxy, 1.6 g/cc",
+        'name': "80 µm 16%/vol in epoxy, 1.6 g/cc", #8
         'section': 4,
         'freq_range_ghz': (0.001, 10),
         'chi_m_params': {
@@ -114,7 +49,7 @@ materials_data = [
             'H': 51.6+43.9j}
     },
     {
-        'name': "80 µm 16.7%/vol in epoxy, 1.68 g/cc",
+        'name': "80 µm 16.7%/vol in epoxy, 1.68 g/cc", #9
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
@@ -131,35 +66,7 @@ materials_data = [
         'eps2_params': None
     },
     {
-        'name': "80 µm 29.9%/vol in epoxy, 2.22 g/cc (0.05-10 GHz)",
-        'section': 4,
-        'freq_range_ghz': (0.05, 10),
-        'chi_m_params': {
-            'B': 2.21, 
-            'C': 0.866, 
-            'D': 0.940},
-        'eps1_params': None,
-        'eps2_params': None
-    },
-    {
-        'name': "80 µm 29.9%/vol in epoxy, 2.22 g/cc (0.001-18 GHz)",
-        'section': 4,
-        'freq_range_ghz': (0.001, 18),
-        'chi_m_params': {
-            'B': 2.04, 
-            'C': 0.554, 
-            'D': 0.240},
-        'eps1_params': {
-            'B': 2.57+0.55j, 
-            'C': 1.46+0.56j, 
-            'D': -3e-3-4e-3j, 
-            'E': -0.44-1.1j, 
-            'F': 20.16+7.5j, 
-            'G': -11.9-73.9j},
-        'eps2_params': None
-    },
-    {
-        'name': "80 µm 41.1%/vol in epoxy, 2.68 g/cc",
+        'name': "80 µm 41.1%/vol in epoxy, 2.68 g/cc", #12
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
@@ -176,7 +83,7 @@ materials_data = [
         'eps2_params': None
     },
     {
-        'name': "80 µm 49.4%/vol in epoxy, ~3.0 g/cc",
+        'name': "80 µm 49.4%/vol in epoxy, ~3.0 g/cc", #13
         'section': 4,
         'freq_range_ghz': (0.001, 10),
         'chi_m_params': {
@@ -200,55 +107,7 @@ materials_data = [
             'H': -10.26-4.8j}
     },
     {
-        'name': "80 µm 53.6%/vol in epoxy, ~3.2 g/cc",
-        'section': 4,
-        'freq_range_ghz': (0.05, 10),
-        'chi_m_params': {
-            'B': 4.72, 
-            'C': 0.7178, 
-            'D': 0.3421},
-        'eps1_params': {
-            'B': 1.63-2E-02j, 
-            'C': 1.47+7E-02j, 
-            'D': -5E-002-0.17j, 
-            'E': 1.89-2E-002j, 
-            'F': 1.64+13.67j, 
-            'G': 14.2+22.1j},
-        'eps2_params': {
-            'B': 3.28+2E-002j, 
-            'C': 0.31-9E-002j, 
-            'D': 0.39+0.3j, 
-            'E': -0.94+0.63j, 
-            'F': 1.72-2E-003j, 
-            'G': 7.89+9.44j, 
-            'H': 6.18-49.19j}
-    },
-    {
-        'name': "80 µm 58.4%/vol in epoxy, ~3.29 g/cc",
-        'section': 4,
-        'freq_range_ghz': (0.05, 10),
-        'chi_m_params': {
-            'B': 8.86, 
-            'C': 0.34, 
-            'D': 0.12},
-        'eps1_params': {
-            'B': 1.2-1.4j, 
-            'C': 1.9-0.98j, 
-            'D': -0.12-0.16j, 
-            'E': 2.05+2.73j, 
-            'F': 7.32-15.6j, 
-            'G': -33.7+20.6j},
-        'eps2_params': {
-            'B': 3.49+0.18j, 
-            'C': 0.6-0.16j, 
-            'D': 0.34-3.7E-002j, 
-            'E': -0.74+0.72j, 
-            'F': 2.29+2E-002j, 
-            'G': 2.87+2.01j, 
-            'H': 0.9-2.7j}
-    },
-    {
-        'name': "80 µm 61.4%/vol in epoxy, ~3.52 g/cc",
+        'name': "80 µm 61.4%/vol in epoxy, ~3.52 g/cc", #16
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
@@ -272,7 +131,7 @@ materials_data = [
             'H': -3.12-11.9j}
     },
     {
-        'name': "80 µm 61.8%/vol in epoxy, ~3.53 g/cc",
+        'name': "80 µm 61.8%/vol in epoxy, ~3.53 g/cc", #17
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
@@ -296,18 +155,33 @@ materials_data = [
             'H': 1.48-5.1j}
     },
     {
-        'name': "80 µm 76.1%/vol in epoxy, ~4.12 g/cc",
+        'name': "80 µm 76.1%/vol in epoxy, ~4.12 g/cc", #18
         'section': 4,
         'freq_range_ghz': (0.001, 10),
         'chi_m_params': {
             'B': 14.20, 
             'C': 0.18, 
             'D': 0.053},
-        'eps1_params': None,
-        'eps2_params': None
+        'eps1_params': {
+            'B': 3.31+.11j, 
+            'C': 2.32+0.15j, 
+            'D': 5e-3-6e-3j, 
+            'E': 1.87-.22j, 
+            'F': 12.1-.76j, 
+            'G': -2.2-19.8j
+        },
+        'eps2_params': {
+            'B': 3.93+2e-2j, 
+            'C': .97-.13j, 
+            'D': 3e2+.15j, 
+            'E': -.26+.32j, 
+            'F': 2.8+.16j, 
+            'G': 13.1-2.91j, 
+            'H': -11.8-19j
+        }
     },
     {
-        'name': "500-nm Fe 7% + 80-µm Ferrite 7%/vol in epoxy, 1.8 g/cc",
+        'name': "500-nm Fe 7% + 80-µm Ferrite 7%/vol in epoxy, 1.8 g/cc", #19
         'section': 4,
         'freq_range_ghz': (0.001, 18),
         'chi_m_params': {
@@ -331,7 +205,7 @@ materials_data = [
             'H': -11.8-19j}
     },
     {
-        'name': "500-nm Fe 10.2% + 80-µm Ferrite 10.1%/vol in epoxy, 2.1 g/cc",
+        'name': "500-nm Fe 10.2% + 80-µm Ferrite 10.1%/vol in epoxy, 2.1 g/cc", #20
         'section': 4,
         'freq_range_ghz': (0.001, 10),
         'chi_m_params': {
@@ -348,7 +222,7 @@ materials_data = [
         'eps2_params': None
     },
     {
-        'name': "500-nm Fe 13.4% + 80-µm Ferrite 13.6%/vol in epoxy, 2.43 g/cc",
+        'name': "500-nm Fe 13.4% + 80-µm Ferrite 13.6%/vol in epoxy, 2.43 g/cc", #21
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
@@ -372,55 +246,7 @@ materials_data = [
             'H': -34.8+6.3j}
     },
     {
-        'name': "500-nm Fe 17.5% + 80-µm Ferrite 17.5%/vol in epoxy, 2.82 g/cc",
-        'section': 4,
-        'freq_range_ghz': (0.05, 10),
-        'chi_m_params': {
-            'B': 4.86, 
-            'C': 0.954, 
-            'D': 0.3640},
-        'eps1_params': {
-            'B': 2.08-0.82j, 
-            'C': 3.16-0.69j, 
-            'D': 0.28+9E-002j, 
-            'E': 5.78+2.28j, 
-            'F': 4.2+0.3j, 
-            'G': 1.26-2.32j},
-        'eps2_params': {
-            'B': 4.3+0.26j, 
-            'C': 1.13-0.86j, 
-            'D': -0.18-0.1j, 
-            'E': 0.57+0.11j, 
-            'F': 3.47+0.25j, 
-            'G': 2-16.1j, 
-            'H': -0.32+22.9j}
-    },
-    {
-        'name': "500-nm Fe 19.9% + 80-µm Ferrite 20.0%/vol in epoxy, 3.1 g/cc",
-        'section': 4,
-        'freq_range_ghz': (0.001, 10),
-        'chi_m_params': {
-            'B': 8.14, 
-            'C': 0.55, 
-            'D': 0.21},
-        'eps1_params': {
-            'B': 2.41-1.8j, 
-            'C': 3.27-1.2j, 
-            'D': 8E-002+0.61j, 
-            'E': 6.13+6.3j, 
-            'F': 1.39+1.64j, 
-            'G': 0.74-0.86j},
-        'eps2_params': {
-            'B': 3.67-4E-002j, 
-            'C': 0.75-0.53j, 
-            'D': -0.3-0.4j, 
-            'E': -0.21+0.11j, 
-            'F': 3.05-6E-002j, 
-            'G': 23.64+12.3j, 
-            'H': 16.3+5.2j}
-    },
-    {
-        'name': "500-nm Fe 23.3% + 80-µm Ferrite 23.3%/vol in epoxy, 3.4 g/cc",
+        'name': "500-nm Fe 23.3% + 80-µm Ferrite 23.3%/vol in epoxy, 3.4 g/cc", #24
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {

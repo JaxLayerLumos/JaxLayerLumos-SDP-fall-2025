@@ -298,8 +298,6 @@ for run_idx in range(NUM_RUNS):
     MAX_THICKNESS_FRACTION -= 0.01
     THICKNESS_TOLERANCE -= 0.015
 
-
-
 # PARETO FRONT COMPUTATION
 
 print("\n" + "="*80)
@@ -316,52 +314,18 @@ if len(pareto_ref) == 0:
     print("This suggests all evaluations failed. Check your material library and functions.")
     exit(1)
 
-# GRADIENT DESCENT REFINEMENT
-
-print("\n" + "="*80)
-print("REFINING WITH GRADIENT DESCENT")
-print("="*80)
-
-def reflection_for_grad(thickness_list, material_list):
     """Wrapper for gradient calculation"""
-    return calculate_peak_reflection(thickness_list, material_list)
-
-refined_layer_thick = [list(lt) for lt in pareto_layer_thick]
-refined_ref = list(pareto_ref)
-refined_total_thick = list(pareto_total_thick)
-
-for i in range(len(pareto_ref)):
-    if (i + 1) % 5 == 0 or i == 0:
-        print(f"  Refining solution {i+1}/{len(pareto_ref)}")
-    
-    try:
-        for iteration in range(10):
-            grad_func = jax.grad(reflection_for_grad, argnums=0)
-            gradients = grad_func(refined_layer_thick[i], pareto_mats[i])
-            
-            learning_rate = 0.001
-            for j in range(len(gradients)):
-                refined_layer_thick[i][j] -= float(gradients[j]) * learning_rate
-                refined_layer_thick[i][j] = max(MIN_LAYER_THICKNESS_MM, refined_layer_thick[i][j])
-            
-            refined_ref[i] = reflection_for_grad(refined_layer_thick[i], pareto_mats[i])
-            refined_total_thick[i] = sum(refined_layer_thick[i])
-            
-    except Exception as e:
-        print(f"  Warning: Gradient refinement failed for solution {i+1}: {e}")
-        continue
-
-# FIND OPTIMAL SOLUTION
+# FIND OPTIMAL SOLUTION (Best point from Pareto front)
 
 print("\n" + "="*80)
-print("OPTIMAL STRUCTURE")
+print("OPTIMAL STRUCTURE (from GP optimization)")
 print("="*80)
 
-best_idx = np.argmin(refined_ref)
+best_idx = np.argmin(pareto_ref)
 best_materials = pareto_mats[best_idx]
-best_thicknesses = refined_layer_thick[best_idx]
-best_reflection = refined_ref[best_idx]
-best_total_thickness = refined_total_thick[best_idx]
+best_thicknesses = pareto_layer_thick[best_idx]
+best_reflection = pareto_ref[best_idx]
+best_total_thickness = pareto_total_thick[best_idx]
 
 print(f"\nTotal Thickness: {best_total_thickness:.3f} mm")
 print(f"Peak Reflection: {best_reflection:.2f} dB")
@@ -369,8 +333,6 @@ print(f"\nLayer Configuration (Air → Layers → PEC):")
 
 for i, (mat_idx, thick) in enumerate(zip(best_materials, best_thicknesses), 1):
     print(f"  Layer {i}: JaxLayerLumos Material {mat_idx:3d} - {thick:.3f} mm")
-
-
 
 # CALCULATING PERFORMANCE SPECTRUM
 print("\n" + "="*80)
@@ -395,8 +357,6 @@ if jnp.any(below_10db):
 else:
     print(f"\nWarning: No frequencies achieve -10 dB reflection")
 
-
-
 # PLOTTING
 
 paperLFx = [5.512, 3.588, 2.934, 2.478]
@@ -407,10 +367,12 @@ paperHFy = [-23.5, -19.8, -17, -13]
 SystemResultsfig = plt.figure(figsize=(18, 12))
 gs = SystemResultsfig.add_gridspec(1, 2, hspace=0.3, wspace=0.3)
 
-# Plot 1: Optimization Landscape with Pareto Front
+# Plot 1: Pareto Front
 ax1 = SystemResultsfig.add_subplot(gs[0, 0])
-ax1.plot(refined_total_thick, refined_ref, "b-o", 
-         label="GP + Gradient Descent", linewidth=2, markersize=6)
+ax1.plot(pareto_total_thick, pareto_ref, "b-o", 
+         label="Gaussian Process Pareto Front", linewidth=2, markersize=6)
+ax1.plot(best_total_thickness, best_reflection, "r*", 
+         markersize=20, label="Optimal Structure", zorder=5)
 ax1.plot(paperLFx, paperLFy, "g-^", label="Michelson Paper LF", linewidth=1.5, markersize=8, alpha=0.8)
 ax1.plot(paperHFx, paperHFy, "m-s", label="Michelson Paper HF", linewidth=1.5, markersize=8, alpha=0.8)
 ax1.set_xlabel("Total Thickness (mm)", fontsize=11)
@@ -423,14 +385,15 @@ ax1.grid(True, alpha=0.3)
 ax5 = SystemResultsfig.add_subplot(gs[0, 1])
 ax5.scatter(tracker.all_total_thicknesses, tracker.all_reflections, 
             c=tracker.run_colors, alpha=0.3, s=20, label='All evaluations')
-ax5.plot(refined_total_thick, refined_ref, "b-o", 
+ax5.plot(pareto_total_thick, pareto_ref, "b-o", 
          label="Pareto front", linewidth=2, markersize=6, zorder=10)
+ax5.plot(best_total_thickness, best_reflection, "r*", 
+         markersize=20, label="Optimal", zorder=15)
 ax5.set_xlabel("Total Thickness (mm)", fontsize=11)
 ax5.set_ylabel("Peak Reflection (dB)", fontsize=11)
 ax5.set_title("Optimization Landscape", fontsize=12)
 ax5.legend(fontsize=9)
 ax5.grid(True, alpha=0.3)
-
 
 # Reflection Coefficient Spectrum
 ReflectionCoeffig = plt.figure(figsize=(18, 12))
@@ -438,14 +401,15 @@ gs = ReflectionCoeffig.add_gridspec(1, 1, hspace=0.3, wspace=0.3)
 
 # Plot 3: Reflection vs Frequency
 ax2 = ReflectionCoeffig.add_subplot(gs[0, 0])
-ax2.plot(freqplot_GHz, best_reflection_spectrum, "b-", linewidth=2)
+ax2.plot(freqplot_GHz, best_reflection_spectrum, "b-", linewidth=2, label="Reflection")
+ax2.axhline(y=-10, color='r', linestyle='--', label='-10 dB threshold', alpha=0.7)
+ax2.axhline(y=-20, color='g', linestyle='--', label='-20 dB threshold', alpha=0.7)
 ax2.set_xlabel("Frequency (GHz)", fontsize=11)
 ax2.set_ylabel("Reflection (dB)", fontsize=11)
 ax2.set_title("Reflection Coefficient", fontsize=12)
 ax2.set_xscale('log')
 ax2.grid(True, alpha=0.3, which='both')
 ax2.legend(fontsize=9)
-
 
 # Plots for Bayesian Optimization Details
 BayesianFig = plt.figure(figsize=(18, 12))
@@ -472,7 +436,6 @@ cbar = plt.colorbar(scatter, ax=ax6)
 cbar.set_label('Iteration', fontsize=10)
 ax6.grid(True, alpha=0.3)
 
-
 # Distribution Figures
 DistributionFigs = plt.figure(figsize=(18, 12))
 gs = DistributionFigs.add_gridspec(1, 3, hspace=0.3, wspace=0.3)
@@ -480,22 +443,24 @@ gs = DistributionFigs.add_gridspec(1, 3, hspace=0.3, wspace=0.3)
 # Plot 6: Reflection histogram
 ax7 = DistributionFigs.add_subplot(gs[0, 0])
 ax7.hist(tracker.all_reflections, bins=30, color='skyblue', edgecolor='black', alpha=0.7)
+ax7.axvline(best_reflection, color='r', linestyle='--', linewidth=2, label='Optimal')
 ax7.set_xlabel("Reflection (dB)", fontsize=11)
 ax7.set_ylabel("Count", fontsize=11)
 ax7.set_title("Reflection Distribution", fontsize=12)
 ax7.legend(fontsize=9)
 ax7.grid(True, alpha=0.3, axis='y')
 
-# Plot 8: Thickness histogram
+# Plot 7: Thickness histogram
 ax8 = DistributionFigs.add_subplot(gs[0, 1])
 ax8.hist(tracker.all_total_thicknesses, bins=30, color='lightcoral', edgecolor='black', alpha=0.7)
+ax8.axvline(best_total_thickness, color='r', linestyle='--', linewidth=2, label='Optimal')
 ax8.set_xlabel("Total Thickness (mm)", fontsize=11)
 ax8.set_ylabel("Count", fontsize=11)
 ax8.set_title("Thickness Distribution", fontsize=12)
 ax8.legend(fontsize=9)
 ax8.grid(True, alpha=0.3, axis='y')
 
-# Plot 9: Material usage
+# Plot 8: Material usage
 ax9 = DistributionFigs.add_subplot(gs[0, 2])
 all_materials_flat = [m for sublist in tracker.all_materials for m in sublist]
 unique_mats, counts = np.unique(all_materials_flat, return_counts=True)
@@ -512,6 +477,9 @@ print("\nResults saved to: ram_optimization_gp_michelson_materials.png")
 
 plt.show()
 
+print("\n" + "="*80)
+print("GAUSSIAN PROCESS OPTIMIZATION COMPLETE!")
+print("="*80)
 print(f"\nGP Model Information:")
 print(f"  Kernel: Matérn 5/2")
 print(f"  Acquisition: {ACQUISITION_FUNC}")

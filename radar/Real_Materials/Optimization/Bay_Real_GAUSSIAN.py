@@ -42,7 +42,7 @@ ACQUISITION_FUNC = 'EI' # Expected Improvement ('EI', 'LCB', 'PI')
 #LCB = Lower Confidence Bound, this is more explorative it basically looks for areas with high uncertainty to try to learn more about the function
 #PI = Probability of Improvement, this focuses on areas likely to improve over the current best (looks at small changes and took longer to run)
 NUM_RUNS = 2 # Number of thickness windows, change when making the code more robust
-NUM_LAYERS = 2 # Number of RAM layers,  change when making the code more robust
+NUM_LAYERS = 5 # Number of RAM layers,  change when making the code more robust
 
 # Thickness constraints
 MIN_LAYER_THICKNESS_MM = 0.1
@@ -61,6 +61,8 @@ N_RESTARTS_OPTIMIZER = 5      # Restarts for hyperparameter optimization
 # Material filtering, change this to filter materials only in 12_4, which usually have better loss
 FILTER_SECTION_4_ONLY = False 
 MIN_LOSS_TANGENT = 0.0
+
+
 
 
 # MATERIAL LIBRARY SETUP
