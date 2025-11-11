@@ -6,7 +6,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import pdfplumber
 from Materials_Library import materials_data
 
 def getEpAndMu_12_1(user_f_min, user_f_max, material):
@@ -59,7 +58,7 @@ def main():
         print(i, ". ", material['name'])
         i+=1
     
-    print('/n/n')
+    print('\n\n')
     mat_idx = int(input("Please select a material index from the list below: "))
      
     freq_min = float(input("Input min freq: "))
