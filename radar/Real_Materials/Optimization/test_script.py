@@ -1,9 +1,9 @@
 import numpy as np
 import jax.numpy as jnp
-from utils_materials_real import get_eps_mus_real_materials
+from utils_materials_real_try import get_eps_mus_real_materials
 
 # Test a few materials
-test_materials = [72, 110]  # The materials from your optimal structure
+test_materials = [22, 29, 3, 18 ,37]  # The materials from your optimal structure
 frequencies_GHz = np.linspace(0.2, 8, 100)
 
 for mat_idx in test_materials:

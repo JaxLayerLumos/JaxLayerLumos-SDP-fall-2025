@@ -34,7 +34,7 @@ NUM_FREQ_POINTS = 500
 # Optimization parameters
 NUM_RUNS = 3  # Number of thickness windows
 MAX_EVALS_PER_RUN = 100  # Max evaluations per window
-NUM_LAYERS = 2  # Number of RAM layers
+NUM_LAYERS = 5  # Number of RAM layers
 
 # Thickness constraints
 MIN_LAYER_THICKNESS_MM = 0.1
@@ -475,24 +475,6 @@ plt.ylim([np.min(best_reflection_spectrum) - 5, 5])
 plt.tight_layout()
 plt.savefig('ram_plot_2_reflection.png', dpi=300, bbox_inches='tight')
 print("Saved: ram_plot_2_reflection.png")
-
-
-# --- Plot 3: Absorption vs Frequency ---
-plt.figure(figsize=(8, 6)) # Create a new figure
-absorption_percent = (1 - R_linear) * 100
-plt.plot(freqplot_GHz, absorption_percent, "r-", linewidth=2)
-plt.axhline(y=90, color='g', linestyle='--', label='90% absorption', alpha=0.7)
-plt.xlabel("Frequency (GHz)", fontsize=12)
-plt.ylabel("Absorption (%)", fontsize=12)
-plt.title("Absorption vs Frequency", fontsize=14)
-plt.xscale('log')
-plt.grid(True, alpha=0.3, which='both')
-plt.legend(fontsize=10)
-plt.ylim([0, 100])
-plt.tight_layout()
-plt.savefig('ram_plot_3_absorption.png', dpi=300, bbox_inches='tight')
-print("Saved: ram_plot_3_absorption.png")
-
 
 # --- Plot 4: All Evaluations ---
 plt.figure(figsize=(8, 6)) # Create a new figure
