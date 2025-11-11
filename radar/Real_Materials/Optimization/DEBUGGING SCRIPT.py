@@ -1,7 +1,7 @@
 import numpy as np
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
-from utils_materials_real import get_eps_mus_real_materials
+from utils_materials_real_try import get_eps_mus_real_materials
 from Materials_Library_NEW import materials_data
 from jaxlayerlumos import stackrt_eps_mu
 
@@ -10,7 +10,7 @@ print("RAM OPTIMIZATION DIAGNOSTIC TOOL")
 print("="*70)
 
 # Test configuration
-test_material_indices = [43, 41, 3, 29, 2, 30, 17, 35, 26, 24]  # Input from you optimizal strucutre
+test_material_indices = [22, 29, 3, 18 ,37]  # Input from you optimizal strucutre
 freq_min_GHz = 0.2
 freq_max_GHz = 8.0
 num_freq_points = 100
@@ -221,12 +221,6 @@ axes[1, 0].legend()
 axes[1, 0].grid(True, alpha=0.3)
 axes[1, 0].set_yscale('log')
 axes[1, 0].axhline(y=0.1, color='r', linestyle='--', label='0.1 threshold', alpha=0.5)
-
-axes[1, 1].set_xlabel("Re(ε)")
-axes[1, 1].set_ylabel("Im(ε)")
-axes[1, 1].set_title("Complex Permittivity")
-axes[1, 1].legend()
-axes[1, 1].grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('material_diagnostic.png', dpi=300, bbox_inches='tight')

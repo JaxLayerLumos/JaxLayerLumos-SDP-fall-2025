@@ -1,5 +1,31 @@
 materials_data = [
     { 
+        'name': "Alumina 99.5% dense (1–250 GHz)", 
+        'section': 1, 
+        'freq_range_ghz': (1, 250),
+        'eps_params': {
+            'B': 2.399 + 0.0001j, 
+            'C': 2.399 + 0.0001j, 
+            'D': 0.000122 - 0.0000193j, 
+            'G': 2.40 + 0.0001j, 
+            'H': -0.00000693 - 0.00000375j, 
+            'I': 0.0000133 + 0.00000231j, 
+            'J': -0.0000000562 + 0.0000000326j}
+    },
+    { 
+        'name': "Alumina 99.9% dense 3.86–3.90 g/cc (1–300 GHz)", 
+        'section': 1, 
+        'freq_range_ghz': (1, 300),
+        'eps_params': {
+            'B': 2.3945 + 0.0033j, 
+            'C': 2.3985 + 0.0032j, 
+            'D': 0.0243 + 0.001j, 
+            'G': 2.39 + 0.0034j, 
+            'H': 0.0005 + 0.0007j, 
+            'I': 0.0001 + 0.000000294j, 
+            'J': 0.00000230 + 0j}
+    },
+    { 
         'name': "SRM709 (0.01–18 GHz), Lead oxide glass", 
         'section': 1, 
         'freq_range_ghz': (0.01, 18),
@@ -13,6 +39,58 @@ materials_data = [
             'J': 0.0005 + 0.0006j}
     },
     { 
+        'name': "Mullite 97% dense (2–35 GHz), 3 Al2O3 • 2SiO2", 
+        'section': 1, 
+        'freq_range_ghz': (2, 35),
+        'eps_params': {
+            'B': 1.6387 + 0.0007j, 
+            'C': 1.6387 + 0.0007j, 
+            'D': -0.0001 + 0.0001j, 
+            'G': 1.6387 + 0.0007j, 
+            'H': -0.0000216 + 0.0000142j, 
+            'I': 0.0000114 + 0.0000309j, 
+            'J': -0.000000463 + 0.000000863j}
+    },
+    { 
+        'name': "Magnesium oxide (MgO) (2–35 GHz)", 
+        'section': 1, 
+        'freq_range_ghz': (2, 35),
+        'eps_params': {
+            'B': 2.3743 + 0.0003j, 
+            'C': 2.3743 + 0.0003j, 
+            'D': 0.0024 + 0.0003j, 
+            'G': 2.3743 + 0.0001j, 
+            'H': -0.0004 + 0.000000591j, 
+            'I': 0 + 0.0000000175j, 
+            'J': 0 + 0j}
+    },
+    { 
+        'name': "Slip-cast silica, 2.05 g/cc (2–35 GHz)",
+        'section': 1, 
+        'freq_range_ghz': (2, 35),
+        'eps_params': {
+            'B': 0.8174 + 0.0001j, 
+            'C': 0.8174 + 0.0001j, 
+            'D': 0.0012 + 0.0001j, 
+            'G': 0.8174 + 0.0001j, 
+            'H': -0.0002 + 0.0001j, 
+            'I': -0.0000121 + 0.000356j, 
+            'J': 0.00000362 + 0.00000133j}
+    },
+    { 
+        'name': "Shuttle tile FRIC12 (3–100 GHz)",
+        'section': 1, 
+        'freq_range_ghz': (3, 100),
+        'eps_params': {
+            'B': 0.2741 + 0.0006j, 
+            'C': 0.2741 + 0.0006j, 
+            'D': -0.04 + 0.0008j, 
+            'G': 0.2755 + 0.0005j, 
+            'H': -0.0031 + 0.0001j, 
+            'I': 0.0001 - 0.0003j, 
+            'J': -0.0000139 - 0.00000036j}
+    },
+    { 
         'name': "Beryllium oxide (BeO) (0.2–250 GHz)",
         'section': 1, 
         'freq_range_ghz': (0.2, 250),
@@ -24,6 +102,19 @@ materials_data = [
             'H': 0.00001042 - 0.000357j, 
             'I': 0.000002546 - 0.0000000109j, 
             'J': -0.00000184 + 0j}
+    },
+    { 
+        'name': "Boron nitride; 2.28 g/cc (1–40 GHz) (Nominal εr = 4.08, Accumet Engineering)",
+        'section': 1, 
+        'freq_range_ghz': (1, 40),
+        'eps_params': {
+            'B': 1.1255 + 0.0002j, 
+            'C': 1.1255 + 0.0002j, 
+            'D': 0.0001 + 0.0006j, 
+            'G': 1.1255 + 0.0002j, 
+            'H': 0.0001 + 0.0001j, 
+            'I': 0.0001 - 0.0011j, 
+            'J': 0.00000502 + 0.00000504j}
     },
     { 
         'name': "SRM 709 Lead-oxide glass (0.01–18 GHz)",
@@ -52,6 +143,45 @@ materials_data = [
             'J': -0.0001 + 0.0001j}
     },
     { 
+        'name': "PyroCeram (2–40 GHz)",
+        'section': 1, 
+        'freq_range_ghz': (2, 40),
+        'eps_params': {
+            'B': 1.4171 + 0.0003j, 
+            'C': 1.4171 + 0.0003j, 
+            'D': -0.0002 + 0.0003j, 
+            'G': 1.4171 - 0.0000137j, 
+            'H': -0.000000194 - 0.000154j, 
+            'I': 0.00000174 + 0.0000328j, 
+            'J': -0.00000236 + 0j}
+    },
+    { 
+        'name': "Silicon nitride 3.2–3.3 g/cc (2–35 GHz)",
+        'section': 1, 
+        'freq_range_ghz': (2, 35),
+        'eps_params': {
+            'B': 1.3598 + 0.0024j, 
+            'C': 1.36 + 0.0025j, 
+            'D': 0.0115 + 0.0001j, 
+            'G': 1.3599 + 0.0025j, 
+            'H': 0.001 - 0.0008j, 
+            'I': -0.0014 + 0.00000461j, 
+            'J': 0.0000596 + 0j}
+    },
+    { 
+        'name': "Fused silica-glass (Dynasil 4000) (2–40 GHz)",
+        'section': 1, 
+        'freq_range_ghz': (2, 40),
+        'eps_params': {
+            'B': 0.9688 + 0.0001j, 
+            'C': 0.9688 + 0.0001j, 
+            'D': -0.0012 + 0.0001j, 
+            'G': 0.9688 + 0.0001j, 
+            'H': 0.0002 + 0.0002j, 
+            'I': -0.000012161 - 0.0000467j, 
+            'J': -0.00000715 + 0.000000633j}
+    },
+    { 
         'name': "Fused silica glass (Dynasil 4000, 2.16–2.2 g/cc) (0.1–100 GHz)",
         'section': 1, 
         'freq_range_ghz': (0.1, 100),
@@ -63,6 +193,19 @@ materials_data = [
             'H': -0.0003 + 0j, 
             'I': -0.0019 + 0j, 
             'J': -0.0000335 + 0j}
+    },
+    { 
+        'name': "Spinel magnesium aluminum oxide (MgAl2O4) (2–35 GHz)",
+        'section': 1, 
+        'freq_range_ghz': (2, 35),
+        'eps_params': {
+            'B': 2.0614 + 0.0004j, 
+            'C': 2.0615 + 0.0004j, 
+            'D': 0.0098 + 0.0001j, 
+            'G': 2.0614 + 0.0004j, 
+            'H': 0.002 + 0.00000107j, 
+            'I': 0.0022 + 0j, 
+            'J': 0.0000864 + 0j}
     },
     { 
         'name': "Magnesium titanate 16 (0.01–18 GHz) (Nominal εr = 16)",
@@ -443,4 +586,112 @@ materials_data = [
             'G': 29.6-23.5j, 
             'H': -115+53.4j}
     },
+    { 
+        'name': "Zinc sulfide; 4.09 g/cc (3–240 GHz) (nominal εr = 8.5 at 2 MHz; Korth Kristalle GMBH)", 
+        'section': 6, 
+        'freq_range_ghz': (3, 240), 
+        'eps_params': {
+            'B': 2.44-0.006j, 
+            'C': 2.58+0.006j, 
+            'D': 0.15+0.006j, 
+            'E': 0.15+0.006j, 
+            'F': 1.9+0.003j, 
+            'G': 3.5+53.24j, 
+            'H': 18.9+88.9j},
+    }, 
+    { 
+        'name': "Zinc selenide, 5.27 g/cc (5–240 GHz) (nominal εr = 8.98; Korth Kristalle GMBH)", 
+        'section': 6, 
+        'freq_range_ghz': (5, 240), 
+        'eps_params': {
+            'B': 2.37-0.13j, 
+            'C': 2.65-0.04j, 
+            'D': 0.15+0.07j, 
+            'E': 0.14+0.06j, 
+            'F': 2.53+0.06j, 
+            'G': 136-138j, 
+            'H': -176+42.4j},
+    },
+    { 
+        'name': "Gallium arsenide (3–240 GHz) (nominal εr = 8.35–11.36; US pat. 6683510)", 
+        'section': 6, 
+        'freq_range_ghz': (3, 240), 
+        'eps_params': {
+            'B': 3.63-0.13j, 
+            'C': 3.64-0.07j, 
+            'D': 0.08+0.03j, 
+            'E': 0.19-0.3j, 
+            'F': 3.73-0.04j, 
+            'G': 76.9-367j, 
+            'H': -547+598j},
+    },
+    { 
+        'name': "Germanium (5.33 g/cc) (3–10 GHz) (nominal εr = 16; Virginia Semiconductor)", 
+        'section': 6, 
+        'freq_range_ghz': (3, 10), 
+        'eps_params': {
+            'B': 11.97+2.83j, 
+            'C': 13.23+3.4j, 
+            'D': -0.02+0.25j, 
+            'E': 0.53+1.44j, 
+            'F': 14.53+1.8j, 
+            'G': 1.1+6j, 
+            'H': 0.92+8.12j},
+    },
+    {
+        'name': "Epoxy, EAB (2–100 GHz), 1.24 g/cc",
+        'section': 8,
+        'freq_range_ghz': (2, 100),
+        'eps_params': {
+            'B': 1.0702+0.0532j,
+            'C': 0.8609-0.0238j,
+            'D': -0.5203+0.1529j,
+            'G': 0.8918-0.0954j,
+            'H': -0.002+0.0017j,
+            'I': 0.0001-0.0048j,
+            'J': -4.85E-005+5.91E-008j
+        }
+    },
+    {
+        'name': "1422, Cross-linked polystyrene 1.05 g/cc (4–100 GHz)",
+        'section': 8,
+        'freq_range_ghz': (4, 100),
+        'eps_params': {
+            'B': 0.5914+0.0509j,
+            'C': 0.586+0.0483j,
+            'D': 0.0224+0.0068j,
+            'G': 0.7488-0.152j,
+            'H': -0.0002+0.0013j,
+            'I': -0.0014+0.0021j,
+            'J': 2.74E-005+1.78E-005j
+        }
+    },
+    {
+        'name': "1000 Polyetherimide (2–60 GHz), 1.28 g/cc",
+        'section': 8,
+        'freq_range_ghz': (2, 60),
+        'eps_params': {
+            'B': 0.7855+0.0009j,
+            'C': 0.7872+0.0008j,
+            'D': -0.0293-0.0007j,
+            'G': 0.7851+0.001j,
+            'H': 0.0008+0.0001j,
+            'I': 0.0001-0.0027j,
+            'J': -4.51E-005-2.27E-006j
+        }
+    },
+    {
+        'name': "7058 Epoxy w/ ~40% vol silica hollow spheres (2–18 GHz)",
+        'section': 8,
+        'freq_range_ghz': (2, 18),
+        'eps_params': {
+            'B': 0.7275+0.0758j,
+            'C': 2.4321+0.1323j,
+            'D': -3.8007-0.9919j,
+            'G': 1.6261+0.2312j,
+            'H': -3.3603+1.9301j,
+            'I': 0.9885-0.0586j,
+            'J': -9E-003+0.0107j
+        }
+    }
 ]
