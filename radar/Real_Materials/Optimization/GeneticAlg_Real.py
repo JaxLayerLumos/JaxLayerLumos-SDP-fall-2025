@@ -32,7 +32,7 @@ mutation_adaptive = (0.3, 0.05) #PyGAD’s adaptive mutation, where mutation pro
 
 # Define the gene space
 #Code defines domain for each of 10 gense
-gene_space = [{'low': 1, 'high': 19}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
+gene_space = [{'low': 1, 'high': 13}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
 
 
 #---------------------------------------
@@ -80,6 +80,18 @@ def stacksolve(tlist,matsin,output):
         #pulls ε(ω), μ(ω) for every layer/material at the vector of frequencies, data found in utils_materials
         eps_stack, mu_stack = utils_materials_real.get_eps_mu(mats, frequencies)
 
+        # Swap imaginary values to negative to follow differing convention
+        eps_stack = jnp.array(eps_stack)
+        mu_stack = jnp.array(mu_stack) 
+
+        eps_stack = eps_stack.real - 1j * jnp.abs(eps_stack.imag)
+        mu_stack = mu_stack.real - 1j * jnp.abs(mu_stack.imag)
+
+        # Error check, prints eps_stack and mu_stack to check them
+        #print(eps_stack)
+        #print(mu_stack)
+        #input('break')
+
         #Calls your solver at 0.0 rad incidence (normal incidence) to obtain:
         #R_TE, T_TE: reflectance/transmittance for TE polarization.
         #R_TM, T_TM: same for TM.
@@ -111,8 +123,8 @@ def fitness_func(ga_instance, solution, solution_idx):
 
     minRmax = stacksolve(tlist,solution[0:5],1) #Computes maximum reflection over frequency band
 
-    fitness1 = -1 * total_thickness
-    fitness2 =  minRmax
+    fitness1 =  -1 * total_thickness
+    fitness2 =  -1 * minRmax
 
     return [np.array(fitness1).item(), np.array(fitness2).item()]
 

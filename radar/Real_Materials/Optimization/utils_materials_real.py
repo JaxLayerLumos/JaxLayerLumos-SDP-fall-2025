@@ -9,7 +9,7 @@ import warnings
 
 from jaxlayerlumos import utils_spectra
 from jaxlayerlumos import utils_units
-from .Materials_Library_NEW import materials_data
+from Materials_Library_NEW import materials_data
 
 
 def load_json():
@@ -167,43 +167,6 @@ def get_eps_mu(materials, frequencies):
     # 1. RAM Layers: Pass the GHZ array
     eps_r, mu_r = get_eps_mus_real_materials(materials[1:-1].astype(int), frequencies_GHz)
 
-    eps_r_fixed = []
-
-    
-    for num in eps_r:
-        # Check if the number is complex or can be treated as one
-        if isinstance(num, (complex, int, float)):
-            # complex() handles int/float by giving them a 0j component
-            c = complex(num)
-            real_part = c.real
-            imag_part = c.imag
-            
-            # Create new complex number with -abs(imag_part)
-            eps_r_fixed.append(complex(real_part, -abs(imag_part)))
-        else:
-            # Append non-numeric types as-is
-            eps_r_fixed.append(num)
-
-    eps_r = jnp.array(eps_r_fixed)
-
-    mu_r_fixed = []
-    
-
-    for num in mu_r:
-        # Check if the number is complex or can be treated as one
-        if isinstance(num, (complex, int, float)):
-            # complex() handles int/float by giving them a 0j component
-            c = complex(num)
-            real_part = c.real
-            imag_part = c.imag
-            
-            # Create new complex number with -abs(imag_part)
-            mu_r_fixed.append(complex(real_part, -abs(imag_part)))
-        else:
-            # Append non-numeric types as-is
-            mu_r_fixed.append(num)
-    mu_r = jnp.array(mu_r_fixed)
-
     # 2. Air Layer (Forces correct shape)
     eps_air = jnp.ones((1, num_frequencies), dtype=jnp.complex128)
     mu_air = jnp.ones((1, num_frequencies), dtype=jnp.complex128)
@@ -227,11 +190,6 @@ def get_eps_mu(materials, frequencies):
 
     eps_r = eps_r.T
     mu_r = mu_r.T
-
-
-    #print(eps_r)
-    #print(mu_r)
-    #input('break')
 
     return eps_r, mu_r
 
@@ -371,7 +329,6 @@ def get_eps_mus_real_materials(material_indices, frequencies): # frequencies is 
     
     eps_r_final = jnp.stack(M_epsr_list, axis=0)
     mu_r_final = jnp.stack(M_mur_list, axis=0)
-    
     return eps_r_final, mu_r_final
 
 # --- Helper functions for Section 4 ---
