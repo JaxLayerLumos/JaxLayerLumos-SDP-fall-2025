@@ -22,7 +22,7 @@ freq_lowerbound = 0.2*10**9 #Hz
 freq_upperbound = 2*10**9 #Hz
 
 #Hyper-Parameters
-num_generations = 20 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
+num_generations = 5 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
 num_parents_mating = 6 #
 sol_per_pop = 40 #40 candidate designs for generation
 num_genes = 10 #Total decisions variables for individual, 5 materials and 2 for each
@@ -32,14 +32,11 @@ mutation_adaptive = (0.3, 0.05) #PyGAD’s adaptive mutation, where mutation pro
 
 # Define the gene space
 #Code defines domain for each of 10 gense
-gene_space = [{'low': 1, 'high': 113}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
+gene_space = [{'low': 1, 'high': 19}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
 
 
 #---------------------------------------
 
-# 0.1 GHz to 10 GHz, logarithmically spaced
-
-#BOUNDS NEED TO BE UPDATED, INPUT IS 0.2 TO 2, CHANGE THIS 
 
 frequencies = jnp.logspace(np.log10(freq_lowerbound), np.log10(freq_upperbound), nfreq)
 # Same thing but for plotting
@@ -115,7 +112,7 @@ def fitness_func(ga_instance, solution, solution_idx):
     minRmax = stacksolve(tlist,solution[0:5],1) #Computes maximum reflection over frequency band
 
     fitness1 = -1 * total_thickness
-    fitness2 = minRmax
+    fitness2 =  minRmax
 
     return [np.array(fitness1).item(), np.array(fitness2).item()]
 
