@@ -1,19 +1,19 @@
 materials_data = [
-    { 
-        'name': "Fused silica glass (Dynasil 4000, 2.16–2.2 g/cc) (0.1–100 GHz)", #5
+   { 
+        'name': "Fused silica glass (Dynasil 4000, 2.16–2.2 g/cc) (0.1–100 GHz)",
         'section': 1, 
         'freq_range_ghz': (0.1, 100),
         'eps_params': {
             'B': 0.9469 + 0.0001j, 
             'C': 0.9469 + 0.0001j, 
-            'D': -0.0081 + 0.0001j, 
-            'G': 0.9468 - 0.000000074j, 
+            'D': -0.0081 + 0j, 
+            'G': 0.9468 + 0.0001j, 
             'H': -0.0003 + 0j, 
             'I': -0.0019 + 0j, 
-            'J': -0.0000335 + 0j}
+            'J': -0.0000335 - 0.000000074j}
     },
     {
-        'name': "80 µm 9%/vol in epoxy, 1.38 g/cc", #7
+        'name': "80 µm 9%/vol in epoxy, 1.38 g/cc",
         'section': 4,
         'freq_range_ghz': (0.05, 18),
         'chi_m_params': {
@@ -23,15 +23,15 @@ materials_data = [
         'eps1_params': None,
         'eps2_params': {
             'B': 2.47+0.26j, 
-            'C': 8E-02-0.14j, 
+            'C': 0.08-0.14j, 
             'D': 0.61+0.68j, 
             'E': -0.17+0.48j, 
-            'F': 0.66-7E-02j, 
+            'F': 0.66-0.02j, 
             'G': 10.66-12.9j, 
             'H': -18.6+10.47j}
     },
     {
-        'name': "80 µm 16%/vol in epoxy, 1.6 g/cc", #8
+        'name': "80 µm 16%/vol in epoxy, 1.6 g/cc",
         'section': 4,
         'freq_range_ghz': (0.001, 10),
         'chi_m_params': {
@@ -41,7 +41,7 @@ materials_data = [
         'eps1_params': None,
         'eps2_params': {
             'B': 2.66+0.16j, 
-            'C': 7E-02-9E-02j, 
+            'C': 0.07-0.09j, 
             'D': 0.61+0.39j, 
             'E': 0.26+0.42j, 
             'F': 0.81+0.12j, 
@@ -49,7 +49,7 @@ materials_data = [
             'H': 51.6+43.9j}
     },
     {
-        'name': "80 µm 16.7%/vol in epoxy, 1.68 g/cc", #9
+        'name': "80 µm 16.7%/vol in epoxy, 1.68 g/cc",
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
@@ -58,21 +58,38 @@ materials_data = [
             'D': 0.583},
         'eps1_params': {
             'B': 1.57+5E-02j, 
-            'C': 9E-02+0.14j, 
+            'C': 0.09+0.14j, 
             'D': -1.7-0.25j, 
             'E': 1.71+0.12j, 
-            'F': 5E-02-14.7j, 
+            'F': 0.05-14.7j, 
             'G': 1.52+43.6j},
         'eps2_params': None
     },
     {
-        'name': "80 µm 41.1%/vol in epoxy, 2.68 g/cc", #12
+        'name': "80 µm 29.9%/vol in epoxy, 2.22 g/cc (0.05-10 GHz)",
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
-            'B': 4.15, 
-            'C': 0.61, 
-            'D': 0.28},
+            'B': 2.21, 
+            'C': 0.866, 
+            'D': 0.940},
+        'eps1_params': {
+            'B': 2.57+0.55j, 
+            'C': 1.46+0.56j, 
+            'D': -3e-3-4e-3j, 
+            'E': -0.44-1.1j, 
+            'F': 20.16+7.5j, 
+            'G': -11.9-73.9j},
+        'eps2_params': None
+    },
+    {
+        'name': "80 µm 29.9%/vol in epoxy, 2.22 g/cc (0.001-18 GHz)",
+        'section': 4,
+        'freq_range_ghz': (0.001, 18),
+        'chi_m_params': {
+            'B': 2.04, 
+            'C': 0.554, 
+            'D': 0.240},
         'eps1_params': {
             'B': 1.18+4e-2j, 
             'C': 1.14+3e-2j, 
@@ -83,13 +100,13 @@ materials_data = [
         'eps2_params': None
     },
     {
-        'name': "80 µm 49.4%/vol in epoxy, ~3.0 g/cc", #13
+        'name': "80 µm 41.1%/vol in epoxy, 2.68 g/cc",
         'section': 4,
-        'freq_range_ghz': (0.001, 10),
+        'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
-            'B': 6.18, 
-            'C': 0.33, 
-            'D': 0.12},
+            'B': 4.15, 
+            'C': 0.61, 
+            'D': 0.28},
         'eps1_params': {
             'B': 1.75+7e-2j, 
             'C': 1.58+0.18j, 
@@ -107,7 +124,73 @@ materials_data = [
             'H': -10.26-4.8j}
     },
     {
-        'name': "80 µm 61.4%/vol in epoxy, ~3.52 g/cc", #16
+        'name': "80 µm 49.4%/vol in epoxy, ~3.0 g/cc",
+        'section': 4,
+        'freq_range_ghz': (0.001, 10),
+        'chi_m_params': {
+            'B': 6.18, 
+            'C': 0.33, 
+            'D': 0.12},
+        'eps1_params': None,
+        'eps2_params': {
+            'B': 3.16+0.26j, 
+            'C': 0.2+0.08j, 
+            'D': 0.75+0.52j, 
+            'E': -0.2+0.2j, 
+            'F': 1.86+0.02j, 
+            'G': 9.42-6.54j, 
+            'H': -13.73-1.87j}
+    },
+    {
+        'name': "80 µm 53.6%/vol in epoxy, ~3.2 g/cc",
+        'section': 4,
+        'freq_range_ghz': (0.05, 10),
+        'chi_m_params': {
+            'B': 4.72, 
+            'C': 0.7178, 
+            'D': 0.3421},
+        'eps1_params': {
+            'B': 1.63-2E-02j, 
+            'C': 1.47+7E-02j, 
+            'D': -5E-002-0.17j, 
+            'E': 1.89-2E-002j, 
+            'F': 1.64+13.67j, 
+            'G': 14.2+22.1j},
+        'eps2_params': {
+            'B': 3.28+2E-002j, 
+            'C': 0.31-9E-002j, 
+            'D': 0.39+0.3j, 
+            'E': -0.94+0.63j, 
+            'F': 1.72-2E-003j, 
+            'G': 7.89+9.44j, 
+            'H': 6.18-49.19j}
+    },
+    {
+        'name': "80 µm 58.4%/vol in epoxy, ~3.29 g/cc",
+        'section': 4,
+        'freq_range_ghz': (0.05, 10),
+        'chi_m_params': {
+            'B': 8.86, 
+            'C': 0.34, 
+            'D': 0.12},
+        'eps1_params': {
+            'B': 1.2-1.4j, 
+            'C': 1.9-0.98j, 
+            'D': -0.12-0.16j, 
+            'E': 2.05+2.73j, 
+            'F': 7.32-15.6j, 
+            'G': -33.7+20.6j},
+        'eps2_params': {
+            'B': 3.49+0.18j, 
+            'C': 0.6-0.16j, 
+            'D': 0.34-3.7E-002j, 
+            'E': -0.74+0.72j, 
+            'F': 2.29+2E-002j, 
+            'G': 2.87+2.01j, 
+            'H': 0.9-2.7j}
+    },
+    {
+        'name': "80 µm 61.4%/vol in epoxy, ~3.52 g/cc",
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
@@ -131,7 +214,7 @@ materials_data = [
             'H': -3.12-11.9j}
     },
     {
-        'name': "80 µm 61.8%/vol in epoxy, ~3.53 g/cc", #17
+        'name': "80 µm 61.8%/vol in epoxy, ~3.53 g/cc",
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
@@ -155,39 +238,13 @@ materials_data = [
             'H': 1.48-5.1j}
     },
     {
-        'name': "80 µm 76.1%/vol in epoxy, ~4.12 g/cc", #18
+        'name': "80 µm 76.1%/vol in epoxy, ~4.12 g/cc",
         'section': 4,
         'freq_range_ghz': (0.001, 10),
         'chi_m_params': {
             'B': 14.20, 
             'C': 0.18, 
             'D': 0.053},
-        'eps1_params': {
-            'B': 3.31+.11j, 
-            'C': 2.32+0.15j, 
-            'D': 5e-3-6e-3j, 
-            'E': 1.87-.22j, 
-            'F': 12.1-.76j, 
-            'G': -2.2-19.8j
-        },
-        'eps2_params': {
-            'B': 3.93+2e-2j, 
-            'C': .97-.13j, 
-            'D': 3e2+.15j, 
-            'E': -.26+.32j, 
-            'F': 2.8+.16j, 
-            'G': 13.1-2.91j, 
-            'H': -11.8-19j
-        }
-    },
-    {
-        'name': "500-nm Fe 7% + 80-µm Ferrite 7%/vol in epoxy, 1.8 g/cc", #19
-        'section': 4,
-        'freq_range_ghz': (0.001, 18),
-        'chi_m_params': {
-            'B': 1.05, 
-            'C': 3.32, 
-            'D': 1.68},
         'eps1_params': {
             'B': 3.31+0.11j, 
             'C': 2.32+0.15j, 
@@ -205,7 +262,31 @@ materials_data = [
             'H': -11.8-19j}
     },
     {
-        'name': "500-nm Fe 10.2% + 80-µm Ferrite 10.1%/vol in epoxy, 2.1 g/cc", #20
+        'name': "500-nm Fe 7% + 80-µm Ferrite 7%/vol in epoxy, 1.8 g/cc",
+        'section': 4,
+        'freq_range_ghz': (0.001, 18),
+        'chi_m_params': {
+            'B': 1.05, 
+            'C': 3.32, 
+            'D': 1.68},
+        'eps1_params': {
+            'B': 0.99-1.45j, 
+            'C': 2.26-1.16j, 
+            'D': -0.0097-0.02j, 
+            'E': 2.1+2.73j, 
+            'F': 48.8+112j, 
+            'G': 47.2+119j},
+        'eps2_params': {
+            'B': 2.94+0.29j, 
+            'C': 0.96-0.71j, 
+            'D': 0.49+0.08j, 
+            'E': 0.32-0.12j, 
+            'F': 2.45+0.08j, 
+            'G': 12.6+4j, 
+            'H': -8.1-10.9j}
+    },
+    {
+        'name': "500-nm Fe 10.2% + 80-µm Ferrite 10.1%/vol in epoxy, 2.1 g/cc",
         'section': 4,
         'freq_range_ghz': (0.001, 10),
         'chi_m_params': {
@@ -219,10 +300,17 @@ materials_data = [
             'E': 2.1+2.69j, 
             'F': 8.39+13.31j, 
             'G': 18.7+15.7j},
-        'eps2_params': None
+        'eps2_params': {
+            'B': 2.9+0.39j, 
+            'C': 1.01-0.69j, 
+            'D': 0.51+0.32j, 
+            'E': 0.32-0.02j, 
+            'F': 2.24+0.24j, 
+            'G': 7.49-2.7j, 
+            'H': -8.4-2.6j}
     },
     {
-        'name': "500-nm Fe 13.4% + 80-µm Ferrite 13.6%/vol in epoxy, 2.43 g/cc", #21
+        'name': "500-nm Fe 13.4% + 80-µm Ferrite 13.6%/vol in epoxy, 2.43 g/cc",
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
@@ -246,7 +334,55 @@ materials_data = [
             'H': -34.8+6.3j}
     },
     {
-        'name': "500-nm Fe 23.3% + 80-µm Ferrite 23.3%/vol in epoxy, 3.4 g/cc", #24
+        'name': "500-nm Fe 17.5% + 80-µm Ferrite 17.5%/vol in epoxy, 2.82 g/cc",
+        'section': 4,
+        'freq_range_ghz': (0.05, 10),
+        'chi_m_params': {
+            'B': 4.86, 
+            'C': 0.954, 
+            'D': 0.3640},
+        'eps1_params': {
+            'B': 2.08-0.82j, 
+            'C': 3.16-0.69j, 
+            'D': 0.28+9E-002j, 
+            'E': 5.78+2.28j, 
+            'F': 4.2+0.3j, 
+            'G': 1.26-2.32j},
+        'eps2_params': {
+            'B': 4.3+0.26j, 
+            'C': 1.13-0.86j, 
+            'D': -0.18-0.1j, 
+            'E': 0.57+0.11j, 
+            'F': 3.47+0.25j, 
+            'G': 2-16.1j, 
+            'H': -0.32+22.9j}
+    },
+    {
+        'name': "500-nm Fe 19.9% + 80-µm Ferrite 20.0%/vol in epoxy, 3.1 g/cc",
+        'section': 4,
+        'freq_range_ghz': (0.001, 10),
+        'chi_m_params': {
+            'B': 8.14, 
+            'C': 0.55, 
+            'D': 0.21},
+        'eps1_params': {
+            'B': 2.41-1.8j, 
+            'C': 3.27-1.2j, 
+            'D': 8E-002+0.61j, 
+            'E': 6.13+6.3j, 
+            'F': 1.39+1.64j, 
+            'G': 0.74-0.86j},
+        'eps2_params': {
+            'B': 3.67-4E-002j, 
+            'C': 0.75-0.53j, 
+            'D': -0.3-0.4j, 
+            'E': -0.21+0.11j, 
+            'F': 3.05-6E-002j, 
+            'G': 23.64+12.3j, 
+            'H': 16.3+5.2j}
+    },
+    {
+        'name': "500-nm Fe 23.3% + 80-µm Ferrite 23.3%/vol in epoxy, 3.4 g/cc",
         'section': 4,
         'freq_range_ghz': (0.05, 10),
         'chi_m_params': {
