@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 from Materials_Library_NEW import materials_data
 import utils_materials_real_try as utils_materials_module
-from utils_materials_real_try import get_eps_mu
+from utils_materials_real_try import get_eps_mus_real_materials
 from jaxlayerlumos import stackrt_eps_mu
 
 # Store original functions
