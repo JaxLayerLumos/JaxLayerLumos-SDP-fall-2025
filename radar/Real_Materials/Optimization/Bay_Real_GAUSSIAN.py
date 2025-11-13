@@ -11,12 +11,13 @@ from skopt.utils import use_named_args
 import time
 from pathlib import Path
 from Materials_Library_NEW import materials_data
-import utils_materials_real_try as utils_materials_module
-from utils_materials_real_try import get_eps_mu
+import utils_materials_real
+from utils_materials_real import get_eps_mu
 from jaxlayerlumos import stackrt_eps_mu
 
+import utils_materials_real
 # Store original functions
-_original_get_eps_mus = utils_materials_module.get_eps_mus_real_materials
+_original_get_eps_mus = utils_materials_real.get_eps_mus_real_materials
 
 def patched_get_eps_mus_real_materials(material_indices, frequencies_GHz):
     """Wrapper that applies sign convention fix"""
@@ -26,7 +27,7 @@ def patched_get_eps_mus_real_materials(material_indices, frequencies_GHz):
     mu_r = np.conj(mu_r)
     return eps_r, mu_r
 
-utils_materials_module.get_eps_mus_real_materials = patched_get_eps_mus_real_materials #Do not understand this line, AI modification (need to research)
+utils_materials_real.get_eps_mus_real_materials = patched_get_eps_mus_real_materials #Do not understand this line, AI modification (need to research)
 
 
 # Frequency range
@@ -41,7 +42,7 @@ ACQUISITION_FUNC = 'EI' # Expected Improvement ('EI', 'LCB', 'PI')
 #EI = Expected Improvement, this was the recommended acquisition function in the skopt documentation
 #LCB = Lower Confidence Bound, this is more explorative it basically looks for areas with high uncertainty to try to learn more about the function
 #PI = Probability of Improvement, this focuses on areas likely to improve over the current best (looks at small changes and took longer to run)
-NUM_RUNS = 2 # Number of thickness windows, change when making the code more robust
+NUM_RUNS = 10 # Number of thickness windows, change when making the code more robust
 NUM_LAYERS = 5 # Number of RAM layers,  change when making the code more robust
 
 # Thickness constraints

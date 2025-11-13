@@ -10,26 +10,27 @@ from skopt.plots import plot_convergence, plot_objective
 from skopt.utils import use_named_args
 import time
 from pathlib import Path
-# Use JaxLayerLumos materials like the Michelson paper
+# Use JaxLayerLumos materials like the Michielssen paper
 from jaxlayerlumos import stackrt_eps_mu
 from jaxlayerlumos import utils_materials
 
 # Frequency range
 FREQ_MIN_GHZ = 0.2
-FREQ_MAX_GHZ = 8.0
-NUM_FREQ_POINTS = 500
+FREQ_MAX_GHZ = 2.0
+NUM_FREQ_POINTS = 300
 
 # Gaussian Process optimization parameters
 NUM_INITIAL_POINTS = 20  # Random exploration before GP kicks in
-NUM_GP_ITERATIONS = 80   # GP-guided optimization iterations
-ACQUISITION_FUNC = 'EI' # Expected Improvement ('EI', 'LCB', 'PI')
-NUM_RUNS = 2 # Number of thickness windows
+NUM_GP_ITERATIONS = 500   # GP-guided optimization iterations
+ACQUISITION_FUNC = 'LCB' # Expected Improvement ('EI', 'LCB', 'PI')
+NUM_RUNS = 10 # Number of thickness windows
 NUM_LAYERS = 5 # Number of RAM layers
 
 # Thickness constraints
 MIN_LAYER_THICKNESS_MM = 0.1
 INITIAL_TARGET_THICKNESS_MM = 5.0
 THICKNESS_INCREMENT_MM = 5.0 / NUM_RUNS
+MAXIMUM_THICKNESS_MM = 7.0 # Define the total thickness limit for all optimizations
 
 # Constraint parameters
 THICKNESS_TOLERANCE = 0.35
@@ -40,9 +41,9 @@ KERNEL_NOISE = 1e-10          # Noise level
 KERNEL_LENGTH_SCALE = 1.0     # Length scale for RBF kernel
 N_RESTARTS_OPTIMIZER = 5      # Restarts for hyperparameter optimization
 
-# MICHELSON PAPER MATERIALS - From JaxLayerLumos library
-# These are the exact materials used in the Michelson paper
-MICHELSON_MATERIALS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16]
+# Michielssen PAPER MATERIALS - From JaxLayerLumos library
+# These are the exact materials used in the Michielssen paper
+Michielssen_MATERIALS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16]
 
 
 # MATERIAL LIBRARY SETUP
@@ -50,12 +51,12 @@ MICHELSON_MATERIALS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16]
 print("="*80)
 print("RAM OPTIMIZATION - GAUSSIAN PROCESS BAYESIAN OPTIMIZATION")
 print("="*80)
-print("USING MICHELSON PAPER MATERIALS (JaxLayerLumos)")
+print("USING Michielssen PAPER MATERIALS (JaxLayerLumos)")
 print("="*80)
 
-# Use only Michelson paper materials from JaxLayerLumos
-valid_material_indices = MICHELSON_MATERIALS
-print(f"\nUsing Michelson paper materials from JaxLayerLumos: {valid_material_indices}")
+# Use only Michielssen paper materials from JaxLayerLumos
+valid_material_indices = Michielssen_MATERIALS
+print(f"\nUsing Michielssen paper materials from JaxLayerLumos: {valid_material_indices}")
 print(f"Material index range: {min(valid_material_indices)} to {max(valid_material_indices)}")
 print(f"Number of materials available: {len(valid_material_indices)}")
 
@@ -63,7 +64,7 @@ print(f"Number of materials available: {len(valid_material_indices)}")
 material_idx_to_library = {i: mat_idx for i, mat_idx in enumerate(valid_material_indices)}
 material_library_to_idx = {mat_idx: i for i, mat_idx in enumerate(valid_material_indices)}
 
-print("\nMichelson Paper Materials:")
+print("\nMichielssen Paper Materials:")
 for idx in valid_material_indices:
     print(f"  Material {idx}")
 
@@ -88,11 +89,11 @@ print(f"  Initial random points: {NUM_INITIAL_POINTS}")
 print(f"  GP-guided iterations: {NUM_GP_ITERATIONS}")
 print(f"  Total evaluations per run: {NUM_INITIAL_POINTS + NUM_GP_ITERATIONS}")
 
-# ELECTROMAGNETIC SOLVER (Using JaxLayerLumos like Michelson paper)
+# ELECTROMAGNETIC SOLVER (Using JaxLayerLumos like Michielssen paper)
 
 def calculate_reflection_spectrum(layer_thicknesses_mm, material_indices, frequencies_Hz):
     """Calculate reflection coefficient spectrum for a multilayer structure.
-    Uses JaxLayerLumos materials exactly like the Michelson paper."""
+    Uses JaxLayerLumos materials exactly like the Michielssen paper."""
     
     # Ensure all inputs are properly typed
     layer_thicknesses_mm = [float(t) for t in layer_thicknesses_mm]
@@ -102,7 +103,7 @@ def calculate_reflection_spectrum(layer_thicknesses_mm, material_indices, freque
     stacklist = [0.0] + layer_thicknesses_mm + [0.0]
     d_stack = jnp.array(stacklist) * 1e-3  # Convert mm to m
     
-    # Build materials list (Air, layers, PEC) - as strings like Michelson paper
+    # Build materials list (Air, layers, PEC) - as strings like Michielssen paper
     mats = ["Air"] + [str(m) for m in material_indices] + ["PEC"]
     
     # Get epsilon and mu using JaxLayerLumos
@@ -225,9 +226,9 @@ for run_idx in range(NUM_RUNS):
         dimension_names.append(f"t{i+1}")
     
     # Material dimensions (discrete - GP treats as integers)
-    # Use indices 0 to len(MICHELSON_MATERIALS)-1
+    # Use indices 0 to len(Michielssen_MATERIALS)-1
     for i in range(NUM_LAYERS):
-        dimensions.append(Integer(0, len(MICHELSON_MATERIALS) - 1, name=f"m{i+1}"))
+        dimensions.append(Integer(0, len(Michielssen_MATERIALS) - 1, name=f"m{i+1}"))
         dimension_names.append(f"m{i+1}")
     
     # Progress tracking
@@ -241,7 +242,7 @@ for run_idx in range(NUM_RUNS):
             thicknesses = [float(params[f"t{i+1}"]) for i in range(NUM_LAYERS)]
             material_gp_indices = [int(params[f"m{i+1}"]) for i in range(NUM_LAYERS)]
             
-            # Convert GP material indices to library indices (Michelson materials)
+            # Convert GP material indices to library indices (Michielssen materials)
             materials = [int(material_idx_to_library[idx]) for idx in material_gp_indices]
             
             total_thickness = sum(thicknesses)
@@ -249,6 +250,9 @@ for run_idx in range(NUM_RUNS):
             # Check thickness constraints
             if total_thickness < min_total_thickness or total_thickness > max_total_thickness:
                 return 1e10  # Large penalty
+            
+            if total_thickness > MAXIMUM_THICKNESS_MM:
+                return 1e10 # Enforce absolute maximum thickness
             
             peak_reflection_db = calculate_peak_reflection(thicknesses, materials)
             
@@ -370,13 +374,11 @@ gs = SystemResultsfig.add_gridspec(1, 2, hspace=0.3, wspace=0.3)
 ax1 = SystemResultsfig.add_subplot(gs[0, 0])
 ax1.plot(pareto_total_thick, pareto_ref, "b-o", 
          label="Gaussian Process Pareto Front", linewidth=2, markersize=6)
-ax1.plot(best_total_thickness, best_reflection, "r*", 
-         markersize=20, label="Optimal Structure", zorder=5)
-ax1.plot(paperLFx, paperLFy, "g-^", label="Michelson Paper LF", linewidth=1.5, markersize=8, alpha=0.8)
-ax1.plot(paperHFx, paperHFy, "m-s", label="Michelson Paper HF", linewidth=1.5, markersize=8, alpha=0.8)
+ax1.plot(paperLFx, paperLFy, "g-^", label="Michielssen Paper LF", linewidth=1.5, markersize=8, alpha=0.8)
+ax1.plot(paperHFx, paperHFy, "m-s", label="Michielssen Paper HF", linewidth=1.5, markersize=8, alpha=0.8)
 ax1.set_xlabel("Total Thickness (mm)", fontsize=11)
 ax1.set_ylabel("Peak Reflection (dB)", fontsize=11)
-ax1.set_title(f"{NUM_LAYERS}-Layer RAM - Pareto Front (Michelson Materials)", fontsize=12)
+ax1.set_title(f"{NUM_LAYERS}-Layer RAM - Pareto Front (Michielssen Materials)", fontsize=12)
 ax1.legend(fontsize=9)
 ax1.grid(True, alpha=0.3)
 
@@ -386,8 +388,6 @@ ax5.scatter(tracker.all_total_thicknesses, tracker.all_reflections,
             c=tracker.run_colors, alpha=0.3, s=20, label='All evaluations')
 ax5.plot(pareto_total_thick, pareto_ref, "b-o", 
          label="Pareto front", linewidth=2, markersize=6, zorder=10)
-ax5.plot(best_total_thickness, best_reflection, "r*", 
-         markersize=20, label="Optimal", zorder=15)
 ax5.set_xlabel("Total Thickness (mm)", fontsize=11)
 ax5.set_ylabel("Peak Reflection (dB)", fontsize=11)
 ax5.set_title("Optimization Landscape", fontsize=12)
@@ -468,11 +468,11 @@ ax9.barh(range(len(top_10_idx)), counts[top_10_idx], color='lightgreen', edgecol
 ax9.set_yticks(range(len(top_10_idx)))
 ax9.set_yticklabels([f"Mat {unique_mats[i]}" for i in top_10_idx], fontsize=9)
 ax9.set_xlabel("Usage Count", fontsize=11)
-ax9.set_title("Top 10 Michelson Materials Used", fontsize=12)
+ax9.set_title("Top 10 Michielssen Materials Used", fontsize=12)
 ax9.grid(True, alpha=0.3, axis='x')
 
-plt.savefig('ram_optimization_gp_michelson_materials.png', dpi=300, bbox_inches='tight')
-print("\nResults saved to: ram_optimization_gp_michelson_materials.png")
+plt.savefig('ram_optimization_gp_Michielssen_materials.png', dpi=300, bbox_inches='tight')
+print("\nResults saved to: ram_optimization_gp_Michielssen_materials.png")
 
 plt.show()
 
@@ -484,5 +484,5 @@ print(f"  Kernel: Matérn 5/2")
 print(f"  Acquisition: {ACQUISITION_FUNC}")
 print(f"  Total evaluations: {tracker.eval_count}")
 print(f"  Best reflection: {best_reflection:.2f} dB")
-print(f"  Materials used: Michelson paper materials {MICHELSON_MATERIALS}")
-print(f"  Material system: JaxLayerLumos (same as Michelson paper)")
+print(f"  Materials used: Michielssen paper materials {Michielssen_MATERIALS}")
+print(f"  Material system: JaxLayerLumos (same as Michielssen paper)")
