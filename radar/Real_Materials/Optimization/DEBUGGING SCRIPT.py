@@ -1,3 +1,5 @@
+#This code needs to be largely scrapped, it works fine (check validity of loss tangents etc) but the plotting of complex plane is not necessary and clutters the output
+
 import numpy as np
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
@@ -10,7 +12,7 @@ print("RAM OPTIMIZATION DIAGNOSTIC TOOL")
 print("="*70)
 
 # Test configuration
-test_material_indices = [22, 29, 3, 18 ,37]  # Input from you optimizal strucutre
+test_material_indices = [1, 12, 10, 7, 9]  # Input from you optimizal strucutre
 freq_min_GHz = 0.2
 freq_max_GHz = 8.0
 num_freq_points = 100
@@ -194,9 +196,6 @@ for mat_idx in test_material_indices:
         
         # Plot loss tangent
         axes[1, 0].plot(frequencies_GHz, loss_tangent, label=f'Material {mat_idx}')
-        
-        # Plot complex plane
-        axes[1, 1].plot(eps_real, eps_imag, label=f'Material {mat_idx}')
         
     except Exception as e:
         print(f"  Warning: Could not plot material {mat_idx}: {e}")

@@ -9,7 +9,7 @@ import warnings
 
 from jaxlayerlumos import utils_spectra
 from jaxlayerlumos import utils_units
-from .Materials_Library import materials_data
+from Materials_Library_NEW import materials_data
 
 
 def load_json():
@@ -329,65 +329,48 @@ def get_eps_mus_real_materials(material_indices, frequencies): # frequencies is 
     
     eps_r_final = jnp.stack(M_epsr_list, axis=0)
     mu_r_final = jnp.stack(M_mur_list, axis=0)
-    
     return eps_r_final, mu_r_final
 
 # --- Helper functions for Section 4 ---
-def calculate_chi_m(f, params): # f is in GHz
-    B = params.get('B', 0.0)
-    C = params.get('C', 1.0) 
-    D = params.get('D', 1.0) 
-    
+def calculate_chi_m(f, params):
+    B, C, D = params['B'], params['C'], params['D']
     j = 1j
     numerator = B * (1 - j * f / D)
     denominator = 1 - (f / C)**2 - (j * f / D)
     return onp.divide(numerator, denominator, out=onp.zeros_like(denominator, dtype=onp.complex128), where=denominator!=0)
 
-def calculate_epsilon1(f, params): # f is in GHz
-    B = params.get('B', 0.0)
-    C = params.get('C', 0.0)
-    D = params.get('D', 0.0)
-    E = params.get('E', 0.0)
-    F = params.get('F', 1.0) 
-    G = params.get('G', 1.0) 
-    
+def calculate_epsilon1(f, params):
+    """
+    Calculates permittivity using the first model (ε1).
+    Formula: ε1(f) = B + C*f^D + E / (1 - (f/F)^2 + 2j*(f/G))
+    """
+    B, C, D, E, F, G = params['B'], params['C'], params['D'], params['E'], params['F'], params['G']
     j = 1j
     f_complex = f.astype(onp.complex128)
 
-    # Normalize frequency for polynomial term
-    f_norm = f / 1.0
-
     term1 = B
-    term2 = C * onp.power(f_norm, D)
+    term2 = C * onp.power(f_complex, D)
 
     lorentz_num = E
-    # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
-    lorentz_den = 1 - (f / F)**2 - 2*j * (f / G) # Changed + to -
+    lorentz_den = 1 - (f / F)**2 + 2*j * (f / G)  # FIXED: + sign
     term3 = onp.divide(lorentz_num, lorentz_den, out=onp.zeros_like(lorentz_den, dtype=onp.complex128), where=lorentz_den!=0)
     return term1 + term2 + term3
 
-def calculate_epsilon2(f, params): # f is in GHz
-    B = params.get('B', 0.0)
-    C = params.get('C', 0.0)
-    D = params.get('D', 0.0)
-    E = params.get('E', 0.0)
-    F = params.get('F', 0.0)
-    G = params.get('G', 1.0) 
-    H = params.get('H', 1.0) 
-    
+def calculate_epsilon2(f, params):
+    """
+    Calculates permittivity using the second model (ε2).
+    Formula: ε2(f) = B + real(C)*f^D + imag(C)*f^E + F / (1 - (f/G)^2 + 2j*(f/H))
+    """
+    B, C, D, E, F, G, H = params['B'], params['C'], params['D'], params['E'], params['F'], params['G'], params['H']
     j = 1j
     f_complex = f.astype(onp.complex128)
-    
-    # Normalize frequency for polynomial term
-    f_norm = f / 1.0
 
     term1 = B
-    term2 = onp.real(C) * onp.power(f_norm, D)
-    term3 = onp.imag(C) * onp.power(f_norm, E)
+    term2 = onp.real(C) * onp.power(f_complex, D)
+    term3 = onp.imag(C) * onp.power(f_complex, E)
 
     lorentz_num = F
-    # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
-    lorentz_den = 1 - (f / G)**2 - 2*j * (f / H) # Changed + to -
+    lorentz_den = 1 - (f / G)**2 + 2*j * (f / H)  # FIXED: + sign
     term4 = onp.divide(lorentz_num, lorentz_den, out=onp.zeros_like(lorentz_den, dtype=onp.complex128), where=lorentz_den!=0)
     return term1 + term2 + term3 + term4
 
@@ -408,8 +391,8 @@ def getEpAndMu_12_1(frequencies, material):
     
     # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
     # Formula: G / (1 - J*(f-H)^2 - j*2*I*f)
-    epsilon_f = B + 2 * C * (f_norm ** D) + G * (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies)**(-1)
-
+    epsilon_f = B + 2 * C * (frequencies ** D) + G * (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies)**(-1)
+    
     mu_f = onp.ones(frequencies.shape)
     return(epsilon_f, mu_f)
 
@@ -445,10 +428,7 @@ def getEpAndMu_12_6(frequencies, material):
 
     # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
     # Formula: F / (1 - (f/G)^2 - j*2*f/H)
-    denominator_term = (1 - (frequencies / G) ** 2 - 1j * 2 * frequencies / H) # Changed + to -
-    safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term) 
-    
-    epsilon_f = (B + onp.real(C) * (f_norm ** D) + onp.imag(C) * (f_norm ** E) + F / safe_denominator)
+    epsilon_f = (B + onp.real(C) * (frequencies ** D) + onp.imag(C) * (frequencies ** E) + F * (1 - (frequencies / G) ** 2 - 1j * 2 * frequencies / H) ** (-1))
 
     mu_f = onp.ones(frequencies.shape)
     return(epsilon_f, mu_f)
@@ -468,10 +448,8 @@ def getEpAndMu_12_7(frequencies, material):
 
     # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
     # Formula: G / (1 - J*(f-H)^2 - j*2*I*f)
-    denominator_term = (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies) # Changed + to -
-    safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term)
+    epsilon_f = B + 2 * C * (frequencies ** D) + G / (1 - J * (frequencies - H)**2 - 1j * 2 * I * frequencies)
 
-    epsilon_f = B + 2 * C * (f_norm ** D) + G / safe_denominator
 
     mu_f = onp.ones(frequencies.shape)
     return(epsilon_f, mu_f)
@@ -491,10 +469,7 @@ def getEpAndMu_12_8(frequencies, material):
     
     # *** FIX: Invert sign of imaginary loss term in denominator (-2j) ***
     # Formula: G / (1 - J*(f-H)^2 - j*2*I*f)
-    denominator_term = (1 - (J *(frequencies - H)**2) - (1j*2*I*frequencies)) # Changed + to -
-    safe_denominator = onp.where(denominator_term == 0, 1e-9, denominator_term)
-
-    epsilon_f = (B + (2*C*(f_norm**D)) + (G / safe_denominator))
+    epsilon_f = (B + (2*C*(frequencies**D)) + (G*(1 - (J *(frequencies - H)**2) - (1j*2*I*frequencies))**-1))
 
     mu_f = onp.ones(frequencies.shape)
     return(epsilon_f, mu_f)

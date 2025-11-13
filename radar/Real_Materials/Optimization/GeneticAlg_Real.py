@@ -22,7 +22,7 @@ freq_lowerbound = 0.2*10**9 #Hz
 freq_upperbound = 2*10**9 #Hz
 
 #Hyper-Parameters
-num_generations = 20 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
+num_generations = 5 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
 num_parents_mating = 6 #
 sol_per_pop = 40 #40 candidate designs for generation
 num_genes = 10 #Total decisions variables for individual, 5 materials and 2 for each
@@ -32,14 +32,11 @@ mutation_adaptive = (0.3, 0.05) #PyGAD’s adaptive mutation, where mutation pro
 
 # Define the gene space
 #Code defines domain for each of 10 gense
-gene_space = [{'low': 1, 'high': 113}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
+gene_space = [{'low': 1, 'high': 13}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
 
 
 #---------------------------------------
 
-# 0.1 GHz to 10 GHz, logarithmically spaced
-
-#BOUNDS NEED TO BE UPDATED, INPUT IS 0.2 TO 2, CHANGE THIS 
 
 frequencies = jnp.logspace(np.log10(freq_lowerbound), np.log10(freq_upperbound), nfreq)
 # Same thing but for plotting
@@ -83,6 +80,18 @@ def stacksolve(tlist,matsin,output):
         #pulls ε(ω), μ(ω) for every layer/material at the vector of frequencies, data found in utils_materials
         eps_stack, mu_stack = utils_materials_real.get_eps_mu(mats, frequencies)
 
+        # Swap imaginary values to negative to follow differing convention
+        eps_stack = jnp.array(eps_stack)
+        mu_stack = jnp.array(mu_stack) 
+
+        eps_stack = eps_stack.real - 1j * jnp.abs(eps_stack.imag)
+        mu_stack = mu_stack.real - 1j * jnp.abs(mu_stack.imag)
+
+        # Error check, prints eps_stack and mu_stack to check them
+        #print(eps_stack)
+        #print(mu_stack)
+        #input('break')
+
         #Calls your solver at 0.0 rad incidence (normal incidence) to obtain:
         #R_TE, T_TE: reflectance/transmittance for TE polarization.
         #R_TM, T_TM: same for TM.
@@ -114,8 +123,8 @@ def fitness_func(ga_instance, solution, solution_idx):
 
     minRmax = stacksolve(tlist,solution[0:5],1) #Computes maximum reflection over frequency band
 
-    fitness1 = -1 * total_thickness
-    fitness2 = minRmax
+    fitness1 =  -1 * total_thickness
+    fitness2 =  -1 * minRmax
 
     return [np.array(fitness1).item(), np.array(fitness2).item()]
 

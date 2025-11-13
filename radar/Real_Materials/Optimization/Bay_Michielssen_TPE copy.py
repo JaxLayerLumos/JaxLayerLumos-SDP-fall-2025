@@ -5,38 +5,27 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import time
 from pathlib import Path
-import utils_materials_real 
-from Materials_Library_NEW import materials_data
-from utils_materials_real import get_eps_mu
 from jaxlayerlumos import stackrt_eps_mu
-
-# Store original functions
-_original_get_eps_mus = utils_materials_real.get_eps_mus_real_materials
-
-def patched_get_eps_mus_real_materials(material_indices, frequencies_GHz):
-    """Wrapper that applies sign convention fix"""
-    eps_r, mu_r = _original_get_eps_mus(material_indices, frequencies_GHz)
-    # Apply complex conjugate to convert from exp(-iωt) to exp(+iωt)
-    eps_r = np.conj(eps_r)
-    mu_r = np.conj(mu_r)
-    return eps_r, mu_r
-
-utils_materials_real.get_eps_mus_real_materials = patched_get_eps_mus_real_materials
+from jaxlayerlumos import utils_materials
 
 
+# import utils_materials_real 
+# from Materials_Library_NEW import materials_data
+# from utils_materials_real import get_eps_mu
+# from jaxlayerlumos import stackrt_eps_mu
 
 # Frequency range
 FREQ_MIN_GHZ = 0.2
 FREQ_MAX_GHZ = 8.0
 NUM_FREQ_POINTS = 500
 
-#Define the maximum thickness the code will optimize
-MAX_TOTAL_THICKNESS_MM = 7.0
-
 # Optimization parameters
 NUM_RUNS = 3  # Number of thickness windows
 MAX_EVALS_PER_RUN = 100  # Max evaluations per window
 NUM_LAYERS = 5  # Number of RAM layers
+
+# Valid material indices (1-15 for Meichels TPE)
+valid_material_indices = range(1,16)
 
 # Thickness constraints
 MIN_LAYER_THICKNESS_MM = 0.1
@@ -55,39 +44,6 @@ print("="*80)
 print("RAM OPTIMIZATION - MATERIAL LIBRARY INITIALIZATION")
 print("="*80)
 
-# Get actual number of materials
-num_materials = len(materials_data)
-print(f"\nTotal materials in library: {num_materials}")
-
-# Filter materials if needed
-if FILTER_SECTION_4_ONLY:
-    # Use only Section 4 (magneto-dielectric) materials
-    valid_material_indices = [
-        i+1 for i, mat in enumerate(materials_data) 
-        if mat.get('section') == 4
-    ]
-    print(f"Filtering to Section 4 materials only: {len(valid_material_indices)} materials")
-else:
-    # Use all available materials
-    valid_material_indices = list(range(1, num_materials + 1))
-
-print(f"Material index range: {min(valid_material_indices)} to {max(valid_material_indices)}")
-print(f"Number of materials available for optimization: {len(valid_material_indices)}")
-
-# Print material summary
-print("\nMaterial Library Summary:")
-sections = {}
-for idx in valid_material_indices:
-    mat = materials_data[idx - 1]
-    section = mat.get('section', 'Unknown')
-    sections[section] = sections.get(section, 0) + 1
-
-for section, count in sorted(sections.items()):
-    print(f"  Section {section}: {count} materials")
-
-# ============================================================================
-# FREQUENCY SETUP
-# ============================================================================
 
 print("\n" + "="*80)
 print("FREQUENCY SETUP")
@@ -116,13 +72,13 @@ def calculate_reflection_spectrum(layer_thicknesses_mm, material_indices, freque
     # Build thickness array: [Air(0), Layer1, Layer2, ..., PEC(0)]
     d_stack = jnp.array([0.0] + list(layer_thicknesses_mm) + [0.0]) * 1e-3  # Convert mm to m
     
-    # Build material list: [Air + Material1 + Material2 + ... + PEC]
+    # Build material list: [Air, Material1, Material2, ..., PEC]
     mats = ["Air"] + [int(m) for m in material_indices] + ["PEC"]
     
-    # Get material properties (input should be in Hz)
-    eps_stack, mu_stack = get_eps_mu(mats, frequencies_Hz)
+    # Get material properties (automatically handles Hz to GHz conversion internally)
+    eps_stack, mu_stack = utils_materials.get_eps_mu(mats, frequencies_Hz)
     
-    # Verify array dimensions (should be a matrix num_freqs x num_layers
+    # Verify array dimensions
     if eps_stack.shape[1] != d_stack.shape[0]:
         raise ValueError(
             f"Dimension mismatch: eps_stack shape {eps_stack.shape} "
@@ -144,6 +100,7 @@ def calculate_reflection_spectrum(layer_thicknesses_mm, material_indices, freque
 
 
 def calculate_peak_reflection(layer_thicknesses_mm, material_indices):
+    """Calculate the worst-case (peak) reflection in the frequency band."""
     R_db = calculate_reflection_spectrum(
         layer_thicknesses_mm, material_indices, frequencies_Hz
     )
@@ -155,6 +112,7 @@ def calculate_peak_reflection(layer_thicknesses_mm, material_indices):
 # ============================================================================
 
 class OptimizationTracker:
+    """Track all evaluations across all runs"""
     def __init__(self):
         self.all_materials = []
         self.all_layer_thicknesses = []
@@ -174,6 +132,7 @@ class OptimizationTracker:
         self.current_run_color = color
         
     def get_pareto_front(self):
+        """Compute Pareto-optimal solutions (minimize both thickness and reflection)"""
         if len(self.all_total_thicknesses) == 0:
             return [], [], [], []
             
@@ -231,7 +190,6 @@ for run_idx in range(NUM_RUNS):
     
     print(f"Total thickness range: {min_total_thickness:.2f} - {max_total_thickness:.2f} mm")
     print(f"Max single layer thickness: {max_single_layer:.2f} mm")
-    print(f"Material choices: {len(valid_material_indices)} materials")
     
     # Evaluation counter for this run
     eval_count = [0]  # Use list to allow modification in nested function
@@ -246,9 +204,6 @@ for run_idx in range(NUM_RUNS):
         
         # Check thickness constraints
         if total_thickness < min_total_thickness or total_thickness > max_total_thickness:
-            return {'loss': 1e10, 'status': STATUS_OK}
-        
-        if total_thickness > MAX_TOTAL_THICKNESS_MM:
             return {'loss': 1e10, 'status': STATUS_OK}
         
         try:
@@ -331,46 +286,46 @@ if len(pareto_ref) == 0:
     print("\n ERROR: No valid solutions found!")
     exit(1)
 
-# ============================================================================
-# GRADIENT DESCENT REFINEMENT
-# ============================================================================
+# # ============================================================================
+# # GRADIENT DESCENT REFINEMENT
+# # ============================================================================
 
-print("\n" + "="*80)
-print("REFINING WITH GRADIENT DESCENT")
-print("="*80)
+# print("\n" + "="*80)
+# print("REFINING WITH GRADIENT DESCENT")
+# print("="*80)
 
-def reflection_for_grad(thickness_list, material_list):
-    """Wrapper for gradient calculation"""
-    return calculate_peak_reflection(thickness_list, material_list)
+# def reflection_for_grad(thickness_list, material_list):
+#     """Wrapper for gradient calculation"""
+#     return calculate_peak_reflection(thickness_list, material_list)
 
-refined_layer_thick = [list(lt) for lt in pareto_layer_thick]
-refined_ref = list(pareto_ref)
-refined_total_thick = list(pareto_total_thick)
+# refined_layer_thick = [list(lt) for lt in pareto_layer_thick]
+# refined_ref = list(pareto_ref)
+# refined_total_thick = list(pareto_total_thick)
 
-for i in range(len(pareto_ref)):
-    if (i + 1) % 5 == 0 or i == 0:
-        print(f"  Refining solution {i+1}/{len(pareto_ref)}")
+# for i in range(len(pareto_ref)):
+#     if (i + 1) % 5 == 0 or i == 0:
+#         print(f"  Refining solution {i+1}/{len(pareto_ref)}")
     
-    try:
-        # Gradient descent iterations
-        for iteration in range(10):
-            grad_func = jax.grad(reflection_for_grad, argnums=0)
-            gradients = grad_func(refined_layer_thick[i], pareto_mats[i])
+#     try:
+#         # Gradient descent iterations
+#         for iteration in range(10):
+#             grad_func = jax.grad(reflection_for_grad, argnums=0)
+#             gradients = grad_func(refined_layer_thick[i], pareto_mats[i])
             
-            # Update thicknesses
-            learning_rate = 0.001
-            for j in range(len(gradients)):
-                refined_layer_thick[i][j] -= float(gradients[j]) * learning_rate
-                # Enforce minimum thickness
-                refined_layer_thick[i][j] = max(MIN_LAYER_THICKNESS_MM, refined_layer_thick[i][j])
+#             # Update thicknesses
+#             learning_rate = 0.001
+#             for j in range(len(gradients)):
+#                 refined_layer_thick[i][j] -= float(gradients[j]) * learning_rate
+#                 # Enforce minimum thickness
+#                 refined_layer_thick[i][j] = max(MIN_LAYER_THICKNESS_MM, refined_layer_thick[i][j])
             
-            # Recalculate
-            refined_ref[i] = reflection_for_grad(refined_layer_thick[i], pareto_mats[i])
-            refined_total_thick[i] = sum(refined_layer_thick[i])
+#             # Recalculate
+#             refined_ref[i] = reflection_for_grad(refined_layer_thick[i], pareto_mats[i])
+#             refined_total_thick[i] = sum(refined_layer_thick[i])
             
-    except Exception as e:
-        print(f"  Warning: Gradient refinement failed for solution {i+1}: {e}")
-        continue
+#     except Exception as e:
+#         print(f"  Warning: Gradient refinement failed for solution {i+1}: {e}")
+#         continue
 
 # ============================================================================
 # FIND OPTIMAL SOLUTION
@@ -390,14 +345,6 @@ print(f"\nTotal Thickness: {best_total_thickness:.3f} mm")
 print(f"Peak Reflection: {best_reflection:.2f} dB")
 print(f"\nLayer Configuration (Air → Layers → PEC):")
 
-for i, (mat_idx, thick) in enumerate(zip(best_materials, best_thicknesses), 1):
-    try:
-        mat_name = materials_data[mat_idx - 1].get('name', f'Material {mat_idx}')
-        mat_section = materials_data[mat_idx - 1].get('section', 'N/A')
-        print(f"  Layer {i}: Material {mat_idx:3d} (Section {mat_section}) - {thick:.3f} mm")
-        print(f"           {mat_name}")
-    except:
-        print(f"  Layer {i}: Material {mat_idx:3d} - {thick:.3f} mm")
 
 # ============================================================================
 # CALCULATE PERFORMANCE SPECTRUM

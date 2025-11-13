@@ -1,6 +1,6 @@
 materials_data = [
     { 
-        'name': "3D Quartz–alumina silica nitride 2.16 g/cc (8–40 GHz)", # out of range
+        'name': "3D Quartz–alumina silica nitride 2.16 g/cc (8–40 GHz)", 
         'section': 1, 
         'freq_range_ghz': (8, 40), 
         'eps_params': {
@@ -8,7 +8,7 @@ materials_data = [
             'C': 1.0147 - 0.0004j, 
             'D': -0.0879 + 0.002j, 
             'G': 0.9732 - 0.0002j, 
-            'H': 0.003 - 0.0004j, 
+            'H': 0.003 + 0.0004j, 
             'I': -0.0002 - 0.0076j, 
             'J': -0.000206 + 0.0000103j}
     },
@@ -22,8 +22,8 @@ materials_data = [
             'D': 0.000122 - 0.0000193j, 
             'G': 2.40 + 0.0001j, 
             'H': -0.00000693 - 0.00000375j, 
-            'I': 0.0000133 + 0.00000231j, 
-            'J': -0.0000000562 + 0.0000000326j}
+            'I': 0.0000133 - 0.00000231j, 
+            'J': -0.0000000562 - 0.0000000326j}
     },
     { 
         'name': "Alumina 99.9% dense 3.86–3.90 g/cc (1–300 GHz)", 
@@ -33,62 +33,62 @@ materials_data = [
             'B': 2.3945 + 0.0033j, 
             'C': 2.3985 + 0.0032j, 
             'D': 0.0243 + 0.001j, 
-            'G': 2.39 + 0.0034j, 
-            'H': 0.0005 + 0.0007j, 
-            'I': 0.0001 + 0.000000294j, 
-            'J': 0.00000230 + 0j}
+            'G': 2.39 - 0.0034j, 
+            'H': 0.0005 + 0j, 
+            'I': 0.0001 + 0.0007j, 
+            'J': 0.00000230 - 0.000000294j}
     },
     { 
-        'name': "Alumina 96–97% dense, 3.71 g/cc (5–250 GHz)", # out of range
+        'name': "Alumina 96–97% dense, 3.71 g/cc (5–250 GHz)", 
         'section': 1, 
         'freq_range_ghz': (5, 250),
         'eps_params': {
             'B': 2.4313 + 0.0015j, 
             'C': 2.4285 + 0.0014j, 
-            'D': 0.0112 + 0.0001j, 
+            'D': 0.0112 - 0.0001j, 
             'G': 2.2536 - 0.0029j, 
-            'H': 0.0004 + 0.0000625j, 
+            'H': 0.0004 + 0j, 
             'I': 0.0013 + 0j, 
-            'J': 0.00000648 + 0j}
+            'J': 0.00000648 - 0.0000625j}
     },
     { 
         'name': "SRM709 (0.01–18 GHz), Lead oxide glass", 
         'section': 1, 
         'freq_range_ghz': (0.01, 18),
         'eps_params': {
-            'B': 4.0907 + 0.0174j, 
-            'C': 4.0907 + 0.0174j, 
-            'D': -0.0002 + 0.0031j, 
-            'G': 4.0902 + 0.0168j, 
-            'H': -0.0001 + 0.0014j, 
+            'B': 4.0907 - 0.0174j, 
+            'C': 4.0907 - 0.0174j, 
+            'D': 0.0002 - 0.0031j, 
+            'G': 4.0902 - 0.0168j, 
+            'H': 0.0001 - 0.0014j, 
             'I': 0.0074 + 0.004j, 
-            'J': 0.0005 + 0.0006j}
+            'J': 0.0005 - 0.0006j}
     },
     { 
-        'name': "Mullite 97% dense (2–35 GHz), 3 Al2O3 • 2SiO2", 
+        'name': "Mullite 97% dense (2–35 GHz), 3 Al2O3 • 2SiO2",
         'section': 1, 
         'freq_range_ghz': (2, 35),
         'eps_params': {
             'B': 1.6387 + 0.0007j, 
             'C': 1.6387 + 0.0007j, 
-            'D': -0.0001 + 0.0001j, 
+            'D': -0.0001 - 0.0001j, 
             'G': 1.6387 + 0.0007j, 
-            'H': -0.0000216 + 0.0000142j, 
-            'I': 0.0000114 + 0.0000309j, 
+            'H': -0.0000216 - 0.0000142j, 
+            'I': 0.0000114 - 0.0000309j, 
             'J': -0.000000463 + 0.000000863j}
     },
     { 
-        'name': "Magnesium oxide (MgO) (2–35 GHz)", 
+        'name': "Magnesium oxide (MgO) (2–35 GHz)",
         'section': 1, 
         'freq_range_ghz': (2, 35),
         'eps_params': {
             'B': 2.3743 + 0.0003j, 
             'C': 2.3743 + 0.0003j, 
-            'D': 0.0024 + 0.0003j, 
-            'G': 2.3743 + 0.0001j, 
-            'H': -0.0004 + 0.000000591j, 
-            'I': 0 + 0.0000000175j, 
-            'J': 0 + 0j}
+            'D': 0.0024 + 0j, 
+            'G': 2.3743 + 0.0003j, 
+            'H': 0.0004 - 0.0001j, 
+            'I': 0.0005 + 0j, 
+            'J': 0.0000175 + 0.000000591j}
     },
     { 
         'name': "Slip-cast silica, 2.05 g/cc (2–35 GHz)",
@@ -104,7 +104,7 @@ materials_data = [
             'J': 0.00000362 + 0.00000133j}
     },
     { 
-        'name': "Shuttle tile LI2200 (30–100 GHz)", # out of range
+        'name': "Shuttle tile LI2200 (30–100 GHz)",
         'section': 1, 
         'freq_range_ghz': (30, 100),
         'eps_params': {
@@ -112,7 +112,7 @@ materials_data = [
             'C': 0.3371 + 0.0012j, 
             'D': -0.0026 - 0.0006j, 
             'G': 0.3374 + 0.0012j, 
-            'H': 0.0005 + 0.0002j, 
+            'H': 0.0005 - 0.0002j, 
             'I': 0.0001 + 0.0007j, 
             'J': 0.0000153 - 0.000000249j}
     },
@@ -123,7 +123,7 @@ materials_data = [
         'eps_params': {
             'B': 0.2741 + 0.0006j, 
             'C': 0.2741 + 0.0006j, 
-            'D': -0.04 + 0.0008j, 
+            'D': 0.04 - 0.0008j, 
             'G': 0.2755 + 0.0005j, 
             'H': -0.0031 + 0.0001j, 
             'I': 0.0001 - 0.0003j, 
@@ -136,11 +136,11 @@ materials_data = [
         'eps_params': {
             'B': 1.6503 + 0.0001j, 
             'C': 1.6503 + 0.0001j, 
-            'D': -0.0023 + 0.0001j, 
-            'G': 1.6502 - 0.00000102j, 
-            'H': 0.00001042 - 0.000357j, 
-            'I': 0.000002546 - 0.0000000109j, 
-            'J': -0.00000184 + 0j}
+            'D': -0.0023 + 0j, 
+            'G': 1.6502 + 0.0001j, 
+            'H': 0.00001042 - 0.00000102j, 
+            'I': 0.000002546 - 0.000357j, 
+            'J': -0.00000184 - 0.0000000109j}
     },
     { 
         'name': "Boron nitride; 2.28 g/cc (1–40 GHz) (Nominal εr = 4.08, Accumet Engineering)",
@@ -151,12 +151,12 @@ materials_data = [
             'C': 1.1255 + 0.0002j, 
             'D': 0.0001 + 0.0006j, 
             'G': 1.1255 + 0.0002j, 
-            'H': 0.0001 + 0.0001j, 
+            'H': 0.0001 - 0.0001j, 
             'I': 0.0001 - 0.0011j, 
             'J': 0.00000502 + 0.00000504j}
     },
     { 
-        'name': "Magnesium calcium titanate 30 (8–50 GHz) (Nominal εr = 30)", # out of range
+        'name': "Magnesium calcium titanate 30 (8–50 GHz) (Nominal εr = 30)",
         'section': 1, 
         'freq_range_ghz': (8, 50),
         'eps_params': {
@@ -165,7 +165,7 @@ materials_data = [
             'D': 0.4159 + 0.3298j, 
             'G': 0.5493 + 0.0008j, 
             'H': -0.0024 + 0.0001j, 
-            'I': -0.0216j, 
+            'I': -0.0216 +0j, 
             'J': -0.0005 + 0j}
     },
     { 
@@ -175,24 +175,24 @@ materials_data = [
         'eps_params': {
             'B': 4.0905 + 0.0173j, 
             'C': 4.0905 + 0.0173j, 
-            'D': -0.0002 + 0.0031j, 
-            'G': 4.0905 + 0.0175j, 
-            'H': -0.0001 + 0.0014j, 
+            'D': 0.0002 - 0.0031j, 
+            'G': 4.0905 - 0.0175j, 
+            'H': 0.0001 - 0.0014j, 
             'I': 0.0074 + 0.004j, 
-            'J': 0.0005 + 0.0006j}
+            'J': 0.0005 - 0.0006j}
     },
     { 
         'name': "SRM 710a Sodalime glass (0.01–18 GHz)",
         'section': 1, 
         'freq_range_ghz': (0.01, 18),
         'eps_params': {
-            'B': 1.7687 + 0.0004j,
-            'C': 1.7687 + 0.0004j, 
+            'B': 1.7687 - 0.0004j,
+            'C': 1.7687 - 0.0004j, 
             'D': -0.0024 - 0.0003j, 
-            'G': 1.7687 + 0.0004j, 
+            'G': 1.7687 - 0.0004j, 
             'H': -0.0004 + 0.0015j, 
             'I': 0.0017 - 0.0006j, 
-            'J': -0.0001 + 0.0001j}
+            'J': -0.0001 - 0.0001j}
     },
     { 
         'name': "PyroCeram (2–40 GHz)",
@@ -201,14 +201,14 @@ materials_data = [
         'eps_params': {
             'B': 1.4171 + 0.0003j, 
             'C': 1.4171 + 0.0003j, 
-            'D': -0.0002 + 0.0003j, 
-            'G': 1.4171 - 0.0000137j, 
-            'H': -0.000000194 - 0.000154j, 
-            'I': 0.00000174 + 0.0000328j, 
-            'J': -0.00000236 + 0j}
+            'D': -0.0002 + 0j, 
+            'G': 1.4171 + 0.0003j, 
+            'H': -0.000000194 - 0.0000000137j, 
+            'I': 0.0000174 - 0.00015427j, 
+            'J': -0.00000236 - 0.0000328j}
     },
     { 
-        'name': "Sapphire wafer #1 (80–100 GHz)", # out of range
+        'name': "Sapphire wafer #1 (80–100 GHz)",
         'section': 1, 
         'freq_range_ghz': (80, 100),
         'eps_params': {
@@ -217,11 +217,11 @@ materials_data = [
             'D': -0.0777 + 0.025j, 
             'G': 2.8204 + 0.0254j, 
             'H': 0.004 - 0.0012j, 
-            'I': -0.0006 + 0.0003j, 
+            'I': -0.0006 - 0.0046j, 
             'J': -0.0000493 + 0.0000053j}
     },
     { 
-        'name': "Sapphire wafer #2 (80–100 GHz)", # out of range
+        'name': "Sapphire wafer #2 (80–100 GHz)",
         'section': 1, 
         'freq_range_ghz': (80, 100),
         'eps_params': {
@@ -243,8 +243,8 @@ materials_data = [
             'D': 0.0115 + 0.0001j, 
             'G': 1.3599 + 0.0025j, 
             'H': 0.001 - 0.0008j, 
-            'I': -0.0014 + 0.00000461j, 
-            'J': 0.0000596 + 0j}
+            'I': 0.0014 + 0j, 
+            'J': 0.0000596 + 0.00000461j}
     },
     { 
         'name': "Fused silica-glass (Dynasil 4000) (2–40 GHz)",
@@ -256,7 +256,7 @@ materials_data = [
             'D': -0.0012 + 0.0001j, 
             'G': 0.9688 + 0.0001j, 
             'H': 0.0002 + 0.0002j, 
-            'I': -0.000012161 - 0.0000467j, 
+            'I': -0.000012161 - 0.000046692j, 
             'J': -0.00000715 + 0.000000633j}
     },
     { 
@@ -266,11 +266,11 @@ materials_data = [
         'eps_params': {
             'B': 0.9469 + 0.0001j, 
             'C': 0.9469 + 0.0001j, 
-            'D': -0.0081 + 0.0001j, 
-            'G': 0.9468 - 0.000000074j, 
+            'D': -0.0081 + 0j, 
+            'G': 0.9468 + 0.0001j, 
             'H': -0.0003 + 0j, 
             'I': -0.0019 + 0j, 
-            'J': -0.0000335 + 0j}
+            'J': -0.0000335 - 0.000000074j}
     },
     { 
         'name': "Spinel magnesium aluminum oxide (MgAl2O4) (2–35 GHz)",
@@ -281,9 +281,9 @@ materials_data = [
             'C': 2.0615 + 0.0004j, 
             'D': 0.0098 + 0.0001j, 
             'G': 2.0614 + 0.0004j, 
-            'H': 0.002 + 0.00000107j, 
+            'H': 0.002 + 0j, 
             'I': 0.0022 + 0j, 
-            'J': 0.0000864 + 0j}
+            'J': 0.0000864 + 0.00000107j}
     },
     { 
         'name': "Magnesium titanate 16 (0.01–18 GHz) (Nominal εr = 16)",
@@ -296,23 +296,23 @@ materials_data = [
             'G': 4.2135 + 0.0099j, 
             'H': 0.0073 + 0.0007j, 
             'I': 0.0085 + 0.0046j, 
-            'J': 0.0004 + 0.0011j}
+            'J': 0.0004 - 0.0011j}
     },
     { 
-        'name': "Barium titanate 38 (4.41–4.48 g/cc, 8–50 GHz) (Nominal εr = 38)", # out of range
+        'name': "Barium titanate 38 (4.41–4.48 g/cc, 8–50 GHz) (Nominal εr = 38)",
         'section': 1, 
         'freq_range_ghz': (8, 50),
         'eps_params': {
             'B': 7.5015 + 0.0152j, 
             'C': 6.3603 + 0.0073j, 
-            'D': 0.1914 + 0.0436j, 
-            'G': 8.0033 - 0.0002j, 
-            'H': -0.0061 + 0j, 
+            'D': 0.1914 + 0j, 
+            'G': 8.0033 - 0.0436j, 
+            'H': -0.0061 + 0.0002j, 
             'I': 0.0003 - 0.0174j, 
             'J': -0.0016 + 0j}
     },
     { 
-        'name': "Cordierite (Mg2Al4Si5O18) (2.3–2.5 g/cc, 8–50 GHz)", # out of range
+        'name': "Cordierite (Mg2Al4Si5O18) (2.3–2.5 g/cc, 8–50 GHz)",
         'section': 1, 
         'freq_range_ghz': (8, 50),
         'eps_params': {
@@ -322,56 +322,56 @@ materials_data = [
             'G': 1.6774 + 0.1004j, 
             'H': -0.0067 - 0.0035j, 
             'I': 0.0005 - 0.0022j, 
-            'J': 0.0000443 + 0.0000005j}
+            'J': 0.0000443 + 0.0000235j}
     },
     { 
-        'name': "Magnesium aluminum titanate 11 (3.3–3.5 g/cc, 8–50 GHz) (Nominal εr = 11)", # out of range
+        'name': "Magnesium aluminum titanate 11 (3.3–3.5 g/cc, 8–50 GHz) (Nominal εr = 11)",
         'section': 1, 
         'freq_range_ghz': (8, 50),
         'eps_params': {
-            'B': 2.3079 + 0.0325j, 
+            'B': 2.3079 - 0.0325j, 
             'C': 2.5009 + 0.2874j, 
-            'D': -0.1472 + 0.1533j, 
+            'D': 0.1472 - 0.1533j, 
             'G': 1.7366 + 0.8388j, 
-            'H': 0.0114 + 0.0319j, 
-            'I': -0.012 + 0.0155j, 
-            'J': -0.0003 + 0.0003j}
+            'H': 0.0114 - 0.0319j, 
+            'I': 0.012 - 0.0155j, 
+            'J': -0.0003 - 0.0003j}
     },
     { 
-        'name': "Stycast 2662 (10–60 GHz, 1.385 g/cc)", # out of range
+        'name': "Stycast 2662 (10–60 GHz, 1.385 g/cc)",
         'section': 1, 
         'freq_range_ghz': (10, 60),
         'eps_params': {
             'B': 0.4099 + 0.0071j, 
             'C': 0.8644 - 0.0551j, 
-            'D': -0.1859 + 0.085j, 
+            'D': 0.1859 - 0.085j, 
             'G': 0.8048 + 0.4175j, 
             'H': 0.0032 - 0.0182j, 
-            'I': -0.0103 + 0.0093j, 
-            'J': -0.0001 + 0.0002j}
+            'I': 0.0103 - 0.0093j, 
+            'J': -0.0001 - 0.0002j}
     },
     { 
-        'name': "Corning 7940 fused silica (2.201 g/cc, 10–100 GHz)", # out of range
+        'name': "Corning 7940 fused silica (2.201 g/cc, 10–100 GHz)",
         'section': 1, 
         'freq_range_ghz': (10, 100),
         'eps_params': {
-            'B': 0.9389 + 0.0003j, 
-            'C': 0.9413 + 0.0002j, 
+            'B': 0.9389 - 0.0003j, 
+            'C': 0.9413 - 0.0002j, 
             'D': 0.0261 + 0.0008j, 
-            'G': 0.9381 + 0.0005j, 
-            'H': 0.0017 + 0.0026j, 
-            'I': -0.0001 + 0.00000131j, 
-            'J': 0.000035 + 0j}
+            'G': 0.9381 - 0.0005j, 
+            'H': 0.0017 + 0j, 
+            'I': -0.0001 + 0.0026j, 
+            'J': 0.000035 + 0.00000131j}
     },
     { 
-        'name': "Corning 7957 fused silica (2.20 g/cc, 27–60 GHz)", # out of range
+        'name': "Corning 7957 fused silica (2.20 g/cc, 27–60 GHz)",
         'section': 1, 
         'freq_range_ghz': (27, 60),
         'eps_params': {
             'B': 0.9213 - 0.0307j, 
-            'C': 0.936 + 0.0203j, 
+            'C': 0.936 - 0.0203j, 
             'D': 0.047 + 0.0524j, 
-            'G': 0.9583 + 0.077j, 
+            'G': 0.9583 - 0.077j, 
             'H': 0.0001 + 0.0064j, 
             'I': -0.0064 + 0.0019j, 
             'J': 0.0000363 + 0.0000644j}
@@ -387,10 +387,10 @@ materials_data = [
         'eps1_params': None,
         'eps2_params': {
             'B': 2.47+0.26j, 
-            'C': 8E-02-0.14j, 
+            'C': 0.08-0.14j, 
             'D': 0.61+0.68j, 
             'E': -0.17+0.48j, 
-            'F': 0.66-7E-02j, 
+            'F': 0.66-0.02j, 
             'G': 10.66-12.9j, 
             'H': -18.6+10.47j}
     },
@@ -405,7 +405,7 @@ materials_data = [
         'eps1_params': None,
         'eps2_params': {
             'B': 2.66+0.16j, 
-            'C': 7E-02-9E-02j, 
+            'C': 0.07-0.09j, 
             'D': 0.61+0.39j, 
             'E': 0.26+0.42j, 
             'F': 0.81+0.12j, 
@@ -422,10 +422,10 @@ materials_data = [
             'D': 0.583},
         'eps1_params': {
             'B': 1.57+5E-02j, 
-            'C': 9E-02+0.14j, 
+            'C': 0.09+0.14j, 
             'D': -1.7-0.25j, 
             'E': 1.71+0.12j, 
-            'F': 5E-02-14.7j, 
+            'F': 0.05-14.7j, 
             'G': 1.52+43.6j},
         'eps2_params': None
     },
@@ -437,7 +437,13 @@ materials_data = [
             'B': 2.21, 
             'C': 0.866, 
             'D': 0.940},
-        'eps1_params': None,
+        'eps1_params': {
+            'B': 2.57+0.55j, 
+            'C': 1.46+0.56j, 
+            'D': -3e-3-4e-3j, 
+            'E': -0.44-1.1j, 
+            'F': 20.16+7.5j, 
+            'G': -11.9-73.9j},
         'eps2_params': None
     },
     {
@@ -449,12 +455,12 @@ materials_data = [
             'C': 0.554, 
             'D': 0.240},
         'eps1_params': {
-            'B': 2.57+0.55j, 
-            'C': 1.46+0.56j, 
-            'D': -3e-3-4e-3j, 
-            'E': -0.44-1.1j, 
-            'F': 20.16+7.5j, 
-            'G': -11.9-73.9j},
+            'B': 1.18+4e-2j, 
+            'C': 1.14+3e-2j, 
+            'D': -9e-2+5e-2j, 
+            'E': 1.26+4e-2j, 
+            'F': 13.8-13.7j, 
+            'G': 6.03+90.4j},
         'eps2_params': None
     },
     {
@@ -465,23 +471,6 @@ materials_data = [
             'B': 4.15, 
             'C': 0.61, 
             'D': 0.28},
-        'eps1_params': {
-            'B': 1.18+4e-2j, 
-            'C': 1.14+3e-2j, 
-            'D': -9e-2+5e-2j, 
-            'E': 1.26+4e-2j, 
-            'F': 13.8-13.7j, 
-            'G': 6.03+90.4j},
-        'eps2_params': None
-    },
-    {
-        'name': "80 µm 49.4%/vol in epoxy, ~3.0 g/cc",
-        'section': 4,
-        'freq_range_ghz': (0.001, 10),
-        'chi_m_params': {
-            'B': 6.18, 
-            'C': 0.33, 
-            'D': 0.12},
         'eps1_params': {
             'B': 1.75+7e-2j, 
             'C': 1.58+0.18j, 
@@ -497,6 +486,24 @@ materials_data = [
             'F': 1.96+0.17j, 
             'G': 7.53-3.33j, 
             'H': -10.26-4.8j}
+    },
+    {
+        'name': "80 µm 49.4%/vol in epoxy, ~3.0 g/cc",
+        'section': 4,
+        'freq_range_ghz': (0.001, 10),
+        'chi_m_params': {
+            'B': 6.18, 
+            'C': 0.33, 
+            'D': 0.12},
+        'eps1_params': None,
+        'eps2_params': {
+            'B': 3.16+0.26j, 
+            'C': 0.2+0.08j, 
+            'D': 0.75+0.52j, 
+            'E': -0.2+0.2j, 
+            'F': 1.86+0.02j, 
+            'G': 9.42-6.54j, 
+            'H': -13.73-1.87j}
     },
     {
         'name': "80 µm 53.6%/vol in epoxy, ~3.2 g/cc",
@@ -602,17 +609,6 @@ materials_data = [
             'B': 14.20, 
             'C': 0.18, 
             'D': 0.053},
-        'eps1_params': None,
-        'eps2_params': None
-    },
-    {
-        'name': "500-nm Fe 7% + 80-µm Ferrite 7%/vol in epoxy, 1.8 g/cc",
-        'section': 4,
-        'freq_range_ghz': (0.001, 18),
-        'chi_m_params': {
-            'B': 1.05, 
-            'C': 3.32, 
-            'D': 1.68},
         'eps1_params': {
             'B': 3.31+0.11j, 
             'C': 2.32+0.15j, 
@@ -630,6 +626,30 @@ materials_data = [
             'H': -11.8-19j}
     },
     {
+        'name': "500-nm Fe 7% + 80-µm Ferrite 7%/vol in epoxy, 1.8 g/cc",
+        'section': 4,
+        'freq_range_ghz': (0.001, 18),
+        'chi_m_params': {
+            'B': 1.05, 
+            'C': 3.32, 
+            'D': 1.68},
+        'eps1_params': {
+            'B': 0.99-1.45j, 
+            'C': 2.26-1.16j, 
+            'D': -0.0097-0.02j, 
+            'E': 2.1+2.73j, 
+            'F': 48.8+112j, 
+            'G': 47.2+119j},
+        'eps2_params': {
+            'B': 2.94+0.29j, 
+            'C': 0.96-0.71j, 
+            'D': 0.49+0.08j, 
+            'E': 0.32-0.12j, 
+            'F': 2.45+0.08j, 
+            'G': 12.6+4j, 
+            'H': -8.1-10.9j}
+    },
+    {
         'name': "500-nm Fe 10.2% + 80-µm Ferrite 10.1%/vol in epoxy, 2.1 g/cc",
         'section': 4,
         'freq_range_ghz': (0.001, 10),
@@ -644,7 +664,14 @@ materials_data = [
             'E': 2.1+2.69j, 
             'F': 8.39+13.31j, 
             'G': 18.7+15.7j},
-        'eps2_params': None
+        'eps2_params': {
+            'B': 2.9+0.39j, 
+            'C': 1.01-0.69j, 
+            'D': 0.51+0.32j, 
+            'E': 0.32-0.02j, 
+            'F': 2.24+0.24j, 
+            'G': 7.49-2.7j, 
+            'H': -8.4-2.6j}
     },
     {
         'name': "500-nm Fe 13.4% + 80-µm Ferrite 13.6%/vol in epoxy, 2.43 g/cc",
@@ -782,7 +809,7 @@ materials_data = [
             'H': -547+598j},
     },
     { 
-        'name': "Silicon (2.33 g/cc) (9–12.4 GHz) (nominal εr = 10.2; Accumet Engineering)", # out of range
+        'name': "Silicon (2.33 g/cc) (9–12.4 GHz) (nominal εr = 10.2; Accumet Engineering)", 
         'section': 6, 
         'freq_range_ghz': (9, 12.4), 
         'eps_params': {
@@ -808,7 +835,7 @@ materials_data = [
             'H': 0.92+8.12j},
     },
     {
-        'name': "Syntactic foam F6555 (0°)", # not a viable material
+        'name': "Syntactic foam F6555 (0°)",
         'section': 7,
         'freq_range_ghz': (20, 100),
         'eps_params': {
@@ -821,7 +848,7 @@ materials_data = [
             'J': -0.00002 - 0.000004j}
     },
     {
-        'name': "Syntactic foam F6555 (90°)", # not a viable material
+        'name': "Syntactic foam F6555 (90°)",
         'section': 7,
         'freq_range_ghz': (20, 100),
         'eps_params': {
@@ -834,7 +861,7 @@ materials_data = [
             'J': -0.00002 - 0.000004j}, 
     },
     {
-        'name': "Honeycomb HRH-310 (0°)", # not a viable material
+        'name': "Honeycomb HRH-310 (0°)",
         'section': 7,
         'freq_range_ghz': (10, 60),
         'eps_params': {
@@ -847,7 +874,7 @@ materials_data = [
             'J': -0.00007 + 0.00001j}
     },
     {
-        'name': "Honeycomb HRH-310 (90°)", # not a viable material
+        'name': "Honeycomb HRH-310 (90°)",
         'section': 7,
         'freq_range_ghz': (10, 60),
         'eps_params': {
@@ -861,7 +888,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRP 1/4-in cell (0°)", # not a viable material
+        'name': "Honeycomb HRP 1/4-in cell (0°)",
         'section': 7,
         'freq_range_ghz': (30, 60),
         'eps_params': {
@@ -875,7 +902,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRP 1/4-in cell (90°)", # not a viable material
+        'name': "Honeycomb HRP 1/4-in cell (90°)",
         'section': 7,
         'freq_range_ghz': (30, 60),
         'eps_params': {
@@ -889,7 +916,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRP 1/16-in cell (0°)", # not a viable material
+        'name': "Honeycomb HRP 1/16-in cell (0°)",
         'section': 7,
         'freq_range_ghz': (30, 60),
         'eps_params': {
@@ -903,7 +930,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRP 1/16-in cell (90°)", # not a viable material
+        'name': "Honeycomb HRP 1/16-in cell (90°)",
         'section': 7,
         'freq_range_ghz': (30, 60),
         'eps_params': {
@@ -917,7 +944,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRH-78 (0°)", # not a viable material
+        'name': "Honeycomb HRH-78 (0°)",
         'section': 7,
         'freq_range_ghz': (18, 60),
         'eps_params': {
@@ -931,7 +958,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRH-78 (90°)", # not a viable material
+        'name': "Honeycomb HRH-78 (90°)",
         'section': 7,
         'freq_range_ghz': (18, 60),
         'eps_params': {
@@ -945,7 +972,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRH-10 (0°)", # not a viable material
+        'name': "Honeycomb HRH-10 (0°)",
         'section': 7,
         'freq_range_ghz': (18, 60),
         'eps_params': {
@@ -959,7 +986,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRH-10 (90°)", # not a viable material
+        'name': "Honeycomb HRH-10 (90°)",
         'section': 7,
         'freq_range_ghz': (18, 60),
         'eps_params': {
@@ -973,7 +1000,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb para-aramid (0°)", # not a viable material
+        'name': "Honeycomb para-aramid (0°)",
         'section': 7,
         'freq_range_ghz': (5, 40),
         'eps_params': {
@@ -987,7 +1014,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb para-aramid (90°)", # not a viable material
+        'name': "Honeycomb para-aramid (90°)",
         'section': 7,
         'freq_range_ghz': (5, 40),
         'eps_params': {
@@ -1001,7 +1028,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRH-327 (0°)", # not a viable material
+        'name': "Honeycomb HRH-327 (0°)",
         'section': 7,
         'freq_range_ghz': (30, 60),
         'eps_params': {
@@ -1015,7 +1042,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb HRH-327 (90°)", # not a viable material
+        'name': "Honeycomb HRH-327 (90°)",
         'section': 7,
         'freq_range_ghz': (30, 60),
         'eps_params': {
@@ -1029,7 +1056,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb ES PEI-E-glass (0°)", # not a viable material
+        'name': "Honeycomb ES PEI-E-glass (0°)",
         'section': 7,
         'freq_range_ghz': (18, 60),
         'eps_params': {
@@ -1043,7 +1070,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb ES PEI-E-glass (90°)", # not a viable material
+        'name': "Honeycomb ES PEI-E-glass (90°)",
         'section': 7,
         'freq_range_ghz': (18, 60),
         'eps_params': {
@@ -1057,7 +1084,7 @@ materials_data = [
         }
     },
     {
-        'name': "PBI Honeycomb (0° incidence)", # not a viable material
+        'name': "PBI Honeycomb (0° incidence)",
         'section': 7,
         'freq_range_ghz': (4, 100),
         'eps_params': {
@@ -1071,7 +1098,7 @@ materials_data = [
         }
     },
     {
-        'name': "PBI Honeycomb (20° incidence)", # not a viable material
+        'name': "PBI Honeycomb (20° incidence)",
         'section': 7,
         'freq_range_ghz': (70, 100),
         'eps_params': {
@@ -1085,7 +1112,7 @@ materials_data = [
         }
     },
     {
-        'name': "PBI Honeycomb (40° incidence)", # not a viable material
+        'name': "PBI Honeycomb (40° incidence)",
         'section': 7,
         'freq_range_ghz': (70, 100),
         'eps_params': {
@@ -1099,7 +1126,7 @@ materials_data = [
         }
     },
     {
-        'name': "PBI Honeycomb (60° incidence)", # not a viable material
+        'name': "PBI Honeycomb (60° incidence)",
         'section': 7,
         'freq_range_ghz': (70, 100),
         'eps_params': {
@@ -1113,7 +1140,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb polycarbonate 1/8-in (0°)", # not a viable material
+        'name': "Honeycomb polycarbonate 1/8-in (0°)",
         'section': 7,
         'freq_range_ghz': (8, 26),
         'eps_params': {
@@ -1127,7 +1154,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb polycarbonate 1/8-in (90°)", # not a viable material
+        'name': "Honeycomb polycarbonate 1/8-in (90°)",
         'section': 7,
         'freq_range_ghz': (8, 26),
         'eps_params': {
@@ -1141,7 +1168,7 @@ materials_data = [
         }
     },
     {
-        'name': "Honeycomb polyimide 1/4-in (0°)", # not a viable material
+        'name': "Honeycomb polyimide 1/4-in (0°)",
         'section': 7,
         'freq_range_ghz': (18, 45),
         'eps_params': {
@@ -1155,7 +1182,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polyurethane foam 10 lb/ft3 (0°)", # not a viable material
+        'name': "Polyurethane foam 10 lb/ft3 (0°)",
         'section': 7,
         'freq_range_ghz': (18, 100),
         'eps_params': {
@@ -1169,7 +1196,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polyurethane foam 6 lb/ft3 (0°)", # not a viable material
+        'name': "Polyurethane foam 6 lb/ft3 (0°)",
         'section': 7,
         'freq_range_ghz': (18, 100),
         'eps_params': {
@@ -1183,7 +1210,7 @@ materials_data = [
         }
     },
     {
-        'name': "Carbon reticulated foam Sample C", # not a viable material
+        'name': "Carbon reticulated foam Sample C",
         'section': 7,
         'freq_range_ghz': (0.5, 6),
         'eps_params': {
@@ -1197,7 +1224,7 @@ materials_data = [
         }
     },
     {
-        'name': "Carbon reticulated foam Sample B", # not a viable material
+        'name': "Carbon reticulated foam Sample B",
         'section': 7,
         'freq_range_ghz': (0.5, 6),
         'eps_params': {
@@ -1211,7 +1238,7 @@ materials_data = [
         }
     },
     {
-        'name': "Carbon reticulated foam Sample A", # not a viable material
+        'name': "Carbon reticulated foam Sample A",
         'section': 7,
         'freq_range_ghz': (0.5, 6),
         'eps_params': {
@@ -1225,7 +1252,7 @@ materials_data = [
         }
     },
     {
-        'name': "110 Polymethacrylimide-1 foam (0°)", # not a viable material
+        'name': "110 Polymethacrylimide-1 foam (0°)",
         'section': 7,
         'freq_range_ghz': (1, 100),
         'eps_params': {
@@ -1239,7 +1266,7 @@ materials_data = [
         }
     },
     {
-        'name': "110 Polymethacrylimide-2 foam (0°)", # not a viable material
+        'name': "110 Polymethacrylimide-2 foam (0°)",
         'section': 7,
         'freq_range_ghz': (1, 100),
         'eps_params': {
@@ -1253,7 +1280,7 @@ materials_data = [
         }
     },
     {
-        'name': "200 Polymethacrylimide foam (0°)", # not a viable material
+        'name': "200 Polymethacrylimide foam (0°)",
         'section': 7,
         'freq_range_ghz': (18, 100),
         'eps_params': {
@@ -1267,7 +1294,7 @@ materials_data = [
         }
     },
     {
-        'name': "300 Polymethacrylimide foam (0°)", # not a viable material
+        'name': "300 Polymethacrylimide foam (0°)",
         'section': 7,
         'freq_range_ghz': (18, 60),
         'eps_params': {
@@ -1281,7 +1308,7 @@ materials_data = [
         }
     },
     {
-        'name': "51 Polymethacrylimide foam (0°)", # not a viable material
+        'name': "51 Polymethacrylimide foam (0°)",
         'section': 7,
         'freq_range_ghz': (8, 26),
         'eps_params': {
@@ -1295,7 +1322,7 @@ materials_data = [
         }
     },
     {
-        'name': "71 Polymethacrylimide foam (0°)", # not a viable material
+        'name': "71 Polymethacrylimide foam (0°)",
         'section': 7,
         'freq_range_ghz': (9, 17),
         'eps_params': {
@@ -1309,7 +1336,7 @@ materials_data = [
         }
     },
     {
-        'name': "31 Polymethacrylimide foam (0°)", # not a viable material
+        'name': "31 Polymethacrylimide foam (0°)",
         'section': 7,
         'freq_range_ghz': (8, 26),
         'eps_params': {
@@ -1323,7 +1350,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polystyrene foam 7.8 lb/ft3", # not a viable material
+        'name': "Polystyrene foam 7.8 lb/ft3",
         'section': 7,
         'freq_range_ghz': (9, 18),
         'eps_params': {
@@ -1337,7 +1364,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polystyrene foam 12.1 lb/ft3", # not a viable material
+        'name': "Polystyrene foam 12.1 lb/ft3",
         'section': 7,
         'freq_range_ghz': (9, 18),
         'eps_params': {
@@ -1351,7 +1378,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polystyrene foam 13.9 lb/ft3", # not a viable material
+        'name': "Polystyrene foam 13.9 lb/ft3",
         'section': 7,
         'freq_range_ghz': (9, 18),
         'eps_params': {
@@ -1365,7 +1392,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polystyrene foam 15.7 lb/ft3", # not a viable material
+        'name': "Polystyrene foam 15.7 lb/ft3",
         'section': 7,
         'freq_range_ghz': (9, 18),
         'eps_params': {
@@ -1379,7 +1406,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polystyrene foam 17.0 lb/ft3", # not a viable material
+        'name': "Polystyrene foam 17.0 lb/ft3",
         'section': 7,
         'freq_range_ghz': (9, 18),
         'eps_params': {
@@ -1393,7 +1420,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polystyrene foam 20.0 lb/ft3", # not a viable material
+        'name': "Polystyrene foam 20.0 lb/ft3",
         'section': 7,
         'freq_range_ghz': (9, 18),
         'eps_params': {
@@ -1407,7 +1434,7 @@ materials_data = [
         }
     },
     {
-        'name': "Bismaleimide BMI F650, 1.27 g/cc (18–60 GHz)", # not in range
+        'name': "Bismaleimide BMI F650, 1.27 g/cc (18–60 GHz)",
         'section': 8,
         'freq_range_ghz': (18, 60),
         'eps_params': {
@@ -1421,7 +1448,7 @@ materials_data = [
         }
     },
     {
-        'name': "Bismaleimide BMI F650, 1.27 g/cc (18–100 GHz)", # not in range
+        'name': "Bismaleimide BMI F650, 1.27 g/cc (18–100 GHz)",
         'section': 8,
         'freq_range_ghz': (18, 100),
         'eps_params': {
@@ -1435,7 +1462,7 @@ materials_data = [
         }
     },
     {
-        'name': "Celazole polybenzamidazole PBI (75–100 GHz), 1.3 g/cc", # not in range
+        'name': "Celazole polybenzamidazole PBI (75–100 GHz), 1.3 g/cc",
         'section': 8,
         'freq_range_ghz': (75, 100),
         'eps_params': {
@@ -1449,7 +1476,7 @@ materials_data = [
         }
     },
     {
-        'name': "Cyanate ester 561, (20–60 GHz), 1.22 g/cc", # not in range
+        'name': "Cyanate ester 561, (20–60 GHz), 1.22 g/cc",
         'section': 8,
         'freq_range_ghz': (20, 60),
         'eps_params': {
@@ -1463,7 +1490,7 @@ materials_data = [
         }
     },
     {
-        'name': "Cyanate ester-2 (30–100 GHz), 1.22 g/cc", # not in range
+        'name': "Cyanate ester-2 (30–100 GHz), 1.22 g/cc",
         'section': 8,
         'freq_range_ghz': (30, 100),
         'eps_params': {
@@ -1491,7 +1518,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polyester F141 (18–60 GHz), 1.38 g/cc", # not in range
+        'name': "Polyester F141 (18–60 GHz), 1.38 g/cc",
         'section': 8,
         'freq_range_ghz': (18, 60),
         'eps_params': {
@@ -1505,7 +1532,7 @@ materials_data = [
         }
     },
     {
-        'name': "Epoxy F161, 1.243 g/cc (18–100 GHz)", # not in range
+        'name': "Epoxy F161, 1.243 g/cc (18–100 GHz)",
         'section': 8,
         'freq_range_ghz': (18, 100),
         'eps_params': {
@@ -1519,7 +1546,7 @@ materials_data = [
         }
     },
     {
-        'name': "2555 Meltbond adhesive (20–60 GHz)", # not in range
+        'name': "2555 Meltbond adhesive (20–60 GHz)",
         'section': 8,
         'freq_range_ghz': (20, 60),
         'eps_params': {
@@ -1533,7 +1560,7 @@ materials_data = [
         }
     },
     {
-        'name': "Plexiglass acrylic (PMMA), 1.2 g/cc (26–100 GHz)", # not in range
+        'name': "Plexiglass acrylic (PMMA), 1.2 g/cc (26–100 GHz)",
         'section': 8,
         'freq_range_ghz': (26, 100),
         'eps_params': {
@@ -1547,7 +1574,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polyester, F148 (18–100 GHz), ~1.4 g/cc", # not in range
+        'name': "Polyester, F148 (18–100 GHz), ~1.4 g/cc",
         'section': 8,
         'freq_range_ghz': (18, 100),
         'eps_params': {
@@ -1589,7 +1616,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polyimide bismaleimide F178 (18–100 GHz), 1.297 g/cc", # not in range
+        'name': "Polyimide bismaleimide F178 (18–100 GHz), 1.297 g/cc",
         'section': 8,
         'freq_range_ghz': (18, 100),
         'eps_params': {
@@ -1603,7 +1630,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polyethylene (8–40 GHz), 0.93–0.94 g/cc", # not in range
+        'name': "Polyethylene (8–40 GHz), 0.93–0.94 g/cc",
         'section': 8,
         'freq_range_ghz': (8, 40),
         'eps_params': {
@@ -1617,7 +1644,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polytetrafluoroethylene (PTFE) (10–100 GHz), 2.13–2.19 g/cc", # not in range
+        'name': "Polytetrafluoroethylene (PTFE) (10–100 GHz), 2.13–2.19 g/cc",
         'section': 8,
         'freq_range_ghz': (10, 100),
         'eps_params': {
@@ -1631,7 +1658,7 @@ materials_data = [
         }
     },
     {
-        'name': "Polyamide 7 (10–16 GHz avg.), 1.15–1.25 g/cc", # not in range
+        'name': "Polyamide 7 (10–16 GHz avg.), 1.15–1.25 g/cc",
         'section': 8,
         'freq_range_ghz': (10, 16),
         'eps_params': {
