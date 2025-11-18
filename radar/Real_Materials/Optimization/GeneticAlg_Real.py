@@ -18,11 +18,11 @@ import jax
 #---------INPUTS--------------------
 nfreq = 500
 layers = 5
-freq_lowerbound = 0.2*10**9 #Hz
-freq_upperbound = 2*10**9 #Hz
+freq_lowerbound = 2*10**9 #Hz
+freq_upperbound = 8*10**9 #Hz
 
 #Hyper-Parameters
-num_generations = 5 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
+num_generations = 50 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
 num_parents_mating = 6 #
 sol_per_pop = 40 #40 candidate designs for generation
 num_genes = 10 #Total decisions variables for individual, 5 materials and 2 for each
@@ -32,7 +32,7 @@ mutation_adaptive = (0.3, 0.05) #PyGAD’s adaptive mutation, where mutation pro
 
 # Define the gene space
 #Code defines domain for each of 10 gense
-gene_space = [{'low': 1, 'high': 13}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
+gene_space = [{'low': 1, 'high': 13}] * layers + [{'low': 0.0002, 'high': 0.003}] * layers 
 
 
 #---------------------------------------
@@ -272,12 +272,19 @@ plt.figure(figsize=(8, 6))
 plt.scatter(avg_thickness_fitness_per_gen, avg_reflection_fitness_per_gen, c=generation_indices, cmap='viridis', alpha=0.7, label="Mean Points")
 plt.scatter(pareto_thickness, pareto_reflection, color='r', label="Pareto Front")
 plt.scatter(common_thick, common_ref, color='m', label="Gradient Pareto Front")
-#EEE paper LF thicknesses and reflections
-paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
-paperLFy=[-33,-21,-18,-14]
+#IEEE paper LF and HF thicknesses and reflections
+# # COMMENT OUT THE ONE THAT ISNT USED
+# paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
+# paperLFy=[-33,-21,-18,-14]
 
-plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
-plt.scatter(paperLFx, paperLFy, color='b', )
+# plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
+# plt.scatter(paperLFx, paperLFy, color='b', )
+
+paperHFx = [0.005244, 0.002670, 0.001761, 0.001236]
+paperHFy = [-23.5, -19.8, -17, -13]
+
+plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
+plt.scatter(paperHFx, paperHFy, color='r', )
 
 plt.xlabel("Total Thickness (m)")
 plt.ylabel("Max Reflection (dB)")
@@ -291,12 +298,19 @@ plt.figure(figsize=(8, 6))
 plt.scatter(avg_thickness_fitness_per_gen, avg_reflection_fitness_per_gen, c=generation_indices, cmap='viridis', alpha=0.7, label="Mean Points")
 plt.scatter(pareto_thickness, pareto_reflection, color='r', label="Pareto Front")
 plt.scatter(c_pareto_totthick, c_pareto_ref, color='m', label="Gradient Points")
-#EEE paper LF thicknesses and reflections
-paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
-paperLFy=[-33,-21,-18,-14]
+#IEEE paper LF and HF thicknesses and reflections
+# # COMMENT OUT THE ONE THAT ISNT USED
+# paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
+# paperLFy=[-33,-21,-18,-14]
 
-plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
-plt.scatter(paperLFx, paperLFy, color='b', )
+# plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
+# plt.scatter(paperLFx, paperLFy, color='b', )
+
+paperHFx = [0.005244, 0.002670, 0.001761, 0.001236]
+paperHFy = [-23.5, -19.8, -17, -13]
+
+plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
+plt.scatter(paperHFx, paperHFy, color='r', )
 
 plt.xlabel("Total Thickness (m)")
 plt.ylabel("Max Reflection (dB)")

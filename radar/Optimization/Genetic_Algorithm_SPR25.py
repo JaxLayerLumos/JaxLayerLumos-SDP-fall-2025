@@ -19,7 +19,7 @@ freq_lowerbound = 0.2*10**9 #Hz
 freq_upperbound = 2*10**9 #Hz
 
 #Hyper-Parameters
-num_generations = 4000
+num_generations = 10
 num_parents_mating = 6
 sol_per_pop = 40
 num_genes = 10
@@ -237,12 +237,19 @@ plt.figure(figsize=(8, 6))
 plt.scatter(avg_thickness_fitness_per_gen, avg_reflection_fitness_per_gen, c=generation_indices, cmap='viridis', alpha=0.7, label="Mean Points")
 plt.scatter(pareto_thickness, pareto_reflection, color='r', label="Pareto Front")
 plt.scatter(common_thick, common_ref, color='m', label="Gradient Pareto Front")
-#EEE paper LF thicknesses and reflections
-paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
-paperLFy=[-33,-21,-18,-14]
+#IEEE paper LF and HF thicknesses and reflections
+# # COMMENT OUT THE ONE THAT ISNT USED
+# paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
+# paperLFy=[-33,-21,-18,-14]
 
-plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
-plt.scatter(paperLFx, paperLFy, color='b', )
+# plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
+# plt.scatter(paperLFx, paperLFy, color='b', )
+
+paperHFx = [5.244, 2.670, 1.761, 1.236]
+paperHFy = [-23.5, -19.8, -17, -13]
+
+plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
+plt.scatter(paperHFx, paperHFy, color='r', )
 
 plt.xlabel("Total Thickness (m)")
 plt.ylabel("Max Reflection (dB)")
