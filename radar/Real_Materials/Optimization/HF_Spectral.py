@@ -17,30 +17,37 @@ inc_angle = 0.0
 frequencies = jnp.linspace(freq_range[0]*10**9, freq_range[1]*10**9, 500)
 frequencies_in_ghz = jnp.linspace(freq_range[0], freq_range[1], 500)
 
-# INPUT MATERIAL INDICIES AND THICKNESSES FROM OUTPUTTED pareto_front_data.csv FROM OPTIMIZATION ALGORITHM
+# INPUT MATERIAL INDICIES AND THICKNESSES FROM OUTPUTTED pareto front .csv FROM OPTIMIZATION ALGORITHM
+df = pd.read_csv('HF_GA_Pareto.csv', skiprows=1, header=None)
 
-designs = [
-    {
-        "materials_data": ["9", "12", "11", "9", "8"],
-        "thicknesses": [0.0008768564731585307,0.0024563861726733176,0.0010617452691572165,0.0018109782504224044,0.0008490160643851624],
-        "ref_R_in_db": -8.862927653673442
-    },
-    {
-        "materials_data": ["8","10","11","9","11"],
-        "thicknesses": [0.0011698064193393432,0.0005440479848624393,0.00166558485694679,0.001012374020956415,0.0001642060488974303],
-        "ref_R_in_db": -11.305338662500013
-    },
-    {
-        "materials_data": ["8","12","9","9","2"],
-        "thicknesses": [0.00255540785658433,0.0023252868983009455,0.0004967484732893862,0.0015466874354698298,0.0004675579592127015],
-        "ref_R_in_db": -15.019816602494213
-    },
-    {
-        "materials_data": ["9", "10", "1", "9", "8"],
-        "thicknesses": [0.0023983186083111445,0.0013286692598182455,0.00022135813930062212,0.0011988238747182695,8.994986041532287e-05],
-        "ref_R_in_db": -15.54450253590965
-    }
-]
+def transform_csv_to_designs_multi_col(file_path, num_layers):
+    df = pd.read_csv(file_path)
+
+    # Define columns that data is to come from
+    material_cols = list(df.columns[4,3,2,1,0])
+    thickness_cols = list(df.columns[9,8,7,6,5])
+    ref_R_col = df.columns[11]
+
+    designs_list = []
+
+    # Extract data and put into standard dataframe
+    for index, row in df.iterrows():
+        
+        materials_list = row[material_cols].astype(str).tolist()
+        thicknesses_list = row[thickness_cols].astype(float).tolist()
+        ref_R = float(row[ref_R_col])
+        
+        # Create the dictionary and append
+        design_dict = {
+            "materials_data": materials_list,
+            "thicknesses": thicknesses_list,
+            "ref_R_in_db": ref_R
+        }
+        designs_list.append(design_dict)
+        
+    return designs_list
+
+designs = transform_csv_to_designs_multi_col(df, 5)
 
 for i, design in enumerate(designs):
     materials_data = design["materials_data"]
@@ -67,6 +74,11 @@ stacklist.append(0)
 d_stack = jnp.array(stacklist)
 
 for i, design in enumerate(designs):
+    materials_data = design["materials_data"]
+    tlist = design["thicknesses"]
+    ref_R_in_db = design["ref_R_in_db"]
+
+    materials = ["Air"] + materials_data + ["PEC"]
     thicknesses = jnp.array([0.0] + [thickness for thickness in tlist] + [0.0])
 
     eps_stack, mu_stack = utils_materials_real.get_eps_mu(materials, frequencies)

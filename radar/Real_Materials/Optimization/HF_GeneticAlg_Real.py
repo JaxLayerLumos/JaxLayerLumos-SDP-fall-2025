@@ -32,7 +32,7 @@ mutation_adaptive = (0.3, 0.05) #PyGAD’s adaptive mutation, where mutation pro
 
 # Define the gene space
 #Code defines domain for each of 10 gense
-gene_space = [{'low': 1, 'high': 13}] * layers + [{'low': 0.0002, 'high': 0.003}] * layers 
+gene_space = [{'low': 1, 'high': 13}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
 
 
 #---------------------------------------
@@ -272,19 +272,14 @@ plt.figure(figsize=(8, 6))
 plt.scatter(avg_thickness_fitness_per_gen, avg_reflection_fitness_per_gen, c=generation_indices, cmap='viridis', alpha=0.7, label="Mean Points")
 plt.scatter(pareto_thickness, pareto_reflection, color='r', label="Pareto Front")
 plt.scatter(common_thick, common_ref, color='m', label="Gradient Pareto Front")
-#IEEE paper LF and HF thicknesses and reflections
+#IEEE paper HF thicknesses and reflections
 # # COMMENT OUT THE ONE THAT ISNT USED
-# paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
-# paperLFy=[-33,-21,-18,-14]
-
-# plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
-# plt.scatter(paperLFx, paperLFy, color='b', )
 
 paperHFx = [0.005244, 0.002670, 0.001761, 0.001236]
 paperHFy = [-23.5, -19.8, -17, -13]
 
 plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
-plt.scatter(paperHFx, paperHFy, color='r', )
+plt.scatter(paperHFx, paperHFy, color='b', )
 
 plt.xlabel("Total Thickness (m)")
 plt.ylabel("Max Reflection (dB)")
@@ -298,19 +293,13 @@ plt.figure(figsize=(8, 6))
 plt.scatter(avg_thickness_fitness_per_gen, avg_reflection_fitness_per_gen, c=generation_indices, cmap='viridis', alpha=0.7, label="Mean Points")
 plt.scatter(pareto_thickness, pareto_reflection, color='r', label="Pareto Front")
 plt.scatter(c_pareto_totthick, c_pareto_ref, color='m', label="Gradient Points")
-#IEEE paper LF and HF thicknesses and reflections
-# # COMMENT OUT THE ONE THAT ISNT USED
-# paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
-# paperLFy=[-33,-21,-18,-14]
-
-# plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
-# plt.scatter(paperLFx, paperLFy, color='b', )
+#IEEE paper HF thicknesses and reflections
 
 paperHFx = [0.005244, 0.002670, 0.001761, 0.001236]
 paperHFy = [-23.5, -19.8, -17, -13]
 
 plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
-plt.scatter(paperHFx, paperHFy, color='r', )
+plt.scatter(paperHFx, paperHFy, color='b', )
 
 plt.xlabel("Total Thickness (m)")
 plt.ylabel("Max Reflection (dB)")
@@ -343,6 +332,6 @@ pareto_df = pd.DataFrame({
 })
 
 # Save as CSV file
-pareto_df.to_csv("pareto_front_data.csv", index=False)
+pareto_df.to_csv("HF_GA_Pareto.csv", index=False)
 
-print("Pareto front materials and layer thicknesses saved to 'pareto_front_data.csv'")
+print("Pareto front materials and layer thicknesses saved to 'HF_GA_Pareto.csv'")

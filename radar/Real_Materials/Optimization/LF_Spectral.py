@@ -17,30 +17,37 @@ inc_angle = 0.0
 frequencies = jnp.linspace(freq_range[0]*10**9, freq_range[1]*10**9, 500) # In Hz
 frequencies_in_ghz = jnp.linspace(freq_range[0], freq_range[1], 500) # In GHz
 
-# INPUT MATERIAL INDICIES AND THICKNESSES FROM OUTPUTTED pareto_front_data.csv FROM OPTIMIZATION ALGORITHM
+# INPUT MATERIAL INDICIES AND THICKNESSES FROM OUTPUTTED pareto front .csv FROM OPTIMIZATION ALGORITHM
+df = pd.read_csv('LF_GA_Pareto.csv', skiprows=1, header=None)
 
-designs = [
-    {
-        "materials_data": ["13", "3", "1", "3", "1"],
-        "thicknesses": [0.0011315971718016253,0.0003183608464371743,0.0002796067064920289,0.0030207494642138385,0.0004760833109844865],
-        "ref_R_in_db": -10.96794531640759
-    },
-    {
-        "materials_data": ["5","8","6","12","1"],
-        "thicknesses": [0.003109260643861932,0.000488955450569595,0.00031155651808970644,0.002039775644792313,0.0004956538260417484],
-        "ref_R_in_db": -18.541645550527665
-    },
-    {
-        "materials_data": ["8","12","12","4","2"],
-        "thicknesses": [0.00041196435885040324,0.0001248750366758503,0.00030186839250998096,0.0028179946568892607,0.0035439952401176366],
-        "ref_R_in_db": -10.350671246823532
-    },
-    {
-        "materials_data": ["5", "8", "6", "4", "1"],
-        "thicknesses": [0.0009943101335997886,0.0004907856745116919,0.0003117041434258897,0.0010851870387622933,0.0005040655556414303],
-        "ref_R_in_db": -21.399924051098708
-    }
-]
+def transform_csv_to_designs_multi_col(file_path, num_layers):
+    df = pd.read_csv(file_path)
+
+    # Define columns that data is to come from
+    material_cols = list(df.columns[4,3,2,1,0])
+    thickness_cols = list(df.columns[9,8,7,6,5])
+    ref_R_col = df.columns[11]
+
+    designs_list = []
+
+    # Extract data and put into standard dataframe
+    for index, row in df.iterrows():
+        
+        materials_list = row[material_cols].astype(str).tolist()
+        thicknesses_list = row[thickness_cols].astype(float).tolist()
+        ref_R = float(row[ref_R_col])
+        
+        # Create the dictionary and append
+        design_dict = {
+            "materials_data": materials_list,
+            "thicknesses": thicknesses_list,
+            "ref_R_in_db": ref_R
+        }
+        designs_list.append(design_dict)
+        
+    return designs_list
+
+designs = transform_csv_to_designs_multi_col(df, 5)
 
 for i, design in enumerate(designs):
     materials_data = design["materials_data"]
