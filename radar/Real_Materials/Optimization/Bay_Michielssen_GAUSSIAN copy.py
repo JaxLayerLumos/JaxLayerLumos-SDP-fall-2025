@@ -22,7 +22,7 @@ NUM_FREQ_POINTS = 300
 # Gaussian Process optimization parameters
 NUM_INITIAL_POINTS = 20  # Random exploration before GP kicks in
 NUM_GP_ITERATIONS = 500   # GP-guided optimization iterations
-ACQUISITION_FUNC = 'LCB' # Expected Improvement ('EI', 'LCB', 'PI')
+ACQUISITION_FUNC = 'EI' # Expected Improvement ('EI', 'LCB', 'PI')
 NUM_RUNS = 10 # Number of thickness windows
 NUM_LAYERS = 5 # Number of RAM layers
 

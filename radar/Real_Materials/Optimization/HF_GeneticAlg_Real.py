@@ -18,11 +18,11 @@ import jax
 #---------INPUTS--------------------
 nfreq = 500
 layers = 5
-freq_lowerbound = 0.2*10**9 #Hz
-freq_upperbound = 2*10**9 #Hz
+freq_lowerbound = 2*10**9 #Hz
+freq_upperbound = 8*10**9 #Hz
 
 #Hyper-Parameters
-num_generations = 5 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
+num_generations = 50 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
 num_parents_mating = 6 #
 sol_per_pop = 40 #40 candidate designs for generation
 num_genes = 10 #Total decisions variables for individual, 5 materials and 2 for each
@@ -272,12 +272,14 @@ plt.figure(figsize=(8, 6))
 plt.scatter(avg_thickness_fitness_per_gen, avg_reflection_fitness_per_gen, c=generation_indices, cmap='viridis', alpha=0.7, label="Mean Points")
 plt.scatter(pareto_thickness, pareto_reflection, color='r', label="Pareto Front")
 plt.scatter(common_thick, common_ref, color='m', label="Gradient Pareto Front")
-#EEE paper LF thicknesses and reflections
-paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
-paperLFy=[-33,-21,-18,-14]
+#IEEE paper HF thicknesses and reflections
+# # COMMENT OUT THE ONE THAT ISNT USED
 
-plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
-plt.scatter(paperLFx, paperLFy, color='b', )
+paperHFx = [0.005244, 0.002670, 0.001761, 0.001236]
+paperHFy = [-23.5, -19.8, -17, -13]
+
+plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
+plt.scatter(paperHFx, paperHFy, color='b', )
 
 plt.xlabel("Total Thickness (m)")
 plt.ylabel("Max Reflection (dB)")
@@ -291,12 +293,13 @@ plt.figure(figsize=(8, 6))
 plt.scatter(avg_thickness_fitness_per_gen, avg_reflection_fitness_per_gen, c=generation_indices, cmap='viridis', alpha=0.7, label="Mean Points")
 plt.scatter(pareto_thickness, pareto_reflection, color='r', label="Pareto Front")
 plt.scatter(c_pareto_totthick, c_pareto_ref, color='m', label="Gradient Points")
-#EEE paper LF thicknesses and reflections
-paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
-paperLFy=[-33,-21,-18,-14]
+#IEEE paper HF thicknesses and reflections
 
-plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
-plt.scatter(paperLFx, paperLFy, color='b', )
+paperHFx = [0.005244, 0.002670, 0.001761, 0.001236]
+paperHFy = [-23.5, -19.8, -17, -13]
+
+plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
+plt.scatter(paperHFx, paperHFy, color='b', )
 
 plt.xlabel("Total Thickness (m)")
 plt.ylabel("Max Reflection (dB)")
@@ -329,6 +332,6 @@ pareto_df = pd.DataFrame({
 })
 
 # Save as CSV file
-pareto_df.to_csv("pareto_front_data.csv", index=False)
+pareto_df.to_csv("HF_GA_Pareto.csv", index=False)
 
-print("Pareto front materials and layer thicknesses saved to 'pareto_front_data.csv'")
+print("Pareto front materials and layer thicknesses saved to 'HF_GA_Pareto.csv'")

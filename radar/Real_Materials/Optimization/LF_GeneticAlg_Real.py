@@ -1,8 +1,11 @@
+#Genetic Algorithm Optimization 
+#Code uses Real_Materials found in Electromagnetic Composites Handbook
+
 import pygad
 import jax.numpy as jnp
 import numpy as np
 from jaxlayerlumos import stackrt_eps_mu
-from jaxlayerlumos import utils_materials
+import utils_materials_real
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import pandas as pd
@@ -19,23 +22,27 @@ freq_lowerbound = 0.2*10**9 #Hz
 freq_upperbound = 2*10**9 #Hz
 
 #Hyper-Parameters
-num_generations = 10
-num_parents_mating = 6
-sol_per_pop = 40
-num_genes = 10
-last_fitness = 0
-mutation_adaptive = (0.3, 0.05)
+num_generations = 50 #Number of GA's to converge CHANGE THIS TO A HIGHER VALUE AFTER TESTING ~4000+
+num_parents_mating = 6 #
+sol_per_pop = 40 #40 candidate designs for generation
+num_genes = 10 #Total decisions variables for individual, 5 materials and 2 for each
+last_fitness = 0 #Holder to update
+mutation_adaptive = (0.3, 0.05) #PyGAD’s adaptive mutation, where mutation probability starts at 0.3 and can
+                                #reduce to 0.05 as generations progress (helps explore early, fine-tune later).
 
 # Define the gene space
-gene_space = [{'low': 1, 'high': 16}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers
+#Code defines domain for each of 10 gense
+gene_space = [{'low': 1, 'high': 13}] * layers + [{'low': 0.0002, 'high': 0.004}] * layers 
+
 
 #---------------------------------------
 
-# 0.1 GHz to 10 GHz, logarithmically spaced
+
 frequencies = jnp.logspace(np.log10(freq_lowerbound), np.log10(freq_upperbound), nfreq)
 # Same thing but for plotting
 freqplot = jnp.logspace(np.log10(freq_lowerbound*1e-9), np.log10(freq_upperbound*1e-9), nfreq)
 
+#These are containers to store performance and evolution data as the GA runs.
 all_generations_fitness = []
 all_solutions = []
 avg_thickness_fitness_per_gen = []
@@ -45,6 +52,12 @@ pareto_thickness =[]
 pareto_thicknesses = []
 pareto_materials =[]
 
+
+#Stacksolve Function
+#Builds a full stack bounded by Air (front) and PEC (perfect electric conductor, back)
+#Pulls the frequency-dependent permittivity/permeability (ε, μ) for each layer
+#Solves the planewave, normal-incidence reflection/transmission of the stack
+#Returns either: peak reflection across the band in dB (for use as an objective), or full reflection spectrum in dB
 
 def stacksolve(tlist,matsin,output):
 
@@ -64,7 +77,24 @@ def stacksolve(tlist,matsin,output):
     mats.append("PEC")
     try:
         #get eps, mu, and then solve the stack
-        eps_stack, mu_stack = utils_materials.get_eps_mu(mats, frequencies)
+        #pulls ε(ω), μ(ω) for every layer/material at the vector of frequencies, data found in utils_materials
+        eps_stack, mu_stack = utils_materials_real.get_eps_mu(mats, frequencies)
+
+        # Swap imaginary values to negative to follow differing convention
+        eps_stack = jnp.array(eps_stack)
+        mu_stack = jnp.array(mu_stack) 
+
+        eps_stack = eps_stack.real - 1j * jnp.abs(eps_stack.imag)
+        mu_stack = mu_stack.real - 1j * jnp.abs(mu_stack.imag)
+
+        # Error check, prints eps_stack and mu_stack to check them
+        #print(eps_stack)
+        #print(mu_stack)
+        #input('break')
+
+        #Calls your solver at 0.0 rad incidence (normal incidence) to obtain:
+        #R_TE, T_TE: reflectance/transmittance for TE polarization.
+        #R_TM, T_TM: same for TM.
         R_TE, T_TE, R_TM, T_TM = stackrt_eps_mu(eps_stack, mu_stack, d_stack, frequencies, 0.0) #eps, mu, thick, freq, angle
 
         R_avg = (R_TE + R_TM) / 2
@@ -74,22 +104,27 @@ def stacksolve(tlist,matsin,output):
           return max(R_db)
         if output==2:
           return R_db
-
+        #output == 1: returns the peak reflection (i.e., the worst-case dB value across the band).
+        #Since reflection dB is negative for values < 1, the “max” is indeed the least negative (worst) point.
+        #output == 2: returns the full spectrum array (one dB value per frequency).
 
     except Exception as e:
         #Catch any exception and return a default value
         print(f"Error in stacksolve: {e}")
         return float('inf')
+    #Any error with material data returns inf
 
+#Fitness_func for the Genetic Algorithm
+#PyGad calls function once per candidate solutionin each generation to compute fitness
 def fitness_func(ga_instance, solution, solution_idx):
 
-    tlist = solution[5:10]
+    tlist = solution[5:10] #Solution had 10 genes total, first 5 material indices and second 5 is thickness
     total_thickness = np.sum(tlist)
 
-    minRmax = stacksolve(tlist,solution[0:5],1)
+    minRmax = stacksolve(tlist,solution[0:5],1) #Computes maximum reflection over frequency band
 
-    fitness1 = -1 * total_thickness
-    fitness2 = -1 * minRmax
+    fitness1 =  -1 * total_thickness
+    fitness2 =  -1 * minRmax
 
     return [np.array(fitness1).item(), np.array(fitness2).item()]
 
@@ -237,19 +272,12 @@ plt.figure(figsize=(8, 6))
 plt.scatter(avg_thickness_fitness_per_gen, avg_reflection_fitness_per_gen, c=generation_indices, cmap='viridis', alpha=0.7, label="Mean Points")
 plt.scatter(pareto_thickness, pareto_reflection, color='r', label="Pareto Front")
 plt.scatter(common_thick, common_ref, color='m', label="Gradient Pareto Front")
-#IEEE paper LF and HF thicknesses and reflections
-# # COMMENT OUT THE ONE THAT ISNT USED
-# paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
-# paperLFy=[-33,-21,-18,-14]
+#IEEE paper LF thicknesses and reflections
+paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
+paperLFy=[-33,-21,-18,-14]
 
-# plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
-# plt.scatter(paperLFx, paperLFy, color='b', )
-
-paperHFx = [5.244, 2.670, 1.761, 1.236]
-paperHFy = [-23.5, -19.8, -17, -13]
-
-plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
-plt.scatter(paperHFx, paperHFy, color='r', )
+plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
+plt.scatter(paperLFx, paperLFy, color='b', )
 
 plt.xlabel("Total Thickness (m)")
 plt.ylabel("Max Reflection (dB)")
@@ -263,7 +291,8 @@ plt.figure(figsize=(8, 6))
 plt.scatter(avg_thickness_fitness_per_gen, avg_reflection_fitness_per_gen, c=generation_indices, cmap='viridis', alpha=0.7, label="Mean Points")
 plt.scatter(pareto_thickness, pareto_reflection, color='r', label="Pareto Front")
 plt.scatter(c_pareto_totthick, c_pareto_ref, color='m', label="Gradient Points")
-#EEE paper LF thicknesses and reflections
+#IEEE paper LF thicknesses and reflections
+
 paperLFx=[5.512*1e-3,3.588*1e-3,2.934*1e-3,2.478*1e-3]
 paperLFy=[-33,-21,-18,-14]
 
@@ -301,6 +330,6 @@ pareto_df = pd.DataFrame({
 })
 
 # Save as CSV file
-pareto_df.to_csv("pareto_front_data.csv", index=False)
+pareto_df.to_csv("LF_GA_Pareto.csv", index=False)
 
-print("Pareto front materials and layer thicknesses saved to 'pareto_front_data.csv'")
+print("Pareto front materials and layer thicknesses saved to 'LF_GA_Pareto.csv'")

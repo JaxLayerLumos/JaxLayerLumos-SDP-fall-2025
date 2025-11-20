@@ -16,11 +16,11 @@ from jaxlayerlumos import utils_materials
 
 # Frequency range
 FREQ_MIN_GHZ = 0.2
-FREQ_MAX_GHZ = 8.0
+FREQ_MAX_GHZ = 2.0
 NUM_FREQ_POINTS = 500
 
 # Optimization parameters
-NUM_RUNS = 3  # Number of thickness windows
+NUM_RUNS = 80  # Number of thickness windows
 MAX_EVALS_PER_RUN = 100  # Max evaluations per window
 NUM_LAYERS = 5  # Number of RAM layers
 
