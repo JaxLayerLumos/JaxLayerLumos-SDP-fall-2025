@@ -5,7 +5,7 @@ import pygad
 import jax.numpy as jnp
 import numpy as np
 from jaxlayerlumos import stackrt_eps_mu
-import utils_materials_real
+from jaxlayerlumos import utils_materials
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import pandas as pd
@@ -32,7 +32,7 @@ mutation_adaptive = (0.3, 0.05) #PyGAD’s adaptive mutation, where mutation pro
 
 # Define the gene space
 #Code defines domain for each of 10 gense
-gene_space = [{'low': 1, 'high': 13}] * layers + [{'low': 0.0003, 'high': 0.0015}] * layers 
+gene_space = [{'low': 1, 'high': 17}] * layers + [{'low': 0.0003, 'high': 0.0015}] * layers 
 
 
 #---------------------------------------
@@ -77,24 +77,7 @@ def stacksolve(tlist,matsin,output):
     mats.append("PEC")
     try:
         #get eps, mu, and then solve the stack
-        #pulls ε(ω), μ(ω) for every layer/material at the vector of frequencies, data found in utils_materials
-        eps_stack, mu_stack = utils_materials_real.get_eps_mu(mats, frequencies)
-
-        # Swap imaginary values to negative to follow differing convention
-        eps_stack = jnp.array(eps_stack)
-        mu_stack = jnp.array(mu_stack) 
-
-        eps_stack = eps_stack.real - 1j * jnp.abs(eps_stack.imag)
-        mu_stack = mu_stack.real - 1j * jnp.abs(mu_stack.imag)
-
-        # Error check, prints eps_stack and mu_stack to check them
-        #print(eps_stack)
-        #print(mu_stack)
-        #input('break')
-
-        #Calls your solver at 0.0 rad incidence (normal incidence) to obtain:
-        #R_TE, T_TE: reflectance/transmittance for TE polarization.
-        #R_TM, T_TM: same for TM.
+        eps_stack, mu_stack = utils_materials.get_eps_mu(mats, frequencies)
         R_TE, T_TE, R_TM, T_TM = stackrt_eps_mu(eps_stack, mu_stack, d_stack, frequencies, 0.0) #eps, mu, thick, freq, angle
 
         R_avg = (R_TE + R_TM) / 2
@@ -104,15 +87,12 @@ def stacksolve(tlist,matsin,output):
           return max(R_db)
         if output==2:
           return R_db
-        #output == 1: returns the peak reflection (i.e., the worst-case dB value across the band).
-        #Since reflection dB is negative for values < 1, the “max” is indeed the least negative (worst) point.
-        #output == 2: returns the full spectrum array (one dB value per frequency).
+
 
     except Exception as e:
         #Catch any exception and return a default value
         print(f"Error in stacksolve: {e}")
         return float('inf')
-    #Any error with material data returns inf
 
 #Fitness_func for the Genetic Algorithm
 #PyGad calls function once per candidate solutionin each generation to compute fitness
