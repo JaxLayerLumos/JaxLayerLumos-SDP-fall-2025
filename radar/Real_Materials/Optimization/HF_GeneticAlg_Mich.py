@@ -312,6 +312,6 @@ pareto_df = pd.DataFrame({
 })
 
 # Save as CSV file
-pareto_df.to_csv("HF_GA_Pareto.csv", index=False)
+pareto_df.to_csv("HF_GA_Pareto_MICH.csv", index=False)
 
-print("Pareto front materials and layer thicknesses saved to 'HF_GA_Pareto.csv'")
+print("Pareto front materials and layer thicknesses saved to 'HF_GA_Pareto_MICH.csv'")
