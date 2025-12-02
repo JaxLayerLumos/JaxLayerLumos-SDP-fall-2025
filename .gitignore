@@ -164,3 +164,5 @@ outputs/
 *.upa
 *.upb
 radar/Real_Materials/~$Real_Materials.xlsx
+radar/Real_Materials/Optimization/Bay_MultWindow_Real.py
+radar/Real_Materials/calculations/plot_eps_muNEW.ipynb

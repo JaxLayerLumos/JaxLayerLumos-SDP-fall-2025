@@ -42,7 +42,7 @@ KERNEL_LENGTH_SCALE = 1.0     # Length scale for RBF kernel
 N_RESTARTS_OPTIMIZER = 5      # Restarts for hyperparameter optimization
 
 # Michielssen PAPER MATERIALS - From JaxLayerLumos library
-# These are the exact materials used in the Michielssen paper
+# These are the exact materials used in the Michielssen paper (by index only)
 Michielssen_MATERIALS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16]
 
 
@@ -64,9 +64,9 @@ print(f"Number of materials available: {len(valid_material_indices)}")
 material_idx_to_library = {i: mat_idx for i, mat_idx in enumerate(valid_material_indices)}
 material_library_to_idx = {mat_idx: i for i, mat_idx in enumerate(valid_material_indices)}
 
-print("\nMichielssen Paper Materials:")
+print("\nMichielssen Paper Materials (by index):")
 for idx in valid_material_indices:
-    print(f"  Material {idx}")
+    print(f"  Material Index: {idx}")
 
 # FREQUENCY SETUP
 
@@ -93,7 +93,7 @@ print(f"  Total evaluations per run: {NUM_INITIAL_POINTS + NUM_GP_ITERATIONS}")
 
 def calculate_reflection_spectrum(layer_thicknesses_mm, material_indices, frequencies_Hz):
     """Calculate reflection coefficient spectrum for a multilayer structure.
-    Uses JaxLayerLumos materials exactly like the Michielssen paper."""
+    Uses JaxLayerLumos materials by index only (no material names)."""
     
     # Ensure all inputs are properly typed
     layer_thicknesses_mm = [float(t) for t in layer_thicknesses_mm]
@@ -103,7 +103,8 @@ def calculate_reflection_spectrum(layer_thicknesses_mm, material_indices, freque
     stacklist = [0.0] + layer_thicknesses_mm + [0.0]
     d_stack = jnp.array(stacklist) * 1e-3  # Convert mm to m
     
-    # Build materials list (Air, layers, PEC) - as strings like Michielssen paper
+    # Build materials list (Air, layers, PEC) - using integers only
+    # Convert to strings for utils_materials.get_eps_mu compatibility
     mats = ["Air"] + [str(m) for m in material_indices] + ["PEC"]
     
     # Get epsilon and mu using JaxLayerLumos
@@ -335,7 +336,7 @@ print(f"Peak Reflection: {best_reflection:.2f} dB")
 print(f"\nLayer Configuration (Air → Layers → PEC):")
 
 for i, (mat_idx, thick) in enumerate(zip(best_materials, best_thicknesses), 1):
-    print(f"  Layer {i}: JaxLayerLumos Material {mat_idx:3d} - {thick:.3f} mm")
+    print(f"  Layer {i}: Material Index {mat_idx:3d} - {thick:.3f} mm")
 
 # CALCULATING PERFORMANCE SPECTRUM
 print("\n" + "="*80)
@@ -459,16 +460,16 @@ ax8.set_title("Thickness Distribution", fontsize=12)
 ax8.legend(fontsize=9)
 ax8.grid(True, alpha=0.3, axis='y')
 
-# Plot 8: Material usage
+# Plot 8: Material usage (by index only)
 ax9 = DistributionFigs.add_subplot(gs[0, 2])
 all_materials_flat = [m for sublist in tracker.all_materials for m in sublist]
 unique_mats, counts = np.unique(all_materials_flat, return_counts=True)
 top_10_idx = np.argsort(counts)[-10:]
 ax9.barh(range(len(top_10_idx)), counts[top_10_idx], color='lightgreen', edgecolor='black')
 ax9.set_yticks(range(len(top_10_idx)))
-ax9.set_yticklabels([f"Mat {unique_mats[i]}" for i in top_10_idx], fontsize=9)
+ax9.set_yticklabels([f"Index {unique_mats[i]}" for i in top_10_idx], fontsize=9)
 ax9.set_xlabel("Usage Count", fontsize=11)
-ax9.set_title("Top 10 Michielssen Materials Used", fontsize=12)
+ax9.set_title("Top 10 Materials Used (by index)", fontsize=12)
 ax9.grid(True, alpha=0.3, axis='x')
 
 plt.savefig('ram_optimization_gp_Michielssen_materials.png', dpi=300, bbox_inches='tight')
@@ -484,5 +485,5 @@ print(f"  Kernel: Matérn 5/2")
 print(f"  Acquisition: {ACQUISITION_FUNC}")
 print(f"  Total evaluations: {tracker.eval_count}")
 print(f"  Best reflection: {best_reflection:.2f} dB")
-print(f"  Materials used: Michielssen paper materials {Michielssen_MATERIALS}")
+print(f"  Materials used: Michielssen material indices {Michielssen_MATERIALS}")
 print(f"  Material system: JaxLayerLumos (same as Michielssen paper)")
