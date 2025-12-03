@@ -1,6 +1,7 @@
 # you need to pip install scikit-optimize
 
 import numpy as np
+import pandas as pd
 import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
@@ -31,7 +32,7 @@ utils_materials_real.get_eps_mus_real_materials = patched_get_eps_mus_real_mater
 
 
 # Frequency range
-FREQ_MIN_GHZ = 0.2
+FREQ_MIN_GHZ = 2.0
 FREQ_MAX_GHZ = 8.0
 NUM_FREQ_POINTS = 500
 
@@ -558,3 +559,160 @@ print(f"  Kernel: Matérn 5/2")
 print(f"  Acquisition: {ACQUISITION_FUNC}")
 print(f"  Total evaluations: {tracker.eval_count}")
 print(f"  Best reflection: {best_reflection:.2f} dB")
+
+
+print("\n" + "="*80)
+print("CREATING GA-STYLE COMPARISON PLOTS")
+print("="*80)
+
+# Calculate generation-equivalent metrics for Bayesian optimization
+evaluations_per_generation = max(1, (NUM_INITIAL_POINTS + NUM_GP_ITERATIONS) // 20)
+num_pseudo_generations = len(tracker.all_reflections) // evaluations_per_generation
+
+avg_thickness_per_generation = []
+avg_reflection_per_generation = []
+
+for gen in range(num_pseudo_generations):
+    start_idx = gen * evaluations_per_generation
+    end_idx = min((gen + 1) * evaluations_per_generation, len(tracker.all_reflections))
+    
+    if start_idx < len(tracker.all_reflections):
+        gen_reflections = tracker.all_reflections[start_idx:end_idx]
+        gen_thicknesses = tracker.all_total_thicknesses[start_idx:end_idx]
+        
+        avg_reflection_per_generation.append(np.mean(gen_reflections))
+        avg_thickness_per_generation.append(np.mean(gen_thicknesses))
+
+# Normalize generation indices for color mapping (0 to 1)
+if len(avg_thickness_per_generation) > 1:
+    generation_indices = np.linspace(0, 1, len(avg_thickness_per_generation))
+else:
+    generation_indices = np.array([0.5])
+
+# Convert thicknesses from mm to meters for plotting (matching GA)
+pareto_total_thick_m = [t * 1e-3 for t in pareto_total_thick]
+refined_total_thick_m = [t * 1e-3 for t in refined_total_thick]
+avg_thickness_per_generation_m = [t * 1e-3 for t in avg_thickness_per_generation]
+
+# Literature data (matching GA exactly) - ALREADY IN METERS
+paperLFx = [0.005512, 0.003588, 0.002934, 0.002478]
+paperLFy = [-33, -21, -18, -14]
+paperHFx = [0.005244, 0.002670, 0.001761, 0.001236]
+paperHFy = [-23.5, -19.8, -17, -13]
+
+# ============================================================================
+# PLOT 1: PARETO FRONT WITH GRADIENT OPTIMIZATION (EXACT GA MATCH)
+# This exactly matches the first GA plot
+# ============================================================================
+
+plt.figure(figsize=(8, 6))
+
+# Plot mean points with viridis colormap (matching GA style exactly)
+plt.scatter(avg_thickness_per_generation_m, avg_reflection_per_generation, 
+           c=generation_indices, cmap='viridis', alpha=0.7, 
+           label="Mean Points")
+
+# Plot Pareto front in RED (matching GA style)
+plt.scatter(pareto_total_thick_m, pareto_ref, color='r', 
+           label="Pareto Front")
+
+# Plot gradient-optimized Pareto front in MAGENTA (matching GA style)
+plt.scatter(refined_total_thick_m, refined_ref, color='m', 
+           label="Gradient Pareto Front")
+
+# IEEE paper HF comparison (matching GA style exactly)
+# Choose which literature data to plot - HF for high frequency, LF for low frequency
+# Uncomment the one you want to use:
+
+# For HIGH FREQUENCY optimization (2-8 GHz):
+plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
+plt.scatter(paperHFx, paperHFy, color='b')
+
+# For LOW FREQUENCY optimization (0.2-2 GHz):
+# plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
+# plt.scatter(paperLFx, paperLFy, color='b')
+
+plt.xlabel("Total Thickness (m)")
+plt.ylabel("Max Reflection (dB)")
+plt.title("Pareto Front")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+
+plt.savefig('GP_Pareto_Front_Plot1.png', dpi=300, bbox_inches='tight')
+print("Saved: GP_Pareto_Front_Plot1.png")
+plt.show()
+
+# ============================================================================
+# PLOT 2: PARETO FRONT WITH ALL GRADIENT POINTS (EXACT GA MATCH)
+# This exactly matches the second GA plot showing gradient descent iterations
+# ============================================================================
+
+plt.figure(figsize=(8, 6))
+
+# Plot mean points with viridis colormap
+plt.scatter(avg_thickness_per_generation_m, avg_reflection_per_generation, 
+           c=generation_indices, cmap='viridis', alpha=0.7, 
+           label="Mean Points")
+
+# Plot original Pareto front in RED
+plt.scatter(pareto_total_thick_m, pareto_ref, color='r', 
+           label="Pareto Front")
+
+# Plot ALL gradient-optimized points in MAGENTA (showing gradient descent path)
+plt.scatter(refined_total_thick_m, refined_ref, color='m', 
+           label="Gradient Points")
+
+# IEEE paper comparison - choose HF or LF
+# For HIGH FREQUENCY optimization (2-8 GHz):
+plt.plot(paperHFx, paperHFy, 'r--', label="Literature HF")
+plt.scatter(paperHFx, paperHFy, color='b')
+
+# For LOW FREQUENCY optimization (0.2-2 GHz):
+# plt.plot(paperLFx, paperLFy, 'r--', label="Literature LF")
+# plt.scatter(paperLFx, paperLFy, color='b')
+
+plt.xlabel("Total Thickness (m)")
+plt.ylabel("Max Reflection (dB)")
+plt.title("Pareto Front")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+
+plt.savefig('GP_Pareto_Front_Plot2.png', dpi=300, bbox_inches='tight')
+print("Saved: GP_Pareto_Front_Plot2.png")
+plt.show()
+
+# ============================================================================
+# SAVE PARETO DATA TO CSV (EXACT GA FORMAT MATCH)
+# ============================================================================
+
+# Dynamically build the CSV based on NUM_LAYERS
+pareto_data = {}
+
+# Add material columns
+for i in range(NUM_LAYERS):
+    pareto_data[f"Material {i+1}"] = [int(pareto_mats[j][i]) for j in range(len(pareto_mats))]
+
+# Add thickness columns (convert mm to m)
+for i in range(NUM_LAYERS):
+    pareto_data[f"Thickness {i+1} (m)"] = [refined_layer_thick[j][i] * 1e-3 for j in range(len(refined_layer_thick))]
+
+# Add total thickness and reflection
+pareto_data["Total Thickness (m)"] = refined_total_thick_m
+pareto_data["Max Reflection (dB)"] = refined_ref
+
+pareto_df = pd.DataFrame(pareto_data)
+pareto_df.to_csv("GP_Pareto.csv", index=False)
+print("\nPareto front materials and layer thicknesses saved to 'GP_Pareto.csv'")
+
+# ============================================================================
+# PRINT SUMMARY (MATCHING GA OUTPUT STYLE)
+# ============================================================================
+
+print("\n" + "="*80)
+print(f"Total evaluations: {len(tracker.all_reflections)}")
+print(f"Pareto-optimal solutions: {len(refined_ref)}")
+best_idx = np.argmin(refined_ref)
+print(f"Best reflection: {refined_ref[best_idx]:.2f} dB at thickness {refined_total_thick_m[best_idx]:.6f} m")
+print("="*80)
