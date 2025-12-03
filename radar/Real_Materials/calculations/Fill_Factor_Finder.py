@@ -7,7 +7,7 @@ import jaxlayerlumos as jll
 import jaxlayerlumos.utils_materials as jll_utils_materials
 import jaxlayerlumos.utils_units as jll_utils_units
 import jax
-from Materials_Library_NEW import materials_data
+from .Materials_Library_NEW import materials_data
 from ..Optimization.utils_materials_real import get_eps_mus_real_materials
 
 def fill_factor_finder(target):
@@ -34,9 +34,7 @@ def fill_factor_finder(target):
 
     epsMat, muMat = get_eps_mus_real_materials(mat_idx, freq)
     print(epsMat)
-    # Discretize structure
-    z = np.linspace(0, T, N)
-
+    
     n_layers = 100
     n_freq = len(freq)
     
@@ -122,7 +120,7 @@ def fill_factor_finder(target):
 
 
 def main():
-    epsFinal, f = FFF("parabolic")
+    epsFinal, f = fill_factor_finder("parabolic")
     
     print("\n\n Epsilon Effective: \n\n")
     print(epsFinal)
